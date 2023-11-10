@@ -1,0 +1,75 @@
+<div layout="row" layout-wrap layout-align="space-between start">
+    <div flex="100" class="ma-scripting-editor-help-container">
+        <ma-ace-editor flex="100" mode="javascript" options="$ctrl.options" editor-loaded="$ctrl.editor = $editor" show-gutter="true"
+            ng-change="$ctrl.setViewValue()" ng-model="$ctrl.scriptData.script"></ma-ace-editor>
+        <md-button class="md-icon-button" ui-sref="ui.help.scriptingEditor">
+            <md-icon>help</md-icon>
+        </md-button>
+    </div>
+</div>
+<div layout="column" layout-gt-sm="row" layout-wrap layout-align="space-between start" class="ma-margin-bottom">
+    <div flex ng-if="$ctrl.scriptResult || $ctrl.scriptOutput || $ctrl.scriptErrors || $ctrl.scriptActions">
+        <div ng-if="$ctrl.scriptResult" flex class="ma-script-output">
+            <span ma-tr="ui.scriptingEditor.scriptResult" ma-tr-args="[$ctrl.scriptResult.value.toString()]"></span>
+        </div>
+        <div ng-if="$ctrl.scriptOutput" flex class="ma-script-output" class="ma-background-background">
+            <pre>{{ $ctrl.scriptOutput }}</pre>
+        </div>
+        <ul ng-if="$ctrl.scriptErrors" class="md-padding ma-script-errors ma-error-text">
+            <li ng-repeat="error in $ctrl.scriptErrors" ng-if="error.property">
+                <span ma-tr="ui.components.errorOnProperty" ma-tr-args="[error.message, error.property]"></span>
+            </li>
+            <li ng-repeat="error in $ctrl.scriptErrors" ng-if="!error.property">
+                <pre ng-bind="error.message"></pre>
+            </li>
+        </ul>
+        <ul ng-if="$ctrl.scriptActions" class="md-padding ma-script-actions">
+            <li ng-repeat="action in $ctrl.scriptActions">
+                <span ng-if="action.level === 'error'" class="ma-error-text">{{ action.message }}</span>
+                <span ng-if="action.level === 'warning'" class="ma-color-accent">{{ action.message }}</span>
+                <span ng-if="action.level !== 'warning' && action.level !== 'error'">{{ action.message }}</span>
+            </li>
+        </ul>
+    </div>
+    <div flex="100" flex-gt-sm="50" ng-if="!$ctrl.scriptOutput && !$ctrl.scriptErrors && !$ctrl.scriptActions"></div>
+
+    <div layout="row" layout-gt-sm="column">
+        <md-button class="md-raised md-primary" ng-disabled="$ctrl.disableValidation" ng-click="$ctrl.validate($event)">
+            <md-icon>done</md-icon> <span ma-tr="ui.scriptingEditor.validate"></span>
+        </md-button>
+        <md-button class="md-raised" ng-click="$ctrl.hideOutput()" ng-if="$ctrl.scriptOutput || $ctrl.scriptErrors || $ctrl.scriptActions">
+            <md-icon>close</md-icon> <span ma-tr="common.close"></span>
+        </md-button>
+    </div>
+</div>
+
+<div layout="row" layout-wrap layout-align="space-between start" class="ma-inputs-container">
+    <div flex="100" flex-gt-md="50" layout="row" layout-align="start center">
+        <md-input-container flex>
+            <md-icon>error_outline</md-icon>
+            <label ma-tr="common.logging.logLevel"></label>
+            <md-select name="relativeDateType" ng-model="$ctrl.logLevel">
+                <md-option value="NONE" ma-tr="common.none"></md-option>
+                <md-option value="TRACE" ma-tr="common.logging.trace"></md-option>
+                <md-option value="DEBUG" ma-tr="common.logging.debug"></md-option>
+                <md-option value="INFO" ma-tr="common.logging.info"></md-option>
+                <md-option value="WARN" ma-tr="common.logging.warn"></md-option>
+                <md-option value="ERROR" ma-tr="common.logging.error"></md-option>
+                <md-option value="FATAL" ma-tr="common.logging.fatal"></md-option>
+            </md-select>
+        </md-input-container>
+        <ma-log-file-view ng-if="$ctrl.logLevel !=='NONE'" file-name="$ctrl.logFileName"></ma-log-file-view>
+    </div>
+
+    <md-input-container flex="100" flex-gt-md="50" ng-if="$ctrl.showLogFileInputs && $ctrl.logLevel !== 'NONE'">
+        <md-icon>photo_size_select_small</md-icon>
+        <label ma-tr="dsEdit.logFileSizeMB"></label>
+        <input name="logSize" type="number" ng-model="$ctrl.logSize" required>
+    </md-input-container>
+
+    <md-input-container flex="100" flex-gt-md="50" ng-if="$ctrl.showLogFileInputs && $ctrl.logLevel !== 'NONE'">
+        <md-icon>filter_none</md-icon>
+        <label ma-tr="dsEdit.logFileCount"></label>
+        <input name="logCount" type="number" ng-model="$ctrl.logCount" required>
+    </md-input-container>
+</div>

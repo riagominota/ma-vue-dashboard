@@ -1,0 +1,1635 @@
+/* Stats Dialog */
+
+.ma-stats-dialog {
+  width: 730px;
+}
+.ma-stats-dialog .md-toolbar-tools h2 {
+  line-height: 20px;
+  font-size: 16px;
+  text-align: center;
+}
+.ma-stats-dialog .md-toolbar-tools h2 span.nowrap {
+  white-space: nowrap;
+}
+
+@media (max-width: 959px) {
+	.ma-stats-dialog table.md-table td.md-cell, table.md-table th.md-column {
+	  font-size: 1.4rem;
+	}
+}
+
+.ma-stats-dialog table.md-table thead.md-head>tr.md-row {
+  height: 0px;
+}
+.ma-stats-dialog input#ma-stats-number-of-values {
+  width: 55px;
+}
+
+/*
+ *	Point disabled styles
+ */
+
+.ma-disabled-text,
+.ma-point-value-no-value,
+.ma-point-value-empty-value {
+	color: #aaa;
+	font-style: italic;
+}
+
+ma-switch .ma-disabled-text {
+  display: none;
+}
+
+ma-switch md-switch {
+	line-height: inherit;
+}
+
+.ma-point-disabled .ma-point-value-no-value,
+.ma-point-disabled .ma-point-value-empty-value {
+	display: none;
+}
+
+/* API down / not logged in styles for live displays */
+
+.ma-live-value.ma-api-down,
+.ma-live-value.ma-point-disabled {
+    opacity: 0.5;
+    position: relative;
+}
+
+.ma-live-value.ma-api-down:before,
+.ma-live-value.ma-point-disabled:before {
+	content: '';
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	background-image: 
+    	linear-gradient(45deg, transparent 40%, rgba(255, 0, 0, 0.5) 50%, transparent 60%, transparent 100%),
+    	linear-gradient(-45deg, transparent 40%, rgba(255, 0, 0, 0.5) 50%, transparent 60%, transparent 100%);
+  	background-size: 16px 16px;
+  	background-position: 8px 8px;
+}
+
+img.ma-live-value.ma-api-down,
+img.ma-live-value.ma-point-disabled {
+	background-color: rgba(255, 0, 0, 0.2);
+}
+
+/*
+ *	Horizontal and vertical bar displays
+ */
+
+ma-bar-display {
+	display: block;
+	position: relative;
+}
+
+ma-bar-display .bar-display-fill {
+    height: 100%;
+    width: 100%;
+    background-color: currentColor;
+    position: absolute;
+}
+
+ma-bar-display .ma-point-value-label {
+	position: absolute;
+	top: 100%;
+	left: 0;
+	right: 0;
+	text-align: center;
+}
+
+.bar-display {
+    border: 1px solid #aaa;
+    position: relative;
+    border-radius: 3px;
+    width: 100%;
+    height: 30px;
+    background-color: #f5f5f5;
+    box-shadow: inset 0px 0px 3px 1px rgba(0,0,0,0.1);
+}
+
+.bar-display.bar-display-vertical {
+    width: 30px;
+    height: 200px;
+}
+
+.bar-display .bar-display-fill {
+    border-radius: 3px;
+    height: 100%;
+    background-color: lightGreen;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.bar-display.bar-display-vertical .bar-display-fill {
+    height: auto;
+    width: 100%;
+    top: auto;
+    bottom: 0;
+}
+
+ma-bar-display .bar-display-text,
+.bar-display .bar-display-text {
+    position: absolute;
+    font-weight: bold;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    white-space: nowrap;
+}
+
+.bar-display.bar-display-vertical .bar-display-text {
+    transform-origin: top left;
+    transform: rotate(-90deg) translate(-50%, -50%);
+}
+
+/*
+ *	Pipe animations
+ */
+
+@keyframes pipe-left-right {
+    0% {background-position: 0 0;} 100% {background-position: 60px 0;}
+}
+
+@keyframes pipe-right-left {
+    0% {background-position: 60px 0;} 100% {background-position: 0 0;}
+}
+
+@keyframes pipe-top-bottom {
+    0% {background-position: 0 0;} 100% {background-position: 0 60px;}
+}
+
+@keyframes pipe-bottom-top {
+    0% {background-position: 0 60px;} 100% {background-position: 0 0;}
+}
+
+.pipe-left-right {
+    background-color: #00bfff;
+    background-size: 30px 30px;
+    background-image: linear-gradient(90deg,
+        transparent 0%,
+    	rgba(255, 255, 255, .30) 50%,
+    	transparent 100%);
+    animation: pipe-left-right 3s linear infinite;
+    height: 15px;
+    width: 100%;
+}
+
+.pipe-right-left {
+    background-color: #00bfff;
+    background-size: 30px 30px;
+    background-image: linear-gradient(90deg,
+        transparent 0%,
+    	rgba(255, 255, 255, .30) 50%,
+    	transparent 100%);
+    animation: pipe-right-left 3s linear infinite;
+    height: 15px;
+    width: 100%;
+}
+
+.pipe-top-bottom {
+    background-color: #00bfff;
+    background-size: 30px 30px;
+    background-image: linear-gradient(0deg,
+        transparent 0%,
+    	rgba(255, 255, 255, .30) 50%,
+    	transparent 100%);
+    animation: pipe-top-bottom 3s linear infinite;
+    height: 100%;
+    width: 15px;
+}
+
+.pipe-bottom-top {
+    background-color: #00bfff;
+    background-size: 30px 30px;
+    background-image: linear-gradient(0deg,
+        transparent 0%,
+    	rgba(255, 255, 255, .30) 50%,
+    	transparent 100%);
+    animation: pipe-bottom-top 3s linear infinite;
+    height: 100%;
+    width: 15px;
+}
+
+ma-set-point-value md-input-container,
+ma-set-point-value md-select {
+	margin: 6px;
+}
+
+ma-set-point-value button.md-button {
+	margin: 6px 6px 6px 0;
+}
+
+ma-set-point-value button md-icon,
+ma-set-point-value button md-progress-circular {
+	margin: 0 0 0 8px;
+}
+
+._md-track-ticks {
+	display: none;
+}
+
+md-progress-linear ._md-container,
+md-progress-linear ._md-container ._md-bar {
+	height: 100%;
+}
+
+/* Query builder */
+
+ma-query-group .query-group-name {
+  font-size: 18px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+ma-query-group md-card.query-group {
+  margin: 5px;
+}
+
+ma-query-group md-card.query-group md-card-content {
+  padding: 5px;
+}
+
+ma-query-builder md-card md-toolbar {
+  min-height: 38px;
+}
+
+ma-query-builder md-card md-toolbar .md-toolbar-tools {
+  height: 38px;
+}
+
+ma-query-group md-toolbar .md-toolbar-tools .button-group .md-button {
+  min-height: 30px;
+  line-height: 30px;
+  min-width: 60px;
+}
+
+ma-query-builder .query-sort-property {
+  padding-right: 20px;
+}
+
+ma-query-builder .query-sort-property .md-icon-button {
+  margin-left: 0;
+}
+
+/* button group */
+.button-group > .md-button {
+  margin: 0;
+}
+.button-group > .md-button.md-raised:not([disabled]) {
+  box-shadow: none;
+}
+.button-group > .md-button.md-raised:not([disabled]):active {
+  box-shadow: none;
+}
+.button-group > .md-button.left,
+.button-group .md-button.left .md-ripple-container {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.button-group > .md-button.middle,
+.button-group .md-button.middle .md-ripple-container {
+  border-radius: 0;
+}
+.button-group > .md-button.right,
+.button-group .md-button.right .md-ripple-container {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.button-group {
+  border-radius: 3px;
+  margin-left: 8px;
+  margin-right: 8px;
+  box-shadow: 0 2px 5px 0 rgba(0,0,0,.26);
+}
+
+/* Badges */
+ma-badge {
+    display: block;
+    z-index: 10;
+    font-size: 10px;
+    line-height: 11px;
+    color: white;
+    padding: 1px 3px;
+    position: absolute;
+    border-radius: 8px;
+    bottom: 2px;
+    left: 22px;
+    background-color: var(--ma-accent);
+    color: var(--ma-accent-contrast);
+}
+.md-button.ma-badge {
+   overflow: visible;
+}
+
+/* Color preview */
+.ma-color-preview-box {
+    margin: 0 5px;
+    padding: 10px 15px;
+    font-weight: bold;
+}
+
+/* Accordions */
+
+ma-accordion-section {
+  overflow: hidden;
+  display: block;
+}
+
+
+md-card.ma-accordion md-card-title:focus {
+  outline: none;
+}
+
+md-card.ma-accordion .md-headline md-icon {
+  transition: transform 0.3s ease-in-out;
+}
+
+md-card.ma-accordion .md-headline.ma-accordion-expanded md-icon {
+  transform: rotate(180deg);
+}
+
+md-card.ma-accordion md-card-title:not(.ma-small-padding) {
+  padding: 16px;
+}
+
+md-card.ma-accordion md-card-content {
+  padding: 0;
+}
+
+.ma-slide-up-parent-enter,
+.ma-slide-up-parent-leave {
+  transition: max-height 0.3s linear;
+}
+
+.ma-slide-up.ng-enter,
+.ma-slide-up.ng-leave {
+  transition: transform 0.3s linear;
+}
+
+/* Buttons for inputs */
+
+.ma-input-button,
+.ma-input-button.md-icon-button.md-button {
+  margin: 0;
+  position: absolute;
+  top: -4px;
+  right: 0;
+}
+
+md-menu.ma-input-button > .md-button.md-icon-button {
+  margin: 0 -7px 0 0;
+}
+
+md-input-container.md-icon-left.md-icon-right.ma-icon-inside {
+  padding: 2px 2px 2px 36px;
+}
+
+md-input-container.md-icon-right.ma-icon-inside {
+  padding: 2px;
+}
+
+md-input-container.md-icon-right.ma-icon-inside > md-icon:last-of-type {
+    margin: 0;
+    right: 0;
+    top: 5px;
+    left: auto;
+}
+
+md-input-container.md-icon-right.ma-icon-inside > md-select ~ md-icon:last-of-type,
+md-input-container.md-icon-right.ma-icon-inside > input[type=number] ~ md-icon:last-of-type {
+    right: 24px;
+}
+
+/* Component styles */
+
+ma-switch-img img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+ma-user-select {
+  box-sizing: border-box;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+}
+
+ma-state-chart,
+ma-clock,
+ma-pie-chart,
+ma-gauge-chart,
+ma-tank-level,
+ma-indicator,
+ma-switch-img,
+ma-serial-chart,
+ma-watch-list-chart,
+ma-svg,
+ma-bulk-data-point-tasks {
+  display: block;
+}
+
+ma-revision-select {
+	display: flex;
+}
+
+ma-gauge-chart .amchart,
+ma-tank-level .amchart {
+  height: 100%;
+}
+
+ma-gauge-chart,
+ma-indicator,
+ma-switch-img {
+	position: relative;
+}
+
+.ma-point-value-label {
+	white-space: nowrap;
+}
+
+ma-gauge-chart .ma-point-value-label,
+ma-indicator .ma-point-value-label,
+ma-switch-img .ma-point-value-label {
+	text-align: center;
+	position: absolute;
+	top: 100%;
+	left: 0;
+	right: 0;
+}
+
+ma-tank-level .amcharts-graph-tank-remainder .amcharts-graph-column-bottom {
+  display: none;
+}
+
+ma-get-point-value,
+ma-point-values,
+ma-point-statistics:not([display-mode]),
+ma-watch-list-get,
+ma-point-query,
+ma-event-audio {
+  display: none;
+}
+
+ma-watch-list-chart ma-serial-chart {
+  height: 100%;
+}
+
+ma-slider md-slider-container {
+  height: 100%;
+}
+
+ma-slider md-input-container {
+  max-height: 10px;
+  max-width: 77px !important;
+}
+
+ma-slider h5 {
+  max-width: 100% !important;
+}
+
+ma-point-value, ma-slider {
+  white-space: nowrap;
+}
+
+ma-point-value {
+	display: inline;
+	position: relative;
+}
+
+ma-point-value > label {
+	margin-right: 3px;
+}
+
+ma-point-value > md-fab-speed-dial {
+	position: absolute;
+}
+
+ma-point-value > md-fab-speed-dial[md-direction=right] {
+	left: 100%;
+	top: 0;
+}
+
+ma-point-value > md-fab-speed-dial[md-direction=left] {
+	right: 100%;
+	top: 0;
+}
+
+ma-point-value > md-fab-speed-dial[md-direction=up] {
+	left: calc(50% - 14px);
+	bottom: 100%;
+}
+
+ma-point-value > md-fab-speed-dial[md-direction=down] {
+	left: calc(50% - 14px);
+	top: 100%;
+}
+
+ma-point-value.ma-flash-on-change {
+    transition: color 0.2s;
+}
+
+ma-point-value[display-type=dateTime].ma-flash-on-change.ma-point-value-time-changed,
+ma-point-value.ma-flash-on-change.ma-point-value-changed {
+    color: rgb(255,133,0);
+    color: var(--ma-accent);
+}
+
+/* Popup Icons / Event Icon */
+
+ma-point-value .ma-point-value-status-icon {
+	cursor: default;
+  	padding: 2px;
+  	margin: 2px;
+  	width: 24px;
+  	height: 24px;
+  	min-width: 24px;
+  	min-height: 24px;
+}
+
+ma-point-value .ma-point-value-status-icon md-icon {
+   	padding: 0;
+	margin: 0;
+	font-size: 20px;
+	width: 20px;
+	height: 20px;
+	min-width: 20px;
+	min-height: 20px;
+}
+
+ma-point-value md-fab-speed-dial.md-right md-fab-actions .md-fab-action-item,
+ma-set-point-value md-fab-speed-dial.md-right md-fab-actions .md-fab-action-item {
+  -webkit-transition-duration: 0.2s;
+  transition-duration: 0.2s;
+}
+
+ma-point-value md-fab-speed-dial md-fab-actions#popup-btns .md-fab-action-item .md-button,
+ma-set-point-value md-fab-speed-dial md-fab-actions#popup-btns .md-fab-action-item .md-button,
+ma-point-value .md-button.event-indicator {
+  border-radius: 0;
+  padding: 2px;
+  margin: 2px;
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  min-height: 24px;
+}
+
+ma-point-value md-fab-speed-dial md-fab-actions#popup-btns .md-fab-action-item md-icon,
+ma-set-point-value md-fab-speed-dial md-fab-actions#popup-btns .md-fab-action-item md-icon,
+ma-point-value .md-button.event-indicator md-icon {
+  padding: 0;
+  margin: 0;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  min-height: 20px;
+}
+
+ma-watch-list-parameters {
+	flex-direction: row;
+	flex-wrap: wrap;
+	display: flex;
+	box-sizing: border-box;
+	align-items: center;
+	align-content: center;
+	justify-content: flex-start;
+	max-width: 100%;
+}
+
+/* SVG and animations */
+
+[ng-include] > svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+@keyframes spin-clockwise {
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes spin-counterclockwise {
+  100% { transform: rotate(-360deg); }
+}
+
+.ma-spin-clockwise {
+  transform-origin: 50% 50%;
+  animation: spin-clockwise 1s linear infinite;
+}
+
+.ma-spin-counterclockwise {
+  transform-origin: 50% 50%;
+  animation: spin-counterclockwise 1s linear infinite;
+}
+
+.ma-led {
+	width: 30px;
+	height: 30px;
+	border: 3px solid lightgrey;
+	border-radius: 50%;
+	background: radial-gradient(rgba(255,255,255,0.5),rgba(0,0,0,0.5));
+}
+
+@keyframes throb-opacity {
+  50% { opacity: 0.5 }
+  100% { opacity: 1 }
+}
+
+.ma-throb-opacity {
+	animation: throb-opacity 1s ease-in-out infinite;
+}
+
+/* Utility classes */
+
+.ma-small-padding,
+md-card md-card-content.ma-small-padding {
+  padding: 8px;
+}
+
+.ma-no-padding,
+md-card md-card-content.ma-no-padding {
+  padding: 0;
+}
+
+.ma-no-padding-top,
+.md-padding.ma-no-padding-top,
+md-card md-card-content.ma-no-padding-top {
+	padding-top: 0;
+}
+
+.ma-no-padding-bottom,
+.md-padding.ma-no-padding-bottom,
+md-card md-card-content.ma-no-padding-bottom {
+	padding-bottom: 0;
+}
+
+.ma-no-padding-right,
+.md-toolbar-tools.ma-no-padding-right,
+md-menu-item > .md-button.ma-no-padding-right {
+	padding-right: 0;	
+}
+
+.ma-no-padding-left,
+.md-toolbar-tools.ma-no-padding-left,
+md-menu-item > .md-button.ma-no-padding-left {
+	padding-left: 0;	
+}
+
+.ma-progress-button div > md-icon {
+  margin-left: 4px;
+  margin-right: 4px;
+}
+
+.ma-progress-button div > md-progress-circular {
+  margin-left: 6px;
+  margin-right: 6px;
+}
+
+.md-button.ma-label-button {
+  padding: 0;
+}
+
+.md-button.ma-label-button label {
+  padding: 0 6px;
+  cursor: pointer;
+}
+
+.ma-no-margin,
+.md-button.ma-no-margin,
+.md-button.md-icon-button.ma-no-margin {
+	margin: 0;
+}
+
+.ma-margin {
+    margin: 8px;
+}
+
+.ma-margin-large {
+    margin: 16px;
+}
+
+.ma-margin-top {
+	margin-top: 8px;
+}
+
+.ma-margin-top-large {
+	margin-top: 16px;
+}
+
+.ma-margin-bottom {
+	margin-bottom: 8px;
+}
+
+.ma-margin-bottom-large {
+	margin-bottom: 16px;
+}
+
+.ma-margin-top-bottom {
+	margin-top: 8px;
+	margin-bottom: 8px;
+}
+
+.ma-margin-top-bottom-large {
+	margin-top: 16px;
+	margin-bottom: 16px;
+}
+
+.ma-margin-right {
+	margin-right: 8px;
+}
+
+.ma-margin-left {
+	margin-left: 8px;
+}
+
+.ma-margin-right-large {
+	margin-right: 16px;
+}
+
+.ma-margin-left-large {
+	margin-left: 16px;
+}
+
+.ma-margin-left-right {
+	margin-left: 8px;
+	margin-right: 8px;
+}
+
+.ma-margin-left-right-large {
+	margin-left: 16px;
+	margin-right: 16px;
+}
+
+.ma-no-margin-top {
+	margin-top: 0;
+}
+
+.ma-no-margin-bottom {
+	margin-bottom: 0;
+}
+
+.ma-no-margin-right,
+.md-button.ma-no-margin-right,
+.md-button.md-icon-button.ma-no-margin-right {
+	margin-right: 0;
+}
+
+.ma-no-margin-left,
+.md-button.ma-no-margin-left,
+.md-button.md-icon-button.ma-no-margin-left {
+	margin-left: 0;
+}
+
+.ma-margin-input-container {
+	margin-top: 20px;
+}
+
+.ma-checkbox-messages {
+	margin-top: -16px;
+	margin-bottom: 16px;
+	margin-left: 30px;
+	font-size: 1.2rem;
+}
+
+.ma-switch-messages {
+	margin-top: -24px;
+	margin-bottom: 16px;
+	margin-left: 44px;
+	font-size: 1.2rem;
+}
+
+/* small icon button with less padding */
+.md-button.md-icon-button.ma-small-button {
+	padding: 4px;
+	width: 32px;
+	height: 32px;
+	min-height: 32px;
+}
+
+.ma-text-centered,
+table.md-table td.md-cell.ma-text-centered,
+table.md-table th.md-column.ma-text-centered {
+	text-align: center;
+}
+
+.ma-no-user-select {
+	user-select: none;
+	-ms-user-select: none;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+}
+
+.ma-full-width {
+	width: 100%;
+}
+
+/* import/export config components */
+ma-config-export md-checkbox.ma-export-section {
+  margin: 2px 0;
+}
+
+ma-config-import .ma-import-dropzone {
+  height: 150px;
+  border: 1px dashed currentColor;
+  border-radius: 2px;
+}
+
+.ma-config-import-dialog {
+  height: 90%;
+  overflow: hidden;
+}
+
+ma-config-import-dialog {
+	height: 100%;
+}
+
+.ma-config-import-messages {
+  margin-top: 16px;
+  overflow-y: scroll;
+}
+
+/* clickable elements */
+
+[ng-click]:not([disabled]),
+[role=button]:not([disabled]),
+[role=option]:not([disabled]) {
+  cursor: pointer;
+}
+
+[ng-click]:focus:not([disabled]):not(md-tab-item) {
+    outline: none;
+    background-color: rgba(var(--ma-background-300-value), 0.2);
+}
+
+[role=option][disabled] {
+  cursor: default;
+}
+
+/* Ace editor styles */
+
+ma-ace-editor {
+	resize: vertical;
+	overflow-y: auto;
+	padding-bottom: 10px;
+	height: 300px;
+	display: flex;
+	flex-direction: column;
+	box-sizing: border-box;
+}
+
+ma-ace-editor > .ace_editor {
+	display: flex;
+	flex-grow: 1;
+	font-size: 1.4rem;
+}
+
+ma-query-predicate > div > .md-button.md-icon-button {
+	margin: 0;
+}
+
+ma-query-predicate .ma-query-predicate-property,
+ma-query-predicate .ma-query-predicate-operation {
+	width: 160px;
+}
+
+ma-query-predicate ma-data-point-tag-key-select {
+	width: 120px;
+}
+
+
+/* Point browser */
+ma-point-browser {
+	display: flex;
+}
+
+ma-point-browser > md-card {
+	margin: 0;
+}
+
+ma-point-browser .ma-scroll-parent {
+	position: relative;
+}
+
+ma-point-browser .ma-scroll-parent md-list,
+ma-point-browser .ma-scroll-parent .ma-scroll-child {
+  overflow-y: auto;
+  display: block;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+ma-point-browser > md-card md-list {
+  padding: 0;
+  overflow-x: hidden;
+}
+
+ma-point-browser .ma-point-browser-filter md-input-container {
+  margin: 8px;
+}
+
+ma-point-browser .ma-point-browser-filter .md-button {
+  margin: 0 0 0 -40px;
+}
+
+ma-point-browser md-list-item.md-2-line,
+ma-point-browser md-list-item.md-2-line > .md-no-style,
+ma-point-browser md-list-item.md-2-line:before,
+ma-point-browser md-list-item.md-2-line > .md-no-style:before {
+  height: 64px;
+  min-height: 64px;
+}
+
+ma-point-browser md-list-item,
+ma-point-browser md-list-item > .md-no-style,
+ma-point-browser md-list-item:before,
+ma-point-browser md-list-item > .md-no-style:before {
+  height: 40px;
+  min-height: 40px;
+}
+
+ma-point-browser md-list-item .md-list-item-inner,
+ma-point-browser md-list-item .md-list-item-inner span {
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+ma-point-browser md-card md-toolbar.ma-point-browser-type-select {
+  max-height: unset;
+  height: unset;
+  padding: 6px 12px;
+}
+
+ma-point-browser md-card md-toolbar.ma-point-browser-type-select md-radio-button {
+	margin: 3px 0;
+	width: 50%;
+}
+
+ma-point-browser md-card md-toolbar.ma-point-browser-type-select md-radio-button .md-label {
+  font-size: 1.8rem;
+}
+
+ma-point-browser .ma-point-browser-progress,
+ma-point-browser .ma-point-browser-progress > md-progress-linear,
+ma-point-browser .ma-point-browser-progress > md-progress-linear > div.md-container {
+	height: 3px;
+}
+
+ma-point-browser ma-data-point-tag-group {
+	padding: 0 8px;
+}
+
+.ma-drag-over {
+	border: 2px dashed lightgrey;
+	opacity: 0.5;
+}
+
+/* Alarm Flags */
+
+md-select-value md-icon.ma-alarm-flag,
+md-option md-icon.ma-alarm-flag {
+	margin-right: 8px;
+}
+
+.alarm-flag.ALL,
+.ma-alarm-flag.ALL,
+.ma-alarm-level-all,
+md-icon.ma-alarm-level-all,
+md-input-container:not(.md-input-invalid).md-input-focused md-icon.ma-alarm-level-all {
+    color: #000000;
+}
+
+.alarm-flag.NONE,
+.ma-alarm-flag.NONE,
+.ma-alarm-level-none,
+md-icon.ma-alarm-level-none,
+md-input-container:not(.md-input-invalid).md-input-focused md-icon.ma-alarm-level-none {
+    color: #9E9E9E;
+}
+
+.alarm-flag.INFORMATION,
+.ma-alarm-flag.INFORMATION,
+.ma-alarm-level-information,
+md-icon.ma-alarm-level-information,
+md-input-container:not(.md-input-invalid).md-input-focused md-icon.ma-alarm-level-information {
+    color: #00BCD4;
+}
+
+.alarm-flag.IMPORTANT,
+.ma-alarm-flag.IMPORTANT,
+.ma-alarm-level-important,
+md-icon.ma-alarm-level-important,
+md-input-container:not(.md-input-invalid).md-input-focused md-icon.ma-alarm-level-important {
+    color: #26B183;
+}
+
+.alarm-flag.WARNING,
+.ma-alarm-flag.WARNING,
+.ma-alarm-level-warning,
+md-icon.ma-alarm-level-warning,
+md-input-container:not(.md-input-invalid).md-input-focused md-icon.ma-alarm-level-warning {
+    color: #4CA631;
+}
+
+.alarm-flag.URGENT,
+.ma-alarm-flag.URGENT,
+.ma-alarm-level-urgent,
+md-icon.ma-alarm-level-urgent,
+md-input-container:not(.md-input-invalid).md-input-focused md-icon.ma-alarm-level-urgent {
+    color: #FDD835;
+}
+
+.alarm-flag.CRITICAL,
+.ma-alarm-flag.CRITICAL,
+.ma-alarm-level-critical,
+md-icon.ma-alarm-level-critical,
+md-input-container:not(.md-input-invalid).md-input-focused md-icon.ma-alarm-level-critical {
+    color: #FF9800;
+}
+
+.alarm-flag.LIFE_SAFETY,
+.ma-alarm-flag.LIFE_SAFETY,
+.ma-alarm-level-life-safety,
+md-icon.ma-alarm-level-life-safety,
+md-input-container:not(.md-input-invalid).md-input-focused md-icon.ma-alarm-level-life-safety {
+    color: #F44336;
+}
+
+.alarm-flag.DO_NOT_LOG,
+.ma-alarm-flag.DO_NOT_LOG,
+.ma-alarm-level-do-not-log,
+md-icon.ma-alarm-level-do-not-log,
+md-input-container:not(.md-input-invalid).md-input-focused md-icon.ma-alarm-level-do-not-log {
+    color: #9E9E9E;
+}
+
+.alarm-flag.IGNORE,
+.ma-alarm-flag.IGNORE,
+.ma-alarm-level-ignore,
+md-icon.ma-alarm-level-ignore,
+md-input-container:not(.md-input-invalid).md-input-focused md-icon.ma-alarm-level-ignore {
+    color: #9E9E9E;
+}
+
+/* Angular material fixes */
+
+md-icon {
+    user-select: none;
+}
+
+md-list-item.md-2-line md-icon.md-avatar-icon {
+	margin-top: 16px;
+	margin-bottom: 16px;
+}
+
+/* affects main UI top toolbar */
+md-toolbar .md-button md-icon,
+md-toolbar .md-button.md-icon-button md-icon {
+    color: inherit;
+}
+
+/* affects main UI top toolbar quick date picker */
+/* affects the drop down button under the main logo (user profile, logout menu) */
+md-toolbar md-select:not([disabled]):focus.md-no-underline md-select-value.md-select-value,
+md-toolbar .md-button:not([disabled]).md-ink-ripple.md-focused,
+md-toolbar .md-button:not([disabled]).md-ink-ripple:hover,
+md-toolbar md-menu > [role=button]:focus {
+    outline: none;
+    background-color: rgba(var(--ma-background-300-value), 0.2);
+}
+
+/* affects main UI top toolbar quick date picker */
+md-toolbar md-select md-select-value.md-select-value .md-select-icon {
+	color: inherit; 
+}
+
+/* affects data point detail "Configure" checkbox */
+md-toolbar md-checkbox:not(.md-checked) .md-ink-ripple {
+	color: inherit;
+}
+
+/* affects data point detail "Configure" checkbox */
+md-toolbar md-checkbox:not(.md-checked) .md-icon {
+	border-color: currentColor !important;
+}
+
+/* affects data point detail "Number of values" input */
+md-toolbar md-input-container > input.md-input {
+	color: inherit !important;
+}
+
+/* affects bacnet local devices drop down */
+md-menu-content md-menu-item:focus {
+	outline: none;
+	color: var(--ma-primary);
+}
+
+.ma-scroll-parent {
+	position: relative;
+}
+
+.ma-scroll-parent .ma-scroll-child {
+  overflow-y: auto;
+  display: block;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+/* used for putting a gap between inputs */
+@media (min-width: 1280px) {
+	.ma-inputs-container.layout-row > .flex-gt-md-50 {
+		max-width: calc(50% - 10px);
+	}
+	
+	.ma-inputs-container.layout-row > .flex-gt-md-33 {
+		max-width: calc(33.33% - 10px);
+	}
+}
+
+/* Color picker checked background */
+
+/*
+.ma-color-picker-checkered-bg,
+.md-color-picker-checkered-bg[md-color-picker-alpha],
+.md-color-picker-preview.md-color-picker-checkered-bg {
+    background-color: #fff;
+    background-position: 0 0, 5px 5px;
+    background-size: 10px 10px;
+    background-image: linear-gradient(45deg, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%), linear-gradient(45deg, #ddd 25%, #fff 25%, #fff 75%, #ddd 75%);
+}
+*/
+
+.ma-color-picker-checkered-bg,
+.md-color-picker-checkered-bg[md-color-picker-alpha],
+.md-color-picker-preview.md-color-picker-checkered-bg {
+	background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAKElEQVQoU2O8e/fufwY0oKSkhC7EwDgUFP7//x/DM/fu3cP0zBBQCAC7zDTlG2JgjAAAAABJRU5ErkJggg==) repeat;
+}
+
+/* Tools for making elements same height as md-input-container (70px) */
+
+md-checkbox.ma-input-container-height {
+	margin-top: 23px;
+	margin-bottom: 23px;
+}
+
+.md-button.md-icon-button.ma-input-container-height {
+	margin-top: 15px;
+	margin-bottom: 15px;
+}
+
+/* Fix time/date pickers not stretching */
+mdp-time-picker md-input-container,
+mdp-date-picker md-input-container {
+	display: block;
+	flex: 1;
+	box-sizing: border-box;
+}
+
+/* Class for stopping text overflow in list items */
+md-list.ma-no-text-overflow md-list-item .md-list-item-inner,
+md-list.ma-no-text-overflow md-list-item .md-list-item-inner .md-list-item-text,
+md-list.ma-no-text-overflow md-list-item .md-list-item-inner .md-list-item-text > * {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Selectable items in lists */
+
+md-list md-list-item.ma-list-selected {
+    background-color: var(--ma-accent-hue-1);
+    color: var(--ma-accent-hue-1-contrast);
+}
+
+md-list md-list-item.ma-list-selected .md-list-item-inner .md-list-item-text h3,
+md-list md-list-item.ma-list-selected .md-list-item-inner .md-list-item-text p,
+md-list md-list-item.ma-list-selected .md-secondary-container .md-secondary.md-button > md-icon {
+  color: inherit;
+}
+
+md-list md-list-item.ma-list-selected .md-list-item-inner .md-list-item-text p {
+    opacity: 0.7;
+}
+
+/* Class for setting md-table cells to not text wrap */
+table.md-table.ma-no-wrap thead tr th,
+table.md-table.ma-no-wrap tbody tr td {
+	white-space: nowrap;
+}
+
+/* Text size */
+.ma-small-text {
+	font-size: 1.2rem;
+}
+
+.ma-smaller-text {
+	font-size: 1.4rem;
+}
+
+.ma-standard-text {
+    font-size: 1.6rem;
+}
+
+.ma-larger-font {
+	font-size: 1.8rem;
+}
+
+.ma-large-font {
+	font-size: 2.0rem;
+}
+
+.ma-text-center {
+	text-align: center;
+}
+
+/* acknowledge button */
+
+.ma-acknowledged-checkbox.ma-acknowledged {
+    color: var(--ma-color-acknowledged);
+    cursor: default;
+}
+
+md-input-container.ma-filter {
+	margin: 8px;
+}
+
+md-input-container.ma-filter > .ma-input-button > md-icon.material-icons {
+    color: inherit;
+}
+
+/* Virtual repeat table */
+
+.ma-virtual-repeat-table {
+	flex-grow: 1;
+	display: flex;
+	flex-direction: column;
+	font-size: 1.3rem;
+}
+
+.ma-virtual-repeat-table .ma-virtual-repeat-table-body {
+	flex-grow: 1;
+}
+
+.ma-virtual-repeat-table .ma-virtual-repeat-table-row {
+	display: flex;
+	align-items: center;
+}
+
+.ma-virtual-repeat-table .ma-virtual-repeat-table-row > * {
+	flex: 1 1 0;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	padding: 4px 2px;
+}
+
+.ma-virtual-repeat-table .ma-virtual-repeat-table-header {
+	font-weight: bold;
+}
+
+/* adds a scrollbar width element to make the row width the same as rows in the body */
+.ma-virtual-repeat-table .ma-virtual-repeat-table-header .ma-virtual-repeat-table-row:after {
+	content: '';
+	overflow-y: scroll;
+	visibility: hidden;
+	height: 0;
+}
+
+/* make the scroller always have a scrollbar so the body rows always have the same width */
+.ma-virtual-repeat-table .md-virtual-repeat-container .md-virtual-repeat-scroller {
+	overflow-y: scroll;
+}
+
+.ma-virtual-repeat-table .ma-row-loading {
+	visibility: hidden;
+}
+
+/* want the progress bar to always take up space */
+.ma-virtual-repeat-table md-progress-linear.ng-hide:not(.ng-hide-animate) {
+	display: block !important;
+	visibility: hidden !important;
+}
+
+.ma-virtual-repeat-table md-progress-linear,
+.ma-virtual-repeat-table md-progress-linear .md-container,
+.ma-virtual-repeat-table md-progress-linear .md-container .md-bar {
+	height: 3px;
+}
+
+.ma-virtual-repeat-table .ma-virtual-repeat-table-header .ma-virtual-repeat-table-row > :focus {
+	outline: none;
+}
+
+.ma-virtual-repeat-table .ma-virtual-repeat-table-header .ma-sort-icon {
+	transition: transform .5s ease-out;
+}
+
+.ma-virtual-repeat-table .ma-virtual-repeat-table-header .ma-sort-icon.ma-sort-descending {
+	transform: rotate(180deg);
+}
+
+.ma-virtual-repeat-table .ma-virtual-repeat-table-header .ma-sort-icon.ma-sort-order-1 {
+    opacity: 40%;
+}
+
+.ma-virtual-repeat-table .ma-virtual-repeat-table-header .ma-sort-icon.ma-sort-order-2 {
+    opacity: 20%;
+}
+
+.ma-virtual-repeat-table .ma-no-items-to-list {
+	font-style: italic;
+	text-align: center;
+	padding: 16px 0;
+}
+
+.ma-virtual-repeat-table .ma-select-progress {
+    font-style: italic;
+    text-align: center;
+    padding: 4px 0;
+}
+
+.ma-action-buttons {
+	margin-top: 24px;
+}
+
+.ma-action-buttons > .md-button:first-child {
+	margin-left: 0;
+}
+
+.ma-action-buttons > .md-button:last-child {
+	margin-right: 0;
+}
+
+/* basic material table */
+table.ma-material-table {
+	border-collapse: collapse;
+	font-size: 1.4rem;
+	width: 100%;
+}
+
+table.ma-material-table td {
+	padding: 4px 16px 4px 16px;
+	border-bottom: 1px solid currentColor;
+	border-bottom-color: rgb(var(--ma-background-hue-3-value), 0.12);
+}
+
+table.ma-material-table thead {
+	font-weight: bold;
+}
+
+/* Input hints / notes */
+
+md-input-container .ma-hint {
+	font-size: 1.2rem;
+	line-height: 1.4rem;
+	overflow: hidden;
+	padding: 5px 5px 0 0;
+	position: absolute;
+	top: 32px;
+	color: var(--ma-foreground-2);
+}
+
+/* 
+ * Hide the hint when the error message is active
+ * (when input is invalid and the form has been submitted or the input touched)
+ */
+ 
+/* This doesnt work as the div has .ng-active on first load when input is invalid
+.md-input-messages-animation.ng-active ~ .ma-hint {
+	display: none;
+}*/
+
+/* Alternative method to above. */
+.ng-submitted md-input-container.md-input-invalid .ma-hint,
+md-input-container.md-input-invalid .ng-touched ~ .ma-hint {
+	display: none;
+}
+
+md-input-container:not(.ma-has-hint) .md-errors-spacer {
+    display: none;
+}
+
+.ma-login-form-container md-input-container {
+	margin: 12px 0;
+}
+
+.ma-login-form-container md-input-container:not(.ma-has-hint) .md-errors-spacer {
+	display: block;
+}
+
+/* Item row styles used in tables */
+.ma-item-row:hover,
+.ma-item-row:focus {
+	background-color: var(--ma-background-hue-2);
+	color: var(--ma-background-hue-2-contrast);
+	outline: none;
+}
+
+/* Theme classes */
+.ma-background-primary,
+.ma-background-primary.ma-hue-default {
+    background-color: var(--ma-primary);
+    color: var(--ma-primary-contrast);
+}
+.ma-background-primary.ma-hue-1 {
+    background-color: var(--ma-primary-hue-1);
+    color: var(--ma-primary-hue-1-contrast);
+}
+.ma-background-primary.ma-hue-2 {
+    background-color: var(--ma-primary-hue-2);
+    color: var(--ma-primary-hue-2-contrast);
+}
+.ma-background-primary.ma-hue-3 {
+    background-color: var(--ma-primary-hue-3);
+    color: var(--ma-primary-hue-3-contrast);
+}
+.ma-color-primary,
+.ma-color-primary.ma-hue-default {
+    color: var(--ma-primary);
+}
+.ma-color-primary.ma-hue-1 {
+    color: var(--ma-primary-hue-1);
+}
+.ma-color-primary.ma-hue-2 {
+    color: var(--ma-primary-hue-2);
+}
+.ma-color-primary.ma-hue-3 {
+    color: var(--ma-primary-hue-3);
+}
+.ma-background-accent,
+.ma-background-accent.ma-hue-default {
+    background-color: var(--ma-accent);
+    color: var(--ma-accent-contrast);
+}
+.ma-background-accent.ma-hue-1 {
+    background-color: var(--ma-accent-hue-1);
+    color: var(--ma-accent-hue-1-contrast);
+}
+.ma-background-accent.ma-hue-2 {
+    background-color: var(--ma-accent-hue-2);
+    color: var(--ma-accent-hue-2-contrast);
+}
+.ma-background-accent.ma-hue-3 {
+    background-color: var(--ma-accent-hue-3);
+    color: var(--ma-accent-hue-3-contrast);
+}
+.ma-color-accent,
+.ma-color-accent.ma-hue-default {
+    color: var(--ma-accent);
+}
+.ma-color-accent.ma-hue-1 {
+    color: var(--ma-accent-hue-1);
+}
+.ma-color-accent.ma-hue-2 {
+    color: var(--ma-accent-hue-2);
+}
+.ma-color-accent.ma-hue-3 {
+    color: var(--ma-accent-hue-3);
+}
+.ma-background-warn,
+.ma-background-warn.ma-hue-default {
+    background-color: var(--ma-warn);
+    color: var(--ma-warn-contrast);
+}
+.ma-background-warn.ma-hue-1 {
+    background-color: var(--ma-warn-hue-1);
+    color: var(--ma-warn-hue-1-contrast);
+}
+.ma-background-warn.ma-hue-2 {
+    background-color: var(--ma-warn-hue-2);
+    color: var(--ma-warn-hue-2-contrast);
+}
+.ma-background-warn.ma-hue-3 {
+    background-color: var(--ma-warn-hue-3);
+    color: var(--ma-warn-hue-3-contrast);
+}
+.ma-color-warn,
+.ma-color-warn.ma-hue-default {
+    color: var(--ma-warn);
+}
+.ma-color-warn.ma-hue-1 {
+    color: var(--ma-warn-hue-1);
+}
+.ma-color-warn.ma-hue-2 {
+    color: var(--ma-warn-hue-2);
+}
+.ma-color-warn.ma-hue-3 {
+    color: var(--ma-warn-hue-3);
+}
+.ma-background-background,
+.ma-background-background.ma-hue-default {
+    background-color: var(--ma-background);
+    color: var(--ma-background-contrast);
+}
+.ma-background-background.ma-hue-1 {
+    background-color: var(--ma-background-hue-1);
+    color: var(--ma-background-hue-1-contrast);
+}
+.ma-background-background.ma-hue-2 {
+    background-color: var(--ma-background-hue-2);
+    color: var(--ma-background-hue-2-contrast);
+}
+.ma-background-background.ma-hue-3 {
+    background-color: var(--ma-background-hue-3);
+    color: var(--ma-background-hue-3-contrast);
+}
+.ma-color-background,
+.ma-color-background.ma-hue-default {
+    color: var(--ma-background);
+}
+.ma-color-background.ma-hue-1 {
+    color: var(--ma-background-hue-1);
+}
+.ma-color-background.ma-hue-2 {
+    color: var(--ma-background-hue-2);
+}
+.ma-color-background.ma-hue-3 {
+    color: var(--ma-background-hue-3);
+}
+.ma-color-foreground-1 {
+    color: var(--ma-foreground-1);
+}
+.ma-color-foreground-2 {
+    color: var(--ma-foreground-2);
+}
+.ma-color-foreground-3 {
+    color: var(--ma-foreground-3);
+}
+.ma-color-foreground-4 {
+    color: var(--ma-foreground-4);
+}
+
+.ma-error-text,
+[ng-messages] {
+    color: var(--ma-warn-A700);
+}
+
+/* Define some additional colors */
+:root {
+    --ma-color-acknowledged: #8BC34A;
+}
+
+/* Sparkline chart */
+.ma-sparkline-chart .amcharts-value-axis,
+.ma-sparkline-chart .amcharts-category-axis,
+.ma-sparkline-chart .amcharts-axis-zero-grid,
+.ma-sparkline-chart .amcharts-value-axis > *,
+.ma-sparkline-chart .amcharts-category-axis > * {
+    visibility: hidden;
+}
+
+md-switch.ma-text-left .md-container {
+    order: 1;
+    margin: 0 0 0 8px;
+}
+
+.ma-hide {
+    visibility: hidden;
+}
+
+.ma-ellipsis {
+    overflow-x: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/* Class added by md-highlight-text directive */
+.highlight {
+    color: var(--ma-accent-hue-1);
+}
+
+.md-tooltip.md-panel {
+    font-size: 1.2rem;
+}
+
+.md-tooltip.md-panel.md-origin-bottom {
+    margin-top: 8px;
+}
+
+.ma-hide-visibility.ng-hide:not(.ng-hide-animate) {
+    display: block !important;
+    visibility: hidden !important;
+}
+
+md-progress-linear.ma-small-progress,
+md-progress-linear.ma-small-progress .md-container,
+md-progress-linear.ma-small-progress .md-container .md-bar {
+    height: 3px;
+}

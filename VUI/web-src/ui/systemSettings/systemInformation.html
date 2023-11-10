@@ -1,0 +1,25 @@
+<div>
+    <ma-system-setting-editor label-tr="users.publicRegistration.systemSetting" key="users.publicRegistration.enabled" type="BOOLEAN" input-type="checkbox"></ma-system-setting-editor>
+</div>
+
+<div layout layout-wrap>
+    <ma-system-setting-editor flex="100" flex-gt-md="50" label-tr="systemSettings.instanceDescription" key="instanceDescription"></ma-system-setting-editor>
+    <ma-system-setting-editor flex="100" flex-gt-md="50" label-tr="ui.settings.publiclyResolvableBaseUrl" key="publiclyResolvableBaseUrl" null-on-empty="true"></ma-system-setting-editor>
+    <ma-system-setting-editor flex="100" flex-gt-md="50" label-tr="systemSettings.restartDelay" key="restart.delay" type="INTEGER" input-type="time" time-unit="seconds" min="0"></ma-system-setting-editor>
+    <ma-system-setting-editor flex="100" flex-gt-md="50" label-tr="systemSettings.tags.defaultDisplayTags" key="tags.dataPoint.display"></ma-system-setting-editor>
+</div>
+
+<div>
+    <ma-system-setting-editor label-tr="systemSettings.upgradeChecksEnabled" key="upgradeChecksEnabled" type="BOOLEAN" input-type="checkbox" on-value-changed="upgradeChecksEnabled = $value"></ma-system-setting-editor>
+    <ma-system-setting-editor label-tr="systemSettings.usageTrackingEnabled" key="usageTrackingEnabled" type="BOOLEAN" input-type="checkbox" ng-disabled="!upgradeChecksEnabled"></ma-system-setting-editor>
+</div>
+
+<div layout layout-wrap>
+    <ma-system-setting-editor flex="100" flex-gt-md="50" label-tr="systemSettings.upgradeVersionState" key="upgradeVersionState" type="INTEGER" input-type="select" ng-disabled="!upgradeChecksEnabled">
+        <md-option ng-value="0"><span ma-tr="systemSettings.upgradeState.development"></span></md-option>
+        <md-option ng-value="1"><span ma-tr="systemSettings.upgradeState.alpha"></span></md-option>
+        <md-option ng-value="2"><span ma-tr="systemSettings.upgradeState.beta"></span></md-option>
+        <md-option ng-value="3"><span ma-tr="systemSettings.upgradeState.releaseCandidate"></span></md-option>
+        <md-option ng-value="4"><span ma-tr="systemSettings.upgradeState.production"></span></md-option>
+    </ma-system-setting-editor>
+</div>

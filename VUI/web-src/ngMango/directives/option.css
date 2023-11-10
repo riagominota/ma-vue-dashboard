@@ -1,0 +1,67 @@
+ma-option {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 48px;
+    padding: 0 16px;
+    color: var(--ma-foreground-1);
+    overflow: hidden;
+    white-space: pre;
+}
+
+ma-option.ma-ellipsis {
+    display: block;
+}
+
+ma-option > span,
+ma-option > em {
+    overflow-x: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+ma-option:focus {
+    outline: none;
+}
+
+ma-option:not([disabled]):focus,
+ma-option:not([disabled]):hover {
+    background-color: rgba(var(--ma-background-500-value), 0.18);
+}
+
+ma-option.ma-selected {
+    color: var(--ma-primary);
+}
+
+ma-option[disabled],
+ma-option-list[disabled] ma-option {
+    color: var(--ma-foreground-3);
+}
+
+ma-option-list[disabled] ma-option,
+ma-option-list[disabled] ma-option:not([disabled]) {
+    cursor: default;
+}
+
+ma-option-list[disabled] ma-option:focus,
+ma-option-list[disabled] ma-option:hover {
+    background-color: unset;
+}
+
+ma-option > md-icon.material-icons {
+    color: inherit;
+    margin: 8px;
+}
+
+ma-option > md-icon:first-child {
+    margin-left: 0;
+}
+
+ma-option.ma-selected .ma-selected-hide,
+ma-option:not(.ma-selected) .ma-selected-show {
+    visibility: hidden;
+}
+
+ma-option > md-checkbox {
+    margin: 0;
+}

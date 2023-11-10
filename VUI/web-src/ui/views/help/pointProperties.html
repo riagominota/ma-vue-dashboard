@@ -1,0 +1,102 @@
+<!--
+Copyright (C) 2021 Radix IoT LLC. All rights reserved.
+-->
+
+<div class="ma-help-doc-container">
+    <h1 ma-tr="ui.dox.pointProperties"></h1>
+    <p>
+        This tab provides controls for editing the properties of a point.
+    </p>
+    <p>
+    You can specify a <strong>Unit</strong> for a point. Type in the symbol for the unit e.g. kg, L, mA, Hz, lb.
+    Note that for some units there are multiple ways of entering the unit, e.g. for degrees celsius you can enter
+    &deg;C or
+    Celsius, for ohms you can use &Omega; or Ohm. Also remember that there are sometimes multiple definitions of a
+    unit, e.g. there are metric tonnes (t),
+    short tons (ton_us) and long tons (ton_uk). You can use all SI prefixes on SI units, e.g. you can enter W for watt
+    and also &micro;W (microwatt), MW (megawatt) etc.</p>
+    
+    <p>
+    <br>
+    For SI Units see the list here <a href='http://jscience.org/api/javax/measure/unit/SI.html' target='blank'>here</a>.
+    <br>
+    For NonSI Units see the list <a href='http://jscience.org/api/javax/measure/unit/NonSI.html' target='blank'>here</a>.
+    <br>
+    Note that there are also some units internally defined in this system:
+    </p>
+    
+    <ul>
+        <li>btu - British thermal unit</li>
+        <li>thm - Thermal Unit (BTU * 100000)</li>
+        <li>psi - Pounds per square inch</li>
+        <li>rpm - Revolutions per minute</li>
+        <li>ppm - Part per million</li>
+        <li>ppb - Part per billion</li>
+    </ul>
+
+    <p>There are also some aliases for common units defined here:</p>
+    <ul>
+        <li>Celsius - &deg;C</li>
+        <li>Fahrenheit - &deg;F</li>
+    </ul>
+    <p>
+        Units can also be constructed as an expression of units, such as expressing the units of acceleration m/s^2 or
+        a
+        unit of
+        surface loss m^2/s. Kilowatt hours is special: while kW*h would be the means of building it, <strong>kWh</strong> is the
+        standard suffix
+        and both are supported units. Similarly, gal/min is more simply labeled <strong>gpm</strong> in common practice, and both
+        are
+        accepted units.
+    </p>
+    <p>
+        The <strong>Displayed unit</strong> specifies which unit the renderer should convert to for display (if supported by the
+        renderer).
+        Input format is the same as for Unit.
+    </p>
+    <p>
+        The <strong>Integral unit</strong> used in the display of statistic and specifies which unit the integrated total should
+        be
+        displayed in. Input format is the same as for Unit.
+    </p>
+    <p>
+        The <strong>Chart color</strong> is the default color of the point's line in images charts of multiple points. Color
+        values
+        can be an HTML-style hex, or any color name in the HTML specification. For example, "#2468AC", "red", and
+        "dodgerblue" are all valid values.
+    </p>
+    <p>
+            The <strong>Plot type</strong> is the default way the data will be represented on a chart.  
+    </p>
+    <ul>
+        <li><strong>Line: </strong> Will draw a direct line between each point useing the shortest possible route.</li>
+        <li><strong>Smooth: </strong> Will apply a smoothing algorithm when drawings the line between each point on the chart.</li>
+        <li><strong>Step: </strong> Will connect each point on the chart by only useing 90 degree angles.</li>
+        <li><strong>Bar: </strong> Will draw a column for each data point on the cart.</li>
+    </ul>
+    <p>
+        The point can influence its default charting through a <strong>Rollup</strong> which will plot that statistical metric
+        when
+        a rollup of 'Point default' is requested. A rollup has a <strong>Rollup period</strong> and a <strong>Rollup period type</strong>.
+    </p>
+    <p>
+        Both rollups and raw data sets can also be put through the Simplify algorithm. Data sets can aspire to have a
+        certain resulting
+        number of values, or provide a magnitude for what is significant. While this can take more resources and time
+        to
+        get the data set, the data set should have its minor variances simplified. A point set to simplify either to a
+        target or a
+        tolerance it will use the <strong>Simplify argument</strong> for that value.
+    </p>
+    <p>
+        Data points can restrict outgoing set values with the <strong>Prevent extreme sets</strong> option. This allows the admin
+        to
+        specify an upper and
+        lower bound for a point's values, such that an operator cannot set a value out to the device that is either
+        below
+        the <strong>Low set limit</strong>
+        or above the <strong>High set limit</strong>.
+    </p>
+
+
+</div>

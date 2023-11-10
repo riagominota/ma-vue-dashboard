@@ -1,0 +1,17 @@
+ma-permission-editor:hover {
+    background-color: rgba(var(--ma-background-500-value), 0.08);
+}
+
+ma-permission-editor md-checkbox {
+    margin: 0;
+    width: 20px;
+    height: 20px;
+}
+
+ma-permission-editor .ma-permission-editor-label > * {
+    vertical-align: middle;
+}
+
+ma-permission-editor .ma-permission-editor-multiple-values {
+    font-size: 1rem;
+}

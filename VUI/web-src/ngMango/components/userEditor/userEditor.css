@@ -1,0 +1,12 @@
+ma-user-editor .ma-user-checkboxes {
+	margin-top: 16px;
+	margin-bottom: 16px;
+}
+
+ma-user-editor .ma-user-checkboxes > md-checkbox {
+	margin-bottom: 8px;
+}
+
+ma-user-editor .ma-action-buttons {
+	margin-top: 16px;
+}

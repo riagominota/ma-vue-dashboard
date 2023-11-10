@@ -1,0 +1,64 @@
+ma-ui-watch-list-builder md-toolbar.md-table-toolbar form > input:focus {
+    outline: none;
+}
+
+ma-ui-watch-list-builder md-toolbar.md-table-toolbar form > input {
+    width: 100%;
+    margin-left: 16px;
+    border: none;
+}
+
+ma-ui-watch-list-builder md-toolbar.ng-animate {
+     transition: none;
+}
+
+ma-ui-watch-list-builder md-toolbar.md-table-toolbar em {
+    font-size:1.6rem;
+}
+
+ma-ui-watch-list-builder md-card {
+  margin: 0;
+}
+
+ma-ui-watch-list-builder md-card.query-group > md-card-content,
+ma-ui-watch-list-builder md-card md-card-content.no-padding {
+  padding: 0;
+}
+
+ma-ui-watch-list-builder ma-query-group md-card.query-group-depth-0 {
+  margin: 0;
+}
+
+ma-ui-watch-list-builder ma-query-group .button-group {
+  margin: 0;
+}
+
+ma-ui-watch-list-builder ma-query-group .button-group .md-button {
+  font-weight: bold;
+}
+
+ma-ui-watch-list-builder .watchlist-settings md-radio-group {
+  margin-bottom: 18px;
+}
+
+ma-ui-watch-list-builder .watchlist-selected-tools {
+  position: relative;
+}
+
+ma-ui-watch-list-builder .watchlist-selected-delete {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+ma-ui-watch-list-builder .watchlist-parameter-row .md-icon-button {
+  margin: 0;
+}
+
+ma-ui-watch-list-builder .watchlist-parameter-options {
+  padding: 5px 10px 10px 10px;
+}
+
+ma-ui-watch-list-builder .watchlist-parameter-options > div md-checkbox {
+  margin: 0 12px 0 12px;
+}

@@ -1,0 +1,182 @@
+ma-ui-admin-home-page md-card.ma-rounded-border,
+ma-ui-admin-home-page md-card.ma-info-card,
+ma-ui-admin-home-page md-card.ma-detailed-info-card {
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+ma-ui-admin-home-page md-card-header {
+    background-color: var(--ma-background-hue-3);
+    color: var(--ma-background-hue-3-contrast);
+    padding: 4px 8px;
+    font-size: 1.8rem;
+}
+
+ma-ui-admin-home-page md-card-header i.fa,
+ma-ui-admin-home-page md-card-header md-icon.material-icons {
+    margin: 10px;
+    font-size: 2.6rem;
+    color: currentColor;
+}
+
+ma-ui-admin-home-page md-card-header > .md-button {
+    border-radius: 16px;
+    border: solid 2px currentColor;
+    text-transform: lowercase;
+    min-height: 32px;
+    line-height: 32px;
+    margin: 4px 8px;
+}
+
+ma-ui-admin-home-page md-card-header > .md-button:hover {
+    border: solid 2px;
+    border-color: var(--ma-accent) !important;
+    color: var(--ma-accent) !important;
+    text-transform: lowercase;
+    min-height: 32px;
+    line-height: 32px;
+    margin: 4px 8px;
+}
+
+ma-ui-admin-home-page .ma-detailed-info-card > div > :nth-child(2n),
+ma-ui-admin-home-page .ma-server-status-contents > :nth-child(2n) {
+    background-color: var(--ma-background-hue-2);
+    color: var(--ma-background-hue-2-contrast);
+}
+
+ma-ui-admin-home-page .ma-ui-home-page-label {
+    color: var(--ma-foreground-3);
+    font-size: 1.4rem;
+    text-transform: lowercase;
+}
+
+ma-ui-admin-home-page .ma-ui-home-page-sub-text {
+    color: var(--ma-foreground-3);
+    font-weight: bold;
+}
+
+ma-ui-admin-home-page .ma-server-status-contents svg {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 12px;
+}
+
+ma-ui-admin-home-page .ma-server-details > div:not(:last-child) {
+    margin-bottom: 12px;
+}
+
+ma-ui-admin-home-page .ma-server-details-graph > div:not(:last-child) {
+    margin-right: 12px;
+}
+
+ma-ui-admin-home-page .ma-sparkline-chart {
+    height: 170px;
+    width: 150px;
+    margin: -20px -10px;
+}
+
+ma-ui-admin-home-page .ma-hover {
+    border: 2px solid transparent;
+    cursor: pointer;
+    position: relative;
+}
+
+ma-ui-admin-home-page .ma-hover:hover,
+ma-ui-admin-home-page .ma-info-card.ma-hover:hover,
+ma-ui-admin-home-page .ma-detailed-info-card .ma-hover:hover {
+    border-color: var(--ma-accent);
+    color: var(--ma-accent);
+}
+
+ma-ui-admin-home-page .ma-hover:hover .ma-value-label,
+ma-ui-admin-home-page .ma-hover:hover div:not(.ma-watermark) md-icon {
+    color: var(--ma-accent);
+}
+
+ma-ui-admin-home-page .ma-value-label {
+    color: var(--ma-foreground-3);
+}
+
+ma-ui-admin-home-page .md-button.ma-info-card-button {
+    text-transform: unset;
+    text-align: unset;
+    font-size: unset;
+    line-height: unset;
+    margin: 0;
+    padding: 16px;
+    display: flex;
+}
+
+ma-ui-admin-home-page .ma-info-card .ma-info-card-button .ma-button-value {
+    font-size: 24px;
+}
+
+ma-ui-admin-home-page .ma-info-card-button .ma-button-icon > md-icon {
+    font-size: 48px;
+    margin-right: 16px;
+}
+
+ma-ui-admin-home-page .ma-info-card-button .ma-content {
+    display: flex;
+    flex-direction: column;
+}
+
+ma-ui-admin-home-page .ma-info-card-button .ma-add {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+}
+
+ma-ui-admin-home-page .ma-info-card .ma-info-card-button .ma-add > md-icon {
+    font-size: 36px;
+}
+
+ma-ui-admin-home-page .ma-watermark {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    margin-right: -26px;
+    margin-bottom: -26px;
+}
+
+ma-ui-admin-home-page .ma-watermark > md-icon.material-icons {
+    font-size: 96px;
+    color: rgba(var(--ma-background-400-value), 0.1);
+}
+
+ma-ui-admin-home-page .ma-detailed-info-card {
+    position: relative;
+}
+
+ma-ui-admin-home-page .ma-watermark.ma-watermark-big {
+    margin-right: -60px;
+    margin-bottom: -60px;
+}
+
+ma-ui-admin-home-page .ma-watermark.ma-watermark-big > md-icon.material-icons {
+    font-size: 192px;
+}
+
+ma-ui-admin-home-page .md-button.ma-redirect {
+    border-radius: 5px;
+    text-transform: unset;
+    text-align: unset;
+    font-size: unset;
+}
+
+ma-ui-admin-home-page .md-button.ma-redirect > ma-point-value {
+    margin-right: 8px;
+}
+
+ma-ui-admin-home-page .ma-redirect md-icon.material-icons {
+    color: inherit;
+}
+
+ma-ui-admin-home-page .ma-redirect > div > ma-point-value {
+    margin: 0px 8px;
+}
+ma-ui-admin-home-page .ma-redirect.ma-hover:hover {
+    border: 2px solid !important;
+    border-color: var(--ma-accent) !important;
+    cursor: pointer;
+}

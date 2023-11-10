@@ -1,0 +1,37 @@
+<ma-permission-editor-container show-filter="::true" ng-form="$ctrl.form" on-filter-changed="$ctrl.filterPermissions($filter)">
+    <div ng-repeat="group in $ctrl.groups track by group.name" class="ma-permission-editor-group">
+        <div class="ma-permission-editor-row ma-module-header"
+             ng-click="$ctrl.expanded[group.name] = !$ctrl.expanded[group.name]"
+             ng-class="{'ma-toggle-open': $ctrl.expanded[group.name]}">
+            <div class="ma-permission-editor-cell" layout="row" layout-align="start center">
+                <div flex>
+                    <div class="ma-ellipsis ma-module-name" md-highlight-text="$filter" md-highlight-flags="ig">{{group.title}}</div>
+                    <div class="ma-ellipsis ma-module-description" md-highlight-text="$filter" md-highlight-flags="ig">{{group.description}}</div>
+                </div>
+                <md-icon class="ma-toggle-icon">arrow_drop_down</md-icon>
+            </div>
+        </div>
+
+        <div class="ma-permission-editor-row ma-permission-editor-subheader" ng-if="$ctrl.expanded[group.name]">
+            <div class="ma-permission-editor-cell ma-permission-editor-description-column"></div>
+            <div class="ma-permission-editor-cell ma-permission-editor-checkbox-column"
+                 ng-repeat="minterm in $minterms track by minterm.id">
+                <div ng-repeat="role in minterm.roles" class="ma-ellipsis">
+                    <span ng-if="!$first">&amp; </span> <span ng-bind="$container.getRoleName(role)"></span>
+                </div>
+            </div>
+            <div class="ma-permission-editor-cell ma-permission-editor-other-column">
+                <div class="ma-ellipsis" ma-tr="ui.permissions.otherRolesWithAccess"></div>
+            </div>
+        </div>
+
+        <ma-permission-editor
+                ng-repeat="permission in ($ctrl.expanded[group.name] && group.permissions) track by permission.name"
+                name="{{permission.name}}"
+                ng-model="permission.permission"
+                ng-change="$ctrl.savePermission(permission)">
+            <span md-highlight-text="$filter" md-highlight-flags="ig">{{permission.description}}</span>
+            <ma-promise-indicator promise="permission.promise"></ma-promise-indicator>
+        </ma-permission-editor>
+    </div>
+</ma-permission-editor-container>

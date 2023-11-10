@@ -1,0 +1,23 @@
+<md-input-container class="ma-filter" md-no-float>
+    <input ng-model="$ctrl.filter" ng-model-options="{debounce: 500}" ng-change="$ctrl.reload = {}" ma-tr="roles.filter">
+    <md-button ng-show="$ctrl.filter" class="ma-input-button md-icon-button" ng-click="$ctrl.filter = null; $ctrl.reload = {}">
+        <md-icon>clear</md-icon>
+    </md-button>
+</md-input-container>
+
+<ma-tree-view reload="$ctrl.reload" load-children="$ctrl.loadRoles($isRoot, $item, $loadMore)"
+              has-children="$isRoot || !!$item.inherited.length"><!-- no space
+ --><md-button class="ma-role-selector-row" ng-click="$ctrl.labelClicked($event, $item)"
+               ng-class="{'ma-selected': $ctrl.selected.has($item.xid)}"
+               ng-disabled="$ctrl.disabled || $ctrl.disabledOptionsMap[$item.xid]"><!-- no space
+     --><md-icon ng-if="$ctrl.multiple" class="ma-selected-show">check</md-icon><!-- no space
+     --><md-icon class="ma-role-icon">group</md-icon>
+        <span md-highlight-text="$ctrl.filter" md-highlight-flags="ig">{{$item.name}}</span>
+    </md-button>
+</ma-tree-view>
+
+<div layout="column" ng-if="$ctrl.dropDownCtrl.fullscreen && $ctrl.multiple" class="ma-ok-button">
+    <md-button ng-click="$ctrl.dropDownCtrl.close()">
+        <span ma-tr="common.ok"></span>
+    </md-button>
+</div>

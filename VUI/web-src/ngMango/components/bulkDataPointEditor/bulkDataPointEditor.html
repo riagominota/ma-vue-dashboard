@@ -1,0 +1,286 @@
+<div flex="noshrink" ma-dropzone ma-drag-enter="dragOver = true" ma-drag-leave="dragOver = false" ma-drop="dragOver = false; $ctrl.fileDropped($data)"
+        ng-class="{'ma-drag-over': dragOver}" ng-form="bulkEditorForm" ma-form-exclude>
+    <div layout="column" layout-gt-md="row" layout-align="start center" class="ma-bulk-edit-toolbar">
+        <div>
+            <md-button ng-if="!$ctrl.bulkTaskPromise && $ctrl.dataSource" class="md-raised" ng-click="$ctrl.createDataPoint($event)" ng-disabled="$ctrl.pointsPromise">
+                <md-icon>add</md-icon>
+                <span ma-tr="common.add"></span>
+            </md-button>
+            <md-button ng-if="!$ctrl.bulkTaskPromise" class="md-raised" ng-disabled="$ctrl.pointsPromise" ng-click="$ctrl.editSelectedPoints($event)">
+                <md-icon>edit</md-icon>
+                <span ma-tr="common.edit"></span>
+                <md-tooltip><span ma-tr="ui.app.editSelectedPoints"></span></md-tooltip>
+            </md-button>
+            <md-button ng-if="!$ctrl.bulkTaskPromise" class="md-raised md-warn" ng-click="$ctrl.confirmDeleteSelected($event)" ng-disabled="$ctrl.pointsPromise">
+                <md-icon>delete</md-icon>
+                <span ma-tr="common.delete"></span>
+                <md-tooltip><span ma-tr="ui.app.deleteSelectedPoints"></span></md-tooltip>
+            </md-button>
+            <md-button ng-if="$ctrl.bulkTask" class="md-raised md-warn" ng-click="$ctrl.cancel($event)">
+                <md-icon>cancel</md-icon>
+                <span ma-tr="ui.app.cancelBulkEdit"></span>
+            </md-button>
+        </div>
+        
+        <div flex class="ma-bulk-edit-toolbar-center-text">
+            <span ng-if="!$ctrl.bulkTask" ma-tr="ui.app.xPointsSelectedLong" ma-tr-args="[$ctrl.selectedPoints.size]"></span>
+    
+            <span ng-if="$ctrl.bulkTask">
+                <span ng-bind="$ctrl.bulkTask.progress || 0"></span>% (<span ma-tr="ui.app.pointXofX" ma-tr-args="[$ctrl.bulkTask.position || 0, $ctrl.bulkTask.maximum || 0]"></span>)
+            </span>
+        </div>
+
+        <div>
+            <md-input-container md-no-float="true">
+                <md-select md-selected-text="'ui.app.selectColumns' | maTr" multiple="true" ng-model="$ctrl.selectedColumns"
+                        ng-change="$ctrl.selectedColumnsChanged()"
+                        ng-model-options="{trackBy: '$value.name'}" ng-disabled="$ctrl.bulkTaskPromise || $ctrl.pointsPromise">
+                    <md-option ng-repeat="column in $ctrl.columns track by column.name" ng-value="column"><span ma-tr="{{column.label}}"></span></md-option>
+                </md-select>
+            </md-input-container>
+            
+            <md-input-container md-no-float="true">
+                <md-select md-selected-text="'ui.app.selectTags' | maTr" multiple="true" ng-model="$ctrl.selectedTags"
+                        ng-change="$ctrl.selectedTagsChanged()"
+                        ng-model-options="{trackBy: '$value.name'}" ng-disabled="$ctrl.bulkTaskPromise || $ctrl.pointsPromise">
+                    <md-option ng-repeat="tag in $ctrl.availableTags track by tag.name" ng-value="tag"><span ng-bind="tag.label"></span></md-option>
+                </md-select>
+            </md-input-container>
+    
+            <md-button class="md-icon-button" ng-click="$ctrl.filterButtonClicked($event)" ng-disabled="$ctrl.bulkTaskPromise || $ctrl.pointsPromise" ng-class="{'md-accent': $ctrl.showFilters}">
+                <md-icon>filter_list</md-icon>
+                <md-tooltip ma-tr="ui.app.showFilters"></md-tooltip>
+            </md-button>
+    
+            <md-button class="md-icon-button" ng-click="$ctrl.downloadCSV($event)" ng-disabled="$ctrl.bulkTaskPromise || $ctrl.pointsPromise">
+                <md-icon>file_download</md-icon>
+                <md-tooltip ma-tr="ui.app.downloadCSV"></md-tooltip>
+            </md-button>
+    
+            <md-button class="md-icon-button" ng-click="$ctrl.uploadCSVButtonClicked($event)" ng-disabled="$ctrl.bulkTaskPromise || $ctrl.pointsPromise">
+                <md-icon>file_upload</md-icon>
+                <md-tooltip ma-tr="ui.app.uploadCSV"></md-tooltip>
+            </md-button>
+            
+            <md-button ng-if="!$ctrl.bulkTaskPromise" class="md-warn md-icon-button" ng-click="$ctrl.confirmPurge($event)" ng-disabled="$ctrl.pointsPromise">
+                <md-icon>delete_forever</md-icon>
+                <md-tooltip><span ma-tr="ui.app.pointValuePurgeForSelectedPoints"></span></md-tooltip>
+            </md-button>
+    
+            <input style="display:none" type="file" ng-model="dummyFileModel"
+                ma-change="$ctrl.csvFileInputChanged($event)" ng-attr-accept="text/csv,.csv">
+        </div>
+    </div>
+    
+    <md-progress-linear ng-if="$ctrl.bulkTask" md-mode="determinate" ng-value="$ctrl.bulkTask.progress"></md-progress-linear>
+
+    <md-table-container>
+        <table md-table md-progress="$ctrl.pointsPromise">
+            <thead md-head md-order="$ctrl.sortString" md-on-reorder="$ctrl.sortStringChangedBound">
+                <tr md-row>
+                    <th md-column class="ma-checkbox-column">
+                        <md-checkbox aria-label="{{'ui.app.selectAll' | maTr}}" ng-model="$ctrl.selectAll" ng-change="$ctrl.selectAllChanged()"
+                            ng-disabled="$ctrl.bulkTaskPromise || $ctrl.pointsPromise || !$ctrl.filteredPoints.length" md-indeterminate="$ctrl.selectAllIndeterminate">
+                        </md-checkbox>
+                    </th>
+                    <th md-column ng-repeat="column in $ctrl.selectedColumns | orderBy:'order' track by column.name"
+                            md-order-by="{{column.disableSort ? '' : column.name}}" ng-if="column.name !== 'value'">
+                        <span ma-tr="{{column.label}}"></span>
+                    </th>
+                    <th md-column ng-repeat="tag in $ctrl.selectedTags track by tag.name"
+                            md-order-by="tags.{{tag.name}}">
+                        <span ng-bind="tag.label"></span>
+                    </th>
+                    <th ma-tr="ui.app.pointValue" ng-if="$ctrl.showPointValueColumn"></th>
+                    <th md-column><!-- Spacer for point actions column --></th>
+                </tr>
+            </thead>
+            <thead ng-if="$ctrl.showFilters" class="ma-filter-header">
+                <tr>
+                    <th><!-- Spacer for checkbox column --></th>
+                    <th ng-repeat="column in $ctrl.selectedColumns | orderBy:'order' track by column.name" ng-if="column.name !== 'value'">
+                        <md-input-container md-no-float="true">
+                            <input ng-model="column.filter" ng-model-options="{debounce: 1000}" ng-change="$ctrl.filterChanged()" ma-tr="ui.app.filter">
+                            <md-button ng-show="!!column.filter" class="ma-input-button md-icon-button" ng-click="column.filter = null; $ctrl.filterChanged()">
+                                <md-icon>clear</md-icon>
+                            </md-button>
+                        </md-input-container>
+                    </th>
+
+                    <th ng-repeat="tag in $ctrl.selectedTags track by tag.name">
+                        <md-input-container md-no-float="true">
+                            <input ng-model="$ctrl.filterObject.tags[tag.name]" ng-model-options="{debounce: 1000}" ng-change="$ctrl.filterChanged()" ma-tr="ui.app.filter">
+                            <md-button ng-show="!!$ctrl.filterObject.tags[tag.name]" class="ma-input-button md-icon-button" ng-click="$ctrl.filterObject.tags[tag.name] = null; $ctrl.filterChanged()">
+                                <md-icon>clear</md-icon>
+                            </md-button>
+                        </md-input-container>
+                    </th>
+                    <th ng-if="$ctrl.showPointValueColumn"><!-- Spacer for point value column --></th>
+                    <th><!-- Spacer for point actions column --></th>
+                </tr>
+            </thead>
+            <tbody md-body>
+                <tr md-row ng-repeat="point in $ctrl.slicedPoints track by point.xid" ng-init="pointSelected = $ctrl.pointSelected(point)">
+                    <td md-cell class="ma-checkbox-column">
+                        <md-checkbox aria-label="{{'ui.app.selectAll' | maTr}}" ng-model="pointSelected" ng-model-options="{getterSetter: true}"
+                            ng-click="$ctrl.checkBoxClicked(point, $event)"
+                            ng-disabled="$ctrl.bulkTaskPromise || $ctrl.pointsPromise">
+                        </md-checkbox>
+                    </td>
+
+                    <td ng-repeat="column in $ctrl.selectedColumns | orderBy:'order' track by column.name" md-cell ng-if="column.name !== 'value'">
+                        <span ng-class="{'ma-empty-null': $ctrl.getCellValue(point, column.property) == null}" ng-bind="$ctrl.getCellValue(point, column.property) | maDisplayNull"></span>
+                    </td>
+                    
+                    <td ng-repeat="tag in $ctrl.selectedTags track by tag.name" md-cell>
+                        <span ng-class="{'ma-empty-null': point.tags[tag.name] == null}" ng-bind="point.tags[tag.name] | maDisplayNull"></span>
+                    </td>
+                    
+                    <td md-cell class="ma-point-value" ng-if="$ctrl.showPointValueColumn">
+                        <ma-point-value point="point"></ma-point-value>
+                    </td>
+                    
+                    <td md-cell class="ma-point-actions">
+                        <div layout layout-align="end center">
+                            <md-switch ng-model="point.isEnabled" 
+                                ng-disabled="point.$enableToggling"
+                                ng-class="[{'ma-throb-opacity': point.$enableToggling}, $ctrl.MA_LIFECYCLE_STATES[point.lifecycleState].class]">
+                            </md-switch>
+
+                            <md-menu md-position-mode="target-right bottom" md-offset="0 4">
+                                <md-button class="md-icon-button" ng-click="$mdMenu.open($event)">
+                                    <md-icon md-menu-origin>more_vert</md-icon>
+                                    <md-tooltip><span ma-tr="ui.app.moreOptions"></span></md-tooltip>
+                                </md-button>
+                                <md-menu-content width="3" class="ma-no-padding" md-colors="::{background: 'background-hue-3'}">
+                                    <md-menu-item>
+                                        <md-button class="ma-no-padding-right" href ui-state="'ui.dataPointDetails'" ui-state-params="{pointXid: point.xid}">
+                                            <div layout="row" flex>
+                                                <div flex ma-tr="ui.app.dataPointDetails"></div>
+                                                <md-icon md-menu-align-target>timeline</md-icon>
+                                            </div>
+                                        </md-button>
+                                    </md-menu-item>
+                                    <md-menu-item>
+                                        <md-button class="ma-no-padding-right" ng-click="$ctrl.editDataPoint($event, point)">
+                                            <div layout="row" flex>
+                                                <div flex ma-tr="common.edit"></div>
+                                                <md-icon md-menu-align-target>edit</md-icon>
+                                            </div>
+                                        </md-button>
+                                    </md-menu-item>
+                                    <md-menu-item>
+                                        <md-button class="ma-no-padding-right" ng-click="$ctrl.copyDataPoint($event, point)">
+                                            <div layout="row" flex>
+                                                <div flex ma-tr="common.copy"></div>
+                                                <md-icon md-menu-align-target>content_copy</md-icon>
+                                            </div>
+                                        </md-button>
+                                    </md-menu-item>
+                                    <md-menu-item>
+                                        <md-button class="ma-no-padding-right md-warn" ng-click="$ctrl.deleteDataPoint($event, point)">
+                                            <div layout="row" flex>
+                                                <div flex ma-tr="common.delete"></div>
+                                                <md-icon md-menu-align-target>delete</md-icon>
+                                            </div>
+                                        </md-button>
+                                    </md-menu-item>
+                                    <md-menu-item>
+                                        <md-button class="ma-no-padding-right" ng-click="$ctrl.eventDetectorPoint = point">
+                                            <div layout="row" flex>
+                                                <div flex ma-tr="ui.eventDetectors.plural"></div>
+                                                <md-icon md-menu-align-target>change_history</md-icon>
+                                            </div>
+                                        </md-button>
+                                    </md-menu-item>
+                                    <md-menu-item>
+                                        <md-button class="ma-no-padding-right" ng-href="/rest/latest/data-points/export/{{point.originalId}}" ng-attr-download="{{point.name}}.json">
+                                            <div layout="row" flex>
+                                                <div flex ma-tr="emport.export"></div>
+                                                <md-icon md-menu-align-target>save_alt</md-icon>
+                                            </div>
+                                        </md-button>
+                                    </md-menu-item>
+                                </md-menu-content>
+                            </md-menu>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div ng-if="!$ctrl.filteredPoints.length && !$ctrl.pointsPromise" class="ma-no-points-found" ma-tr="ui.app.noPointsToDisplay"></div>
+        <div ng-if="!$ctrl.filteredPoints.length && $ctrl.pointsPromise" class="ma-no-points-found" ma-tr="ui.app.loadingPoints"></div>
+    </md-table-container>
+    
+    <md-table-pagination md-limit="$ctrl.numberOfRows" md-limit-options="[10, 15, 25, 50, 100]" md-page="$ctrl.pageNumber"
+            md-page-select md-total="{{$ctrl.filteredPoints.length}}" md-on-paginate="$ctrl.slicePointsBound"></md-table-pagination>
+
+    <ma-dialog show-dialog="$ctrl.showPointDialog" on-hide="$ctrl.editTarget = null; $ctrl.csvFile = null" on-cancel="$ctrl.editTarget = null;  $ctrl.csvFile = null; $ctrl.editDataPoints = null;">
+        <md-dialog flex="100" flex-gt-sm="80" flex-gt-md="65" flex-gt-lg="50" flex-gt-xl="30">
+            <md-toolbar>
+                <div class="md-toolbar-tools">
+                    <h2>
+                        <span ng-if="$ctrl.csvFile" ma-tr="ui.app.uploadingCSV"></span>
+                        <span ng-if="$ctrl.editTarget.length" ma-tr="ui.components.editXDataPoints" ma-tr-args="[$ctrl.editTarget.length]"></span>
+                        <span ng-if="!$ctrl.editTarget.length && !$ctrl.editTarget.isNew()" ng-bind="$ctrl.editTarget.formatLabel()"></span>
+                        <span ng-if="!$ctrl.editTarget.length && $ctrl.editTarget.isNew()" ma-tr="dsList.createDataPoint"></span>
+                    </h2>
+                    <span flex></span>
+                    <md-button class="md-icon-button" ng-click="$dialog.cancel()">
+                        <md-icon>close</md-icon>
+                    </md-button>
+                </div>
+            </md-toolbar>
+    
+            <md-dialog-content layout="column" flex>
+                <ma-data-point-editor flex="noshrink" layout="column" dynamic-height="!$dialog.fullscreen()"
+                    ng-model="$ctrl.editTarget" ng-change="$dialog.hide()" fixed-type="true" import-csv="$ctrl.csvFile" data-source="$ctrl.dataSource">
+                </ma-data-point-editor>
+            </md-dialog-content>
+        </md-dialog>
+    </ma-dialog>
+
+    <ma-dialog show-dialog="$ctrl.eventDetectorPoint" on-hide="$ctrl.detectorDialogClosed()" on-cancel="$ctrl.detectorDialogClosed()">
+        <md-dialog flex="100" flex-gt-sm="80" flex-gt-md="65" flex-gt-lg="50" flex-gt-xl="30">
+            <md-toolbar>
+                <div class="md-toolbar-tools">
+                    <h2>
+                        <span ma-tr="ui.eventDetectors.for" ma-tr-args="[$ctrl.eventDetectorPoint.formatLabel()]"></span>
+                    </h2>
+                    <span flex></span>
+                    <md-button class="md-icon-button" ui-sref="ui.help.eventDetectors">
+                        <md-icon>help</md-icon>
+                    </md-button>
+                    <md-button class="md-icon-button" ng-click="$dialog.cancel()">
+                        <md-icon>close</md-icon>
+                    </md-button>
+                </div>
+            </md-toolbar>
+    
+            <md-dialog-content class="ma-bulk-data-point-editor-event-detectors" flex layout="column">
+                <ma-event-detector-layout data-point="$ctrl.eventDetectorPoint" ng-model="$ctrl.eventDetector" on-query="$ctrl.gotDetectors($items)">
+                </ma-event-detector-layout>
+            </md-dialog-content>
+        </md-dialog>
+    </ma-dialog>
+
+    <ma-dialog show-dialog="$ctrl.showPurgeDialogObj" on-hide="$ctrl.cancelPurge()" on-cancel="$ctrl.cancelPurge()">
+        <md-dialog flex="100" flex-gt-sm="60" flex-gt-md="50" flex-gt-lg="40" flex-gt-xl="30">
+            <md-toolbar>
+                <div class="md-toolbar-tools">
+                    <h2>
+                        <span ma-tr="ui.app.pointValuePurge"></span>
+                    </h2>
+                    <span flex></span>
+                    <md-button class="md-icon-button" ng-click="$dialog.cancel()">
+                        <md-icon>close</md-icon>
+                    </md-button>
+                </div>
+            </md-toolbar>
+    
+            <md-dialog-content class="ma-bulk-data-point-editor-purge md-padding" flex layout="column">
+                <ma-purge-point-values data-points="$ctrl.purgePoints" cancel="$ctrl.cancelPurgeObj"></ma-purge-point-values>
+            </md-dialog-content>
+        </md-dialog>
+    </ma-dialog>
+</div>

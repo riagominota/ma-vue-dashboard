@@ -1,0 +1,105 @@
+<div ng-form="$ctrl.form" ma-validation-messages="$ctrl.validationMessages" ma-activate-tab="$ctrl.activeTab = $index" flex="noshrink" layout="column">
+    <md-tabs flex="noshrink" layout="column" ng-attr-md-dynamic-height="{{$ctrl.dynamicHeight}}" md-border-bottom="true" md-swipe-content="false" md-selected="$ctrl.activeTab">
+        <md-tab>
+            <md-tab-label>
+                <span ma-tr="ui.eventDetectors.name"></span>
+            </md-tab-label>
+            <md-tab-body>
+                <div class="md-padding ma-no-padding-bottom">
+                    <div layout="row" layout-wrap layout-align="space-between start" class="ma-inputs-container">
+                        <md-input-container flex="100">
+                            <label ma-tr="ui.eventDetectors.type"></label>
+                            <md-select name="detectorType" ng-model="$ctrl.eventDetector.detectorType" required ng-change="$ctrl.typeChanged()" ng-disabled="!$ctrl.eventDetector.isNew()">
+                                <md-option ng-repeat="type in $ctrl.detectorTypes | orderBy:'description' track by type.type" ng-value="type.type"
+                                        ng-if="$ctrl.eventDetector.dataPoint ? type.pointEventDetector && type.dataTypes.has($ctrl.eventDetector.dataPoint.dataType) : !type.pointEventDetector">
+                                    <span ma-tr="{{type.description}}"></span>
+                                </md-option>
+                            </md-select>
+                            <div ng-messages="$ctrl.form.detectorType.$error">
+                                <div ng-message="required" ma-tr="validate.required"></div>
+                                <div ng-message="validationMessage" ng-bind="$ctrl.form.detectorType.validationMessage"></div>
+                            </div>
+                        </md-input-container>
+
+                        <md-input-container flex="100" flex-gt-md="50">
+                            <label ma-tr="common.name"></label>
+                            <input name="name" ng-model="$ctrl.eventDetector.name">
+                            <div ng-messages="$ctrl.form.name.$error">
+                                <div ng-message="required" ma-tr="validate.required"></div>
+                                <div ng-message="validationMessage" ng-bind="$ctrl.form.name.validationMessage"></div>
+                            </div>
+                        </md-input-container>
+
+                        <md-input-container flex="100" flex-gt-md="50">
+                            <label ma-tr="common.xid"></label>
+                            <input name="xid" ng-model="$ctrl.eventDetector.xid" required>
+                            <div ng-messages="$ctrl.form.xid.$error">
+                                <div ng-message="required" ma-tr="validate.required"></div>
+                                <div ng-message="validationMessage" ng-bind="$ctrl.form.xid.validationMessage"></div>
+                            </div>
+                        </md-input-container>
+
+                        <md-input-container flex="100">
+                            <label ma-tr="ui.app.alarmLvl"></label>
+                            <md-select name="alarmLevel" ng-model="$ctrl.eventDetector.alarmLevel" required>
+                                <md-option ng-repeat="level in $ctrl.alarmLevels track by level.key" ng-value="level.key">
+                                    <md-icon ng-class="level.materialClasses">{{level.materialIcon}}</md-icon>
+                                    <span ma-tr="{{level.translation}}"></span>
+                                </md-option>
+                            </md-select>
+                            <div ng-messages="$ctrl.form.alarmLevel.$error">
+                                <div ng-message="required" ma-tr="validate.required"></div>
+                                <div ng-message="validationMessage" ng-bind="$ctrl.form.alarmLevel.validationMessage"></div>
+                            </div>
+                        </md-input-container>
+                    </div>
+
+                    <ma-permission-editor-container>
+                        <ma-permission-editor name="readPermission" ng-model="$ctrl.eventDetector.readPermission">
+                            <span ma-tr="ui.eventDetectors.permission.read"></span>
+                        </ma-permission-editor>
+                        <ma-permission-editor name="editPermission" ng-model="$ctrl.eventDetector.editPermission">
+                            <span ma-tr="ui.eventDetectors.permission.edit"></span>
+                        </ma-permission-editor>
+                    </ma-permission-editor-container>
+                </div>
+            </md-tab-body>
+        </md-tab>
+        <md-tab ng-if="$ctrl.detectorType.templateUrl">
+            <md-tab-label>
+                <span ma-tr="{{$ctrl.detectorType.description}}"></span>
+            </md-tab-label>
+            <md-tab-body>
+                <div class="md-padding ma-no-padding-bottom" ng-include="$ctrl.detectorType.templateUrl"></div>
+            </md-tab-body>
+        </md-tab>
+        <md-tab>
+            <md-tab-label>
+                <span ma-tr="ui.app.eventHandlers"></span>
+            </md-tab-label>
+            <md-tab-body>
+                <ma-event-handler-check-list name="handlerXids" ng-model="$ctrl.eventDetector.handlerXids"
+                    ma-format-array="{xid: $item}" ma-parse-array="$item.xid">
+                </ma-event-handler-check-list>
+            </md-tab-body>
+        </md-tab>
+        <div ma-template-hook="eventDetectorEditor"></div>
+    </md-tabs>
+
+    <div class="md-padding" ng-if="$ctrl.form.validationMessage" ng-bind="$ctrl.form.validationMessage" role="alert" class="ma-error-text"></div>
+
+    <div class="md-padding ma-action-buttons">
+        <md-button class="md-raised md-primary" ng-click="$ctrl.saveItem($event)" ng-disabled="!$ctrl.form || $ctrl.savePromise || $ctrl.deletePromise">
+            <md-icon>save</md-icon>
+            <span ma-tr="common.save"></span>
+        </md-button>
+        <md-button class="md-raised" ng-click="$ctrl.revertItem($event)" ng-disabled="$ctrl.form.$pristine || $ctrl.savePromise || $ctrl.deletePromise">
+            <md-icon>undo</md-icon>
+            <span ma-tr="ui.app.revert"></span>
+        </md-button>
+        <md-button class="md-raised md-warn" ng-click="$ctrl.deleteItem($event)" ng-disabled="$ctrl.eventDetector.isNew() || $ctrl.savePromise || $ctrl.deletePromise">
+            <md-icon>delete</md-icon>
+            <span ma-tr="common.delete"></span>
+        </md-button>
+    </div>
+</div>

@@ -1,0 +1,11 @@
+<div layout layout-align="end">
+    <md-button ng-click="$ctrl.displayCurrentLogFile()" class="md-raised md-primary">
+        <md-icon>
+            remove_red_eye
+        </md-icon>
+        <span ma-tr="ui.settings.systemStatus.viewCurrentMaLog"></span>
+    </md-button>
+</div>
+
+<ma-log-file-table ng-model="$ctrl.selectedLogFile" ng-change="$ctrl.displayLogFile()"
+    show-actions="true"></ma-log-file-table>

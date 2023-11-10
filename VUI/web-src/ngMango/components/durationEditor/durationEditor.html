@@ -1,0 +1,39 @@
+<div layout layout-align="start start">
+    <md-input-container flex>
+        <md-icon>access_time</md-icon>
+        <label ng-transclude="periodsLabel"><span ma-tr="ui.app.timePeriods"></span></label>
+        <input name="{{$ctrl.ngModelCtrl.$name}}.periods" ng-model="$ctrl.duration.periods" ng-change="$ctrl.inputChanged()"
+            ma-form-exclude="parent" ma-get-ctrl="periods = $ngModel"
+            ng-required="$ctrl.required" type="number" step="1" ng-attr-min="{{$ctrl.min}}" ng-disabled="$ctrl.disabled"
+            ma-flatten-values="$values.firstNonEmpty()">
+        <div ng-messages="periods.$error">
+            <div ng-message="required" ma-tr="validate.required"></div>
+            <div ng-message="step" ma-tr="validate.wholeNumber"></div>
+            <div ng-message="min" ma-tr="validate.minNumber" ma-tr-args="[$ctrl.min]"></div>
+            <div ng-message="validationMessage" ng-bind="periods.validationMessage"></div>
+        </div>
+    </md-input-container>
+    <md-input-container flex>
+        <label ng-transclude="typeLabel"><span ma-tr="ui.app.timePeriodType"></span></label>
+        <md-select name="{{$ctrl.ngModelCtrl.$name}}.type" ng-model="$ctrl.duration.type" ng-change="$ctrl.inputChanged()"
+                ma-form-exclude="parent" ma-get-ctrl="type = $ngModel"
+                ng-required="$ctrl.required" ng-disabled="$ctrl.disabled">
+            <md-option ng-if="$ctrl.duration.type.hasMultipleValues()" ng-value="$ctrl.duration.type">
+                <em ng-bind="$ctrl.duration.type"></em>
+            </md-option>
+            <md-option ng-repeat="type in $ctrl.types track by type.type" ng-value="type.type">
+                <span ma-tr="{{type.translation}}"></span>
+            </md-option>
+        </md-select>
+        <div ng-messages="type.$error">
+            <div ng-message="required" ma-tr="validate.required"></div>
+            <div ng-message="validationMessage" ng-bind="type.validationMessage"></div>
+        </div>
+    </md-input-container>
+</div>
+
+<!--  TODO replace with component -->
+<div ng-messages="$ctrl.ngModelCtrl.$error" class="ma-small-text" role="alert">
+    <div ng-message="required" ma-tr="validate.required"></div>
+    <div ng-message="validationMessage" ng-bind="$ctrl.ngModelCtrl.validationMessage"></div>
+</div>

@@ -1,0 +1,43 @@
+<md-input-container>
+    <label ng-transclude="label">
+        <span ma-tr="users.title"></span>
+    </label>
+
+    <ma-drop-down-button ng-disabled="$ctrl.disabled">
+        <span class="ma-ellipsis">
+            <span ng-repeat="user in ($ctrl.selectMultiple ? $ctrl.selected : [$ctrl.selected])" ng-if="user">
+                <span>{{user.username}}</span><em ng-if="!$ctrl.hideName"> ({{user.name}})</em><span ng-if="!$last">, </span>
+            </span>
+        </span>
+        <ma-drop-down class="ma-user-select" auto-focus="::false">
+            <ma-option-list ma-form-exclude ng-model="$ctrl.selected"
+                            ng-change="$ctrl.selectChanged()"
+                            ng-disabled="$ctrl.disabled"
+                            ng-required="$ctrl.required"
+                            ng-multiple="$ctrl.selectMultiple"
+                            items="$ctrl.getUsers($filter, $filterChanged, $loadMore)"
+                            item-id="$item.username"
+                            ma-configure-input-container>
+
+                <ma-option ng-if="!$ctrl.selectMultiple && $ctrl.showClear && !$filter" ng-value="undefined">
+                    <md-icon>clear</md-icon>
+                    <em class="ma-ellipsis" ma-tr="ui.app.clear"></em>
+                </ma-option>
+
+                <ma-option ng-repeat="user in $items track by user.username" ng-value="user">
+                    <md-icon ng-if="$multiple" class="ma-selected-show">check</md-icon>
+                    <span class="ma-ellipsis">
+                        <span md-highlight-text="$filter" md-highlight-flags="ig">{{user.username}}</span>
+                        <em ng-if="!$ctrl.hideName" md-highlight-text="$filter" md-highlight-flags="ig">({{user.name}})</em>
+                    </span>
+                </ma-option>
+
+            </ma-option-list>
+        </ma-drop-down>
+    </ma-drop-down-button>
+
+    <div ng-messages="$ctrl.ngModelCtrl.$error">
+        <div ng-message="required" ma-tr="validate.required"></div>
+        <div ng-message="validationMessage" ng-bind="$ctrl.ngModelCtrl.validationMessage"></div>
+    </div>
+</md-input-container>

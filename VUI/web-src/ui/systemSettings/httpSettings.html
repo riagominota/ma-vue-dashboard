@@ -1,0 +1,10 @@
+<div layout="column" layout-align="start start">
+    <ma-system-setting-editor label-tr="systemSettings.useProxy" key="httpClientUseProxy" type="BOOLEAN" input-type="checkbox" on-value-changed="useProxy = $value"></ma-system-setting-editor>
+</div>
+
+<div layout layout-wrap layout-align="start center" ng-show="useProxy">
+  <ma-system-setting-editor label-tr="systemSettings.proxyHost" key="httpClientProxyServer" flex="100" flex-gt-md="50"></ma-system-setting-editor>
+  <ma-system-setting-editor label-tr="systemSettings.proxyPort" key="httpClientProxyPort" type="INTEGER" input-type="number" flex="100" flex-gt-md="50"></ma-system-setting-editor>
+  <ma-system-setting-editor label-tr="systemSettings.proxyUsername" key="httpClientProxyUsername" flex="100" flex-gt-md="50"></ma-system-setting-editor>
+  <ma-system-setting-editor label-tr="systemSettings.proxyPassword" key="httpClientProxyPassword" input-type="password" flex="100" flex-gt-md="50"></ma-system-setting-editor>
+</div>

@@ -1,0 +1,364 @@
+<div ng-form="$ctrl.form" ng-disabled="$ctrl.savePromise || $ctrl.disabled" ma-validation-messages="$ctrl.validationMessages" ma-activate-tab="$ctrl.activeTab = $index" flex="noshrink" layout="column">
+    <md-tabs flex="noshrink" layout="column" ng-attr-md-dynamic-height="{{$ctrl.dynamicHeight}}" md-border-bottom="true" md-swipe-content="false" md-selected="$ctrl.activeTab">
+        <md-tab>
+            <md-tab-label>
+                <span ma-tr="ui.app.dataPoint"></span>
+            </md-tab-label>
+            <md-tab-body>
+                <div class="md-padding ma-no-padding-bottom">
+                    <h3>
+                        <span ma-tr="ui.dox.dataPoint"></span>
+                        <md-button class="md-icon-button ma-small-button ma-no-margin" ui-sref="ui.help.dataPointProperties">
+                            <md-icon>help</md-icon>
+                        </md-button>
+                    </h3>
+                    <div layout="row" layout-wrap layout-align="space-between start" class="ma-inputs-container">
+                        <md-input-container flex="100" flex-gt-md="50">
+                            <md-icon>settings</md-icon>
+                            <label ma-tr="dsEdit.dataPointType"></label>
+                            <md-select name="dataSourceTypeName" ng-model="$ctrl.dataPoint.dataSourceTypeName"
+                                    ng-disabled="$ctrl.fixedType || !$ctrl.dataPoint.isNew()" ng-change="$ctrl.typeChanged()" required>
+                                <md-option ng-repeat="type in $ctrl.types | orderBy:'descriptionTranslated' track by type.type" ng-value="type.type">
+                                    <span ng-bind="type.descriptionTranslated"></span>
+                                </md-option>
+                            </md-select>
+                            <div ng-messages="$ctrl.form.dataSourceTypeName.$error">
+                                <div ng-message="required" ma-tr="validate.required"></div>
+                                <div ng-message="validationMessage" ng-bind="$ctrl.form.dataSourceTypeName.validationMessage"></div>
+                            </div>
+                        </md-input-container>
+
+                        <div flex="100" flex-gt-md="50">
+                            <md-checkbox class="ma-input-container-height" name="enabled" ng-model="$ctrl.dataPoint.enabled">
+                                <span ma-tr="common.enabled"></span>
+                                <em class="ma-small-text">(<span ma-tr="ui.app.doesNotTakeEffectUntilSaved"></span>)</em>
+                            </md-checkbox>
+                        </div>
+
+                        <md-input-container flex="100">
+                            <md-icon>label</md-icon>
+                            <label ma-tr="common.xid"></label>
+                            <input name="xid" ng-model="$ctrl.dataPoint.xid" required ng-disabled="$ctrl.dataPoint.xid.hasMultipleValues()">
+                            <div ng-messages="$ctrl.form.xid.$error">
+                                <div ng-message="required" ma-tr="validate.required"></div>
+                                <div ng-message="validationMessage" ng-bind="$ctrl.form.xid.validationMessage"></div>
+                            </div>
+                        </md-input-container>
+
+                        <md-input-container flex="100" flex-gt-md="50">
+                            <md-icon>device_hub</md-icon>
+                            <label ma-tr="common.deviceName"></label>
+                            <input name="deviceName" ng-model="$ctrl.dataPoint.deviceName">
+                            <div ng-messages="$ctrl.form.deviceName.$error">
+                                <div ng-message="validationMessage" ng-bind="$ctrl.form.deviceName.validationMessage"></div>
+                            </div>
+                        </md-input-container>
+
+                        <md-input-container flex="100" flex-gt-md="50">
+                            <md-icon>label</md-icon>
+                            <label ma-tr="common.name"></label>
+                            <input name="name" ng-model="$ctrl.dataPoint.name" required>
+                            <div ng-messages="$ctrl.form.name.$error">
+                                <div ng-message="required" ma-tr="validate.required"></div>
+                                <div ng-message="validationMessage" ng-bind="$ctrl.form.name.validationMessage"></div>
+                            </div>
+                        </md-input-container>
+                    </div>
+
+                    <ma-permission-editor-container>
+                        <ma-permission-editor name="readPermission" ng-model="$ctrl.dataPoint.readPermission">
+                            <span ma-tr="pointEdit.props.permission.read"></span>
+                        </ma-permission-editor>
+                        <ma-permission-editor name="editPermission" ng-model="$ctrl.dataPoint.editPermission">
+                            <span ma-tr="pointEdit.props.permission.edit"></span>
+                        </ma-permission-editor>
+                        <ma-permission-editor name="setPermission" ng-model="$ctrl.dataPoint.setPermission">
+                            <span ma-tr="pointEdit.props.permission.set"></span>
+                        </ma-permission-editor>
+                    </ma-permission-editor-container>
+                </div>
+            </md-tab-body>
+        </md-tab>
+        <md-tab ng-if="$ctrl.dataSourceType.templateUrl">
+            <md-tab-label>
+                <span ma-tr="{{$ctrl.dataSourceType.description}}"></span>
+            </md-tab-label>
+            <md-tab-body>
+                <div class="md-padding ma-no-padding-bottom" ng-include="$ctrl.dataSourceType.templateUrl"></div>
+            </md-tab-body>
+        </md-tab>
+        <md-tab>
+            <md-tab-label>
+                <span ma-tr="ui.app.tags"></span>
+            </md-tab-label>
+            <md-tab-body>
+                <div class="md-padding ma-no-padding-bottom">
+                        <h3>
+                                <span ma-tr="ui.dox.tags"></span>
+                                <md-button class="md-icon-button ma-small-button ma-no-margin" ui-sref="ui.help.tags">
+                                    <md-icon>help</md-icon>
+                                </md-button>
+                        </h3>
+                    <ma-data-point-tags-editor name="tags" ng-model="$ctrl.dataPoint.tags"></ma-data-point-tags-editor>
+                </div>
+            </md-tab-body>
+        </md-tab>
+        <md-tab>
+            <md-tab-label>
+                <span ma-tr="pointEdit.props.props"></span>
+            </md-tab-label>
+            <md-tab-body>
+                <div class="md-padding ma-no-padding-bottom">
+                        <h3>
+                                <span ma-tr="ui.dox.pointProperties"></span>
+                                <md-button class="md-icon-button ma-small-button ma-no-margin" ui-sref="ui.help.pointProperties">
+                                    <md-icon>help</md-icon>
+                                </md-button>
+                            </h3>
+                    <div layout="row" layout-wrap layout-align="space-between start" class="ma-inputs-container" ng-if="$ctrl.dataPoint.dataType === 'NUMERIC'">
+                        <md-input-container flex="100" flex-gt-md="50">
+                            <md-icon>straighten</md-icon>
+                            <label ma-tr="pointEdit.props.unit"></label>
+                            <input name="unit" ng-model="$ctrl.dataPoint.unit">
+                            <ma-unit-list ng-model="$ctrl.dataPoint.unit" mode="multiply"></ma-unit-list>
+                            <div ng-messages="$ctrl.form.unit.$error">
+                                <div ng-message="validationMessage" ng-bind="$ctrl.form.unit.validationMessage"></div>
+                            </div>
+                        </md-input-container>
+
+                        <div flex="100" flex-gt-md="50">
+                            <md-checkbox class="ma-input-container-height" name="useRenderedUnit" ng-model="$ctrl.dataPoint.useRenderedUnit" ma-flatten-values="false">
+                                <span ma-tr="pointEdit.props.useRenderedUnit"></span>
+                            </md-checkbox>
+                            <md-checkbox class="ma-input-container-height" name="useIntegralUnit" ng-model="$ctrl.dataPoint.useIntegralUnit" ma-flatten-values="false">
+                                <span ma-tr="pointEdit.props.useIntegralUnit"></span>
+                            </md-checkbox>
+                        </div>
+
+                        <md-input-container flex="100" flex-gt-md="50" ng-if="$ctrl.dataPoint.useRenderedUnit == true">
+                            <md-icon>straighten</md-icon>
+                            <label ma-tr="pointEdit.props.renderedUnit"></label>
+                            <input name="renderedUnit" ng-model="$ctrl.dataPoint.renderedUnit">
+                            <ma-unit-list ng-model="$ctrl.dataPoint.renderedUnit" mode="multiply"></ma-unit-list>
+                            <div ng-messages="$ctrl.form.renderedUnit.$error">
+                                <div ng-message="validationMessage" ng-bind="$ctrl.form.renderedUnit.validationMessage"></div>
+                            </div>
+                        </md-input-container>
+
+                        <md-input-container flex="100" flex-gt-md="50" ng-if="$ctrl.dataPoint.useIntegralUnit == true">
+                            <md-icon>straighten</md-icon>
+                            <label ma-tr="pointEdit.props.integralUnit"></label>
+                            <input name="integralUnit" ng-model="$ctrl.dataPoint.integralUnit">
+                            <ma-unit-list ng-model="$ctrl.dataPoint.integralUnit" mode="multiply"></ma-unit-list>
+                            <div ng-messages="$ctrl.form.integralUnit.$error">
+                                <div ng-message="validationMessage" ng-bind="$ctrl.form.integralUnit.validationMessage"></div>
+                            </div>
+                        </md-input-container>
+                    </div>
+
+                    <div layout="row" layout-wrap layout-align="space-between start" class="ma-inputs-container">
+                        <div flex="100" flex-gt-md="50" layout layout-align="start center">
+                            <ma-color-picker ng-model="$ctrl.dataPoint.chartColour" ma-flatten-values="$values.firstNonEmpty()"></ma-color-picker>
+                            <md-input-container flex>
+                                <label ma-tr="pointEdit.props.chartColour"></label>
+                                <input name="chartColour" ng-model="$ctrl.dataPoint.chartColour">
+                                <div ng-messages="$ctrl.form.chartColour.$error">
+                                    <div ng-message="validationMessage" ng-bind="$ctrl.form.chartColour.validationMessage"></div>
+                                </div>
+                            </md-input-container>
+                        </div>
+
+                        <md-input-container flex="100" flex-gt-md="50" ng-if="!$ctrl.dataPoint.dataType.hasMultipleValues()">
+                            <md-icon>loop</md-icon>
+                            <label ma-tr="common.rollup"></label>
+                            <md-select name="rollup" ng-model="$ctrl.dataPoint.rollup">
+                                <md-option ng-if="$ctrl.dataPoint.rollup.hasMultipleValues()" ng-value="$ctrl.dataPoint.rollup">
+                                    <em ng-bind="$ctrl.dataPoint.rollup"></em>
+                                </md-option>
+                                <md-option ng-repeat="rollup in $ctrl.rollupTypes track by rollup.type" ng-value="rollup.type"
+                                        ng-if="$ctrl.dataPoint.dataType === 'NUMERIC' || rollup.nonNumeric">
+                                    <span ma-tr="{{rollup.translation}}"></span>
+                                </md-option>
+                            </md-select>
+                            <div ng-messages="$ctrl.form.rollup.$error">
+                                <div ng-message="validationMessage" ng-bind="$ctrl.form.rollup.validationMessage"></div>
+                            </div>
+                        </md-input-container>
+
+                        <md-input-container flex="100" flex-gt-md="50" ng-if="!$ctrl.dataPoint.dataType.hasMultipleValues()">
+                            <md-icon>show_chart</md-icon>
+                            <label ma-tr="pointEdit.plotType"></label>
+                            <md-select name="plotType" ng-model="$ctrl.dataPoint.plotType" required>
+                                <md-option ng-if="$ctrl.dataPoint.plotType.hasMultipleValues()" ng-value="$ctrl.dataPoint.plotType">
+                                    <em ng-bind="$ctrl.dataPoint.plotType"></em>
+                                </md-option>
+                                <md-option ng-repeat="plot in $ctrl.plotTypes track by plot.apiType" ng-value="plot.apiType"
+                                        ng-if="$ctrl.dataPoint.dataType === 'NUMERIC' || plot.nonNumeric">
+                                    <span ma-tr="{{plot.translation}}"></span>
+                                </md-option>
+                            </md-select>
+                            <div ng-messages="$ctrl.form.plotType.$error">
+                                <div ng-message="required" ma-tr="validate.required"></div>
+                                <div ng-message="validationMessage" ng-bind="$ctrl.form.plotType.validationMessage"></div>
+                            </div>
+                        </md-input-container>
+
+                        <md-input-container flex="100" flex-gt-md="50">
+                            <md-icon>vertical_align_center</md-icon>
+                            <label ma-tr="pointEdit.props.simplifyType"></label>
+                            <md-select name="simplifyType" ng-model="$ctrl.dataPoint.simplifyType" required>
+                                <md-option ng-if="$ctrl.dataPoint.simplifyType.hasMultipleValues()" ng-value="$ctrl.dataPoint.simplifyType">
+                                    <em ng-bind="$ctrl.dataPoint.simplifyType"></em>
+                                </md-option>
+                                <md-option ng-repeat="simplifyType in $ctrl.simplifyTypes track by simplifyType.type" ng-value="simplifyType.type" ng-if="$ctrl.optionSupported(simplifyType.dataTypes, $ctrl.dataPoint.dataType)">
+                                    <span ma-tr="{{simplifyType.translation}}"></span>
+                                </md-option>
+                            </md-select>
+                            <div ng-messages="$ctrl.form.simplifyType.$error">
+                                <div ng-message="required" ma-tr="validate.required"></div>
+                                <div ng-message="validationMessage" ng-bind="$ctrl.form.simplifyType.validationMessage"></div>
+                            </div>
+                        </md-input-container>
+
+                        <md-input-container flex="100" flex-gt-md="50" ng-if="$ctrl.dataPoint.simplifyType === 'TARGET'">
+                            <md-icon>linear_scale</md-icon>
+                            <label ma-tr="pointEdit.props.simplifyTarget"></label>
+                            <input name="simplifyTarget" ng-model="$ctrl.dataPoint.simplifyTarget" type="number" required min="1" step="1" ma-flatten-values="$values.firstNonEmpty()">
+                            <div ng-messages="$ctrl.form.simplifyTarget.$error">
+                                <div ng-message="required" ma-tr="validate.required"></div>
+                                <div ng-message="min" ma-tr="validate.minNumber" ma-tr-args="[1]"></div>
+                                <div ng-message="step" ma-tr="validate.wholeNumber"></div>
+                                <div ng-message="validationMessage" ng-bind="$ctrl.form.simplifyTarget.validationMessage"></div>
+                            </div>
+                        </md-input-container>
+
+                        <md-input-container flex="100" flex-gt-md="50" ng-if="$ctrl.dataPoint.simplifyType === 'TOLERANCE'">
+                            <md-icon>tune</md-icon>
+                            <label ma-tr="pointEdit.props.simplifyTolerance"></label>
+                            <input name="simplifyTolerance" ng-model="$ctrl.dataPoint.simplifyTolerance" type="number" required ma-greater-than="0"
+                                ma-format-value="$value === 'NaN' ? null : $value" ma-flatten-values="$values.firstNonEmpty()">
+                            <div ng-messages="$ctrl.form.simplifyTolerance.$error">
+                                <div ng-message="required" ma-tr="validate.required"></div>
+                                <div ng-message="greaterThan" ma-tr="validate.greaterThan" ma-tr-args="[0]"></div>
+                                <div ng-message="validationMessage" ng-bind="$ctrl.form.simplifyTolerance.validationMessage"></div>
+                            </div>
+                        </md-input-container>
+                    </div>
+
+                    <div ng-if="$ctrl.dataPoint.dataType === 'NUMERIC'">
+                        <md-checkbox class="ma-input-container-height" name="preventSetExtremeValues" ng-model="$ctrl.dataPoint.preventSetExtremeValues" ma-flatten-values="false">
+                            <span ma-tr="pointEdit.props.preventSetExtremeValues"></span>
+                        </md-checkbox>
+                    </div>
+                    <div layout="row" layout-wrap layout-align="space-between start" class="ma-inputs-container"
+                            ng-if="$ctrl.dataPoint.dataType === 'NUMERIC' && $ctrl.dataPoint.preventSetExtremeValues">
+                        <md-input-container flex="100" flex-gt-md="50">
+                            <md-icon>vertical_align_bottom</md-icon>
+                            <label ma-tr="pointEdit.props.setExtremeLowLimit"></label>
+                            <input name="setExtremeLowLimit" ng-model="$ctrl.dataPoint.setExtremeLowLimit" type="number" required
+                                    ma-less-than="{{$ctrl.dataPoint.setExtremeHighLimit}}" ma-flatten-values="$values.firstNonEmpty()">
+                            <div ng-messages="$ctrl.form.setExtremeLowLimit.$error">
+                                <div ng-message="required" ma-tr="validate.required"></div>
+                                <div ng-message="lessThan" ma-tr="validate.lessThan" ma-tr-args="[$ctrl.dataPoint.setExtremeHighLimit]"></div>
+                                <div ng-message="validationMessage" ng-bind="$ctrl.form.setExtremeLowLimit.validationMessage"></div>
+                            </div>
+                        </md-input-container>
+                        <md-input-container flex="100" flex-gt-md="50">
+                            <md-icon>vertical_align_top</md-icon>
+                            <label ma-tr="pointEdit.props.setExtremeHighLimit"></label>
+                            <input name="setExtremeHighLimit" ng-model="$ctrl.dataPoint.setExtremeHighLimit" type="number" required
+                                    ma-greater-than="{{$ctrl.dataPoint.setExtremeLowLimit}}" ma-flatten-values="$values.firstNonEmpty()">
+                            <div ng-messages="$ctrl.form.setExtremeHighLimit.$error">
+                                <div ng-message="required" ma-tr="validate.required"></div>
+                                <div ng-message="greaterThan" ma-tr="validate.greaterThan" ma-tr-args="[$ctrl.dataPoint.setExtremeLowLimit]"></div>
+                                <div ng-message="validationMessage" ng-bind="$ctrl.form.setExtremeHighLimit.validationMessage"></div>
+                            </div>
+                        </md-input-container>
+                    </div>
+                </div>
+            </md-tab-body>
+        </md-tab>
+        <md-tab>
+            <md-tab-label>
+                <span ma-tr="pointEdit.logging.props"></span>
+            </md-tab-label>
+            <md-tab-body>
+                <div class="md-padding ma-no-padding-bottom" ng-form="loggingProperties" ng-include="::'maDataPointEditor.loggingProperties.html'"></div>
+            </md-tab-body>
+        </md-tab>
+        <md-tab>
+            <md-tab-label>
+                <span ma-tr="pointEdit.text.props"></span>
+            </md-tab-label>
+            <md-tab-body>
+                <div class="md-padding ma-no-padding-bottom" ng-form="textRenderer" ng-include="::'maDataPointEditor.textRenderer.html'"></div>
+            </md-tab-body>
+        </md-tab>
+        <md-tab>
+            <md-tab-label>
+                <span ma-tr="dsEdit.logging.purge"></span>
+            </md-tab-label>
+            <md-tab-body>
+                <div class="md-padding ma-no-padding-bottom">
+                        <h3>
+                                <span ma-tr="ui.dox.dpPurgeOverride"></span>
+                                <md-button class="md-icon-button ma-small-button ma-no-margin" ui-sref="ui.help.dpPurgeOverride">
+                                    <md-icon>help</md-icon>
+                                </md-button>
+                            </h3>
+                    <div>
+                        <md-checkbox name="purgeOverride" ng-model="$ctrl.dataPoint.purgeOverride" ma-flatten-values="false"><span ma-tr="pointEdit.logging.purgeOverride"></span></md-checkbox>
+                    </div>
+
+                    <div layout layout-wrap layout-align="start start" ng-if="$ctrl.dataPoint.purgeOverride == true">
+                        <ma-duration-editor flex="100" flex-gt-md="50" name="purgePeriod" ng-model="$ctrl.dataPoint.purgePeriod"
+	                           allowed-types="::['DAYS', 'WEEKS', 'MONTHS', 'YEARS']" required>
+                            <ma-periods-label ma-tr="pointEdit.logging.after"></ma-periods-label>
+                            <ma-type-label ma-tr="pointEdit.logging.after"></ma-type-label>
+	                    </ma-duration-editor>
+                    </div>
+                </div>
+            </md-tab-body>
+        </md-tab>
+        <div ma-template-hook="dataPointEditor"></div>
+    </md-tabs>
+
+    <div class="md-padding ma-error-text" ng-if="$ctrl.form.validationMessage" ng-bind="$ctrl.form.validationMessage" role="alert"></div>
+
+    <div ng-if="$ctrl.bulkTask" class="md-padding ma-action-buttons">
+        <div layout layout-align="center">
+            <em>
+                <span ng-bind="$ctrl.bulkTask.progress || 0"></span>% (<span ma-tr="ui.app.pointXofX" ma-tr-args="[$ctrl.bulkTask.position || 0, $ctrl.bulkTask.maximum || 0]"></span>)
+            </em>
+        </div>
+
+        <md-progress-linear md-mode="determinate" ng-value="$ctrl.bulkTask.progress"></md-progress-linear>
+
+        <md-button class="md-raised md-warn" ng-click="$ctrl.bulkTask.cancel()">
+            <md-icon>cancel</md-icon>
+            <span ma-tr="ui.app.cancelBulkEdit"></span>
+        </md-button>
+    </div>
+
+    <div ng-if="$ctrl.errorMessages.length" class="md-padding">
+        <em class="ma-error-text">
+            <span ng-repeat="msg in $ctrl.errorMessages"><span ng-bind="msg"></span><span ng-if="!$last">, </span></span>
+        </em>
+    </div>
+
+    <div ng-if="!$ctrl.bulkTask && !$ctrl.disabled" class="md-padding ma-action-buttons">
+        <md-button class="md-raised md-primary" ng-click="$ctrl.saveItem($event)" ng-disabled="!$ctrl.form || $ctrl.savePromise">
+            <md-icon>save</md-icon>
+            <span ma-tr="common.save"></span>
+        </md-button>
+        <md-button class="md-raised" ng-click="$ctrl.revertItem($event)" ng-disabled="$ctrl.form.$pristine || $ctrl.savePromise">
+            <md-icon>undo</md-icon>
+            <span ma-tr="ui.app.revert"></span>
+        </md-button>
+        <md-button class="md-raised md-warn" ng-click="$ctrl.deleteItem($event)" ng-disabled="$ctrl.dataPoint.isNew() || $ctrl.savePromise" ng-if="!$ctrl.points">
+            <md-icon>delete</md-icon>
+            <span ma-tr="common.delete"></span>
+        </md-button>
+        <em ng-if="!$ctrl.dataSourceType" md-colors="::{color: 'accent'}" ma-tr="ui.app.dataPointTypeNotSupported"></em>
+    </div>
+</div>

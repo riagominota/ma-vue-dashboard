@@ -1,0 +1,67 @@
+<h1 ma-tr="ui.dox.styleViaValue"></h1>
+
+<p>
+    This example shows how to use Angular's built in
+    <a href="https://www.w3schools.com/angular/ng_ng-class.asp" target="_blank">ng-class</a>
+    attribute for switching CSS classes based on a data point value.
+</p>
+
+<p>
+    In addition an example using <a href="https://www.w3schools.com/angular/ng_ng-switch.asp" target="_blank">ng-switch</a> is
+    demonstrated.
+</p>
+
+<ma-ui-dual-pane-editor>
+
+<style>
+    .default {
+        background-color: black;
+        color: white;
+    }
+
+    .good {
+        background-color: green;
+    }
+
+    .warn {
+        background-color: orange;
+    }
+
+    .bad {
+        background-color: red;
+    }
+</style>
+
+<ma-filtering-point-list ng-model="myPoint" auto-init="true" data-type="NUMERIC"></ma-filtering-point-list>
+
+<h3>CSS class based on range (numeric points)</h3>
+<div class="default"
+     ng-class="{'good': myPoint.value < 100, 'warn': myPoint.value >= 100 && myPoint.value < 200, 'bad': myPoint.value >= 200}">
+    <label>Point value:</label>
+    <ma-point-value point="myPoint"></ma-point-value>
+</div>
+
+<h3>CSS class based on exact value (multistate/binary points)</h3>
+<div class="default" ng-class="{'good': myPoint.value === 0, 'warn': myPoint.value === 1, 'bad': myPoint.value === 2}">
+    <label>Point value:</label>
+    <ma-point-value point="myPoint"></ma-point-value>
+</div>
+
+<h3>Hide/show based on value</h3>
+<div class="default good" ng-show="myPoint.value === 0">
+    <label>Point value:</label>
+    <ma-point-value point="myPoint"></ma-point-value>
+</div>
+<div class="default bad" ng-hide="myPoint.value === 0">
+    <label>Point value:</label>
+    <ma-point-value point="myPoint"></ma-point-value>
+</div>
+
+<h3>Switch based on value</h3>
+<div ng-switch="myPoint.value">
+    <div ng-switch-when="0">Point is zero</div>
+    <div ng-switch-when="1">Point is one</div>
+    <div ng-switch-default>Point has other value</div>
+</div>
+
+</ma-ui-dual-pane-editor>

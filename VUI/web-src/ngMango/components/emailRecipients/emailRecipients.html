@@ -1,0 +1,23 @@
+<div layout layout-align="space-between center" layout-wrap class="ma-inputs-container">
+    <ma-user-select flex="100" flex-gt-md="50" ng-model="$ctrl.users" ng-change="$ctrl.usersChanged()" ma-form-exclude select-multiple="true" hide-name="true">
+        <ma-label ma-tr="ui.components.selectUsers"></ma-label>
+    </ma-user-select>
+    <ma-mailing-list-select ng-if="!$ctrl.hideMailingLists" flex="100" flex-gt-md="50" ng-model="$ctrl.mailingLists" ng-change="$ctrl.mailingListsChanged()" ma-form-exclude select-multiple="true">
+        <ma-label ma-tr="ui.components.selectMailingLists"></ma-label>
+    </ma-mailing-list-select>
+</div>
+
+<md-chips ng-model="$ctrl.recipients" ng-change="$ctrl.chipsChanged()" readonly="false" md-removable="true"
+        md-transform-chip="$ctrl.emailToRecipient($chip)" md-separator-keys="$ctrl.separatorKeys" ma-form-exclude>
+
+    <input name="email" type="email" ng-model="$ctrl.email" ma-tr="js.email.addAddress" ng-keydown="$ctrl.chipKeyDown($event)" ma-form-exclude ma-get-ctrl="$ctrl.emailCtrl=$ngModel">
+    
+    <md-chip-template>
+        <strong><md-icon>{{$ctrl.iconForRecipient($chip)}}</md-icon>&nbsp;<span ng-bind="$chip.username || $chip.address || $chip.name || $chip.xid"></span>&nbsp;</strong>
+        <md-tooltip ma-tr="ui.components.emailRecipient.{{$chip[$ctrl.typeProp]}}"></md-tooltip>
+    </md-chip-template>
+</md-chips>
+
+<div ng-messages="$ctrl.emailCtrl.$error">
+    <div ng-message="email" ma-tr="validate.invalidEmail"></div>
+</div>

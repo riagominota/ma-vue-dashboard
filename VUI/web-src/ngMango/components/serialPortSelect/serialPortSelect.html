@@ -1,0 +1,39 @@
+<md-input-container flex>
+    <md-icon ng-if="$ctrl.showIcon">settings_input_component</md-icon>
+    <label ng-transclude="label">
+        <span ma-tr="ui.app.serialPort.select"></span>
+    </label>
+    
+    <input ma-inherit-ng-model ng-disabled="$ctrl.disabled" ng-required="$ctrl.required">
+
+    <md-menu class="ma-input-button" md-position-mode="target-right target">
+        <md-button ng-click="$mdMenu.open($event)" class="md-icon-button" ng-disabled="$ctrl.disabled">
+            <md-icon>arrow_drop_down</md-icon>
+        </md-button>
+        <md-menu-content width="4" class="ma-serial-port-select">
+            <md-menu-item ng-if="$ctrl.showClear">
+                <md-button ng-click="$ctrl.setValue(null)">
+                    <md-icon>clear</md-icon>
+                    <em ma-tr="ui.app.clear"></em>
+                </md-button>
+            </md-menu-item>
+            <md-menu-item ng-repeat="serialPort in $ctrl.serialPorts">
+                <md-button ng-click="$ctrl.setValue(serialPort)">
+                    <span ng-bind="serialPort"></span>
+                </md-button>
+            </md-menu-item>
+            <md-menu-item>
+                <md-button ng-click="$ctrl.refreshList()">
+                    <md-icon>refresh</md-icon>
+                    <em ma-tr="common.refresh"></em>
+                </md-button>
+            </md-menu-item>
+        </md-menu-content>
+    </md-menu>
+    
+    
+    <div ng-messages="$ctrl.ngModelCtrl.$error">
+        <div ng-message="required" ma-tr="validate.required"></div>
+        <div ng-message="validationMessage" ng-bind="$ctrl.ngModelCtrl.validationMessage"></div>
+    </div>
+</md-input-container>

@@ -1,0 +1,7 @@
+<h1 ma-tr="ui.app.serverErrorOccurred"></h1>
+<p ma-tr="ui.app.serverErrorOccurred.details"></p>
+<div>
+    <md-button ng-if="User.current.hasRole('superadmin')" ui-sref="ui.settings.systemStatus.loggingConsole({filename: 'ma.log'})" class="md-raised">
+        <span ma-tr="ui.settings.systemStatus.viewCurrentMaLog"></span>
+    </md-button>
+</div>

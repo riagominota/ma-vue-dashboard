@@ -1,0 +1,246 @@
+<div class="ma-help-doc-container">
+	<h1 ma-tr="ui.settings.systemStatus"></h1>
+
+	<p>
+		The system status pages provide insight into the performance and health of your Mango System. The various sections
+		provide information on system logs, processor threads, audit history and much more.
+	</p>
+
+	<br>
+
+	<h2>Audit Trail</h2>
+
+	<p>
+		The <a ui-sref="ui.settings.systemStatus.auditTrail">Audit Trail</a> section shows a table of any changes to the
+		system. <code>Audit Events</code> can be sorted and filtered by <code>Alarm Level</code>, <code>Change Type</code>,
+		<code>Event Type</code>, <code>User</code> and <code>Time</code>.
+	</p>
+
+	<img md-whiteframe="5" style="max-width: 100%" src="./images/Help-ScreenShots-SystemStatus-AuditTrail.png"
+		 alt="Help-ScreenShots-SystemStatus-AuditTrail"/>
+
+	<p>
+		Enabling the <code>Date filter</code> will limit the <code>Audit Events</code> shown in the table to those that
+		were created within the time range selected in the <a ui-sref="ui.help.dateBar">Date Bar</a>.
+	</p>
+
+	<p>
+		Click any row to select that <code>Audit Event</code> and have its context be displayed as JSON in an output pane in a
+		popup dialog.
+	</p>
+
+	<br>
+
+	<h2>Internal Metrics</h2>
+
+	<p>
+		The <a ui-sref="ui.settings.systemStatus.internalMetrics">Internal Metrics</a> section shows various metrics
+		that are related to your system. The table can be refreshed on demand and sorted by name or value.
+		Descriptions of these metrics are detailed below:
+	</p>
+
+	<img md-whiteframe="5" style="max-width: 100%" src="./images/Help-ScreenShots-SystemStatus-InternalMetrics.png"
+		 alt="Help-ScreenShots-SystemStatus-InternalMetrics"/>
+
+	<ul>
+		<li><strong>Active database connections</strong> - Active connections in the pool and is only useful if using JDBC Pooling</li>
+		<li><strong>Active user sessions</strong></li>
+		<li><strong>Available upgrades</strong></li>
+		<li><strong>Backdate poster running</strong> - (NoSQL Batch Write) State of the backdate poster, 1 running, 0 not running</li>
+		<li><strong>Backdates queued</strong> - (NoSQL Batch Write) Number of back-dated items waiting to be written</li>
+		<li><strong>Calendar rule sets</strong> - (count)</li>
+		<li><strong>Currently scheduled high priority tasks</strong> - Number of high priority tasks that are scheduled to run in the future</li>
+		<li><strong>Data points</strong> - (count)</li>
+		<li><strong>Data sources</strong> - (count)</li>
+		<li><strong>Event detectors</strong> - (count)</li>
+		<li><strong>Event handlers</strong> - (count)</li>
+		<li><strong>Excel report templates</strong> - (count)</li>
+		<li><strong>Excel reports</strong> - (count)</li>
+		<li><strong>Filestore partition total space (GB)</strong></li>
+		<li><strong>Filestore partition usable space (GB)</strong></li>
+		<li><strong>Filestore partition used space (GB)</strong></li>
+		<li><strong>Global scripts</strong> - (count)</li>
+		<li><strong>HTTP server idle threads</strong></li>
+		<li><strong>HTTP server queue size</strong></li>
+		<li><strong>HTTP server threads</strong></li>
+		<li><strong>High priority tasks queued</strong> - Number of queued high priority tasks that will be executed when a free thread from the high priority pool is available</li>
+		<li><strong>High priority work items currently running</strong> - Number of currently executing high priority tasks</li>
+		<li><strong>Idle database connections</strong> - Idle connections in the pool and is only useful if using JDBC Pooling</li>
+		<li><strong>JSON data entries</strong> - (count)</li>
+		<li><strong>JVM available processors</strong> - Number of CPU cores that the JVM can access</li>
+		<li><strong>JVM classes loaded</strong></li>
+		<li><strong>JVM classes total loaded</strong></li>
+		<li><strong>JVM classes unloaded</strong></li>
+		<li><strong>JVM daemon thread count</strong></li>
+		<li><strong>JVM free memory (MB)</strong> - Amount of memory left before the heap will attempt to grow</li>
+		<li><strong>JVM maximum available memory (MB)</strong> - Maximum amount of memory that the heap can potentially acquire</li>
+		<li><strong>JVM peak thread count</strong></li>
+		<li><strong>JVM thread count</strong></li>
+		<li><strong>JVM total threads started</strong></li>
+		<li><strong>JVM uptime (seconds)</strong></li>
+		<li><strong>JVM used memory (MB)</strong> - Current amount of memory being used by the JVM</li>
+		<li><strong>Low priority tasks currently running</strong> - Number of currently executing low priority tasks</li>
+		<li><strong>Low priority tasks queued</strong>- Number of queued low priority tasks that will be executed when a free thread from the low priority pool is available</li>
+		<li><strong>Mailing lists</strong> - (count)</li>
+		<li><strong>Maintenance events</strong> - (count)</li>
+		<li><strong>Mango partition total space (GB)</strong></li>
+		<li><strong>Mango partition usable space (GB)</strong></li>
+		<li><strong>Mango partition used space (GB)</strong></li>
+		<li><strong>Mango process CPU load</strong> - (%)</li>
+		<li><strong>Mango process Virtual Memory Size</strong> - Number of memory bytes that the Mango process can access, including memory that is swapped out and memory that is from shared libraries</li>
+		<li><strong>Mango process bytes read</strong> - Number of bytes the process has read from disk</li>
+		<li><strong>Mango process bytes written</strong>  - Number of bytes the Mango process has written to disk</li>
+		<li><strong>Mango process kernel cpu time</strong> - Number of milliseconds the Mango process has executed in kernel/system mode</li>
+		<li><strong>Mango process major (hard) faults</strong> - Number of major (hard) faults the Mango process has made which have required loading a memory page from disk. Windows does not distinguish major and minor faults at the process level, so this value is 0 and major faults are included in minor (soft) faults</li>
+		<li><strong>Mango process minor (soft) faults</strong> - Number of minor (soft) faults the Mango process has made which have not required loading a memory page from disk. On Windows, this includes the total of major and minor faults</li>
+		<li><strong>Mango process open files</strong> - Number of open file handles (or network connections) that belongs to the Mango process, -1 if unknown or not supported</li>
+		<li><strong>Mango process resident set size (RSS)</strong> - Number of memory bytes is allocated to Mango process and is in RAM. It does not include memory that is swapped out. It does include memory from shared libraries as long as the pages from those libraries are actually in memory. It does include all stack and heap memory</li>
+		<li><strong>Mango process user cpu time</strong> - Number of milliseconds the Mango process has executed in user mode</li>
+		<li><strong>Medium priority tasks currently running</strong> - Number of currently executing medium priority tasks</li>
+		<li><strong>Medium priority tasks queued</strong> - Number of queued medium priority tasks that will be executed when a free thread from the medium priority pool is available. The queue for this pool has no bounds and can grow indefinitely</li>
+		<li><strong>NoSQL database size (GB)</strong></li>
+		<li><strong>NoSQL partition total space (GB)</strong></li>
+		<li><strong>NoSQL partition usable space (GB)</strong></li>
+		<li><strong>NoSQL partition used space (GB)</strong></li>
+		<li><strong>OS load average (1 minute)</strong> - (%) Not available for Windows</li>
+		<li><strong>Point value write threads</strong> - Number of threads concurrently write point values from the queue</li>
+		<li><strong>Point values to be written</strong> - Number of point values queued up waiting to be dumped to the database</li>
+		<li><strong>Publishers</strong> - (count)</li>
+		<li><strong>Roles</strong> - (count)</li>
+		<li><strong>SQL database partition total space (GB)</strong></li>
+		<li><strong>SQL database partition usable space (GB)</strong></li>
+		<li><strong>SQL database partition used space (GB)</strong></li>
+		<li><strong>SQL database size (GB)</strong></li>
+		<li><strong>Schedules</strong> - (count)</li>
+		<li><strong>System CPU load</strong> - (%)</li>
+		<li><strong>System uptime (Hrs)</strong></li>
+		<li><strong>Total backdates</strong> - (NoSQL Batch Write) Total number of back-dated items</li>
+		<li><strong>User file stores</strong> - (count)</li>
+		<li><strong>Users</strong> - (count)</li>
+		<li><strong>Watchlist count</strong></li>
+		<li><strong>Writes per second during database batches</strong> - Number of point values going into the database per second if there are values queued</li>
+	</ul>
+
+	<h3>Monitored metrics for each data source</h3>
+	<ul>
+		<li><strong>Last poll duration</strong> - (miliseconds)</li>
+		<li><strong>Poll success percentage</strong></li>
+		<li><strong>Previous sequential successful polls</strong></li>
+	</ul>
+
+	<h3>High priority work items</h3>
+	<ul>
+		<li><code>Database batch write behind</code> - Writing point values from the queue</li>
+		<li><code>Process Work Item</code> - Event handlers that run a process use this</li>
+		<li><code>Set Point Work Item</code> - Setting a point value from outside of the data source runtime</li>
+		<li><code>HttpImageRetriever</code> - This data source uses a work item to retrieve the images</li>
+		<li><code>BACnet Device Poller</code> - BACnet data source device polling</li>
+	</ul>
+
+	<h3>Medium priority work items</h3>
+	<ul>
+		<li><code>Event Notify Work Item</code> - When a data point is saved or updated anything in Mango that needs to know is notified in a separate thread</li>
+		<li><code>Backups</code> - Backups happen from this pool</li>
+	</ul>
+	
+	<h3>Low priority work items</h3>
+	<ul>
+		<li><code>Reports</code></li>
+		<li><code>Excel Reports</code></li>
+		<li><code>Email</code></li>
+		<li><code>Event Notify Work Item</code> - Anything listening for events/alarms</li>
+	</ul>
+
+	<br>
+
+	<h2>Logging Console</h2>
+
+	<p>
+		The <a ui-sref="ui.settings.systemStatus.loggingConsole">Logging Console</a> section shows a table of all log files
+		that have been created by your system. Log files can be useful for debugging a system.
+	</p>
+
+	<img md-whiteframe="5" style="max-width: 100%" src="./images/Help-ScreenShots-SystemStatus-LogFilesTable.png"
+		 alt="Help-ScreenShots-SystemStatus-LogFilesTable"/>
+
+	<p>
+		You can <code>View</code> a log file in the text pane in a popup dialog, or you can <code>Download</code> a log file to
+		your desktop.
+	</p>
+
+	<img md-whiteframe="5" style="max-width: 100%"
+		 src="./images/Help-ScreenShots-SystemStatus-LogFileView.png"
+		 alt="Help-ScreenShots-SystemStatus-LogFileView"/>
+
+	<p>
+		If you are viewing the log file you can click the <code>Copy to Clipboard</code> button for easy pasting into an email
+		or text editor.
+	</p>
+
+	<br>
+
+	<h2>Server Info</h2>
+
+	<p>
+		The <a ui-sref="ui.settings.systemStatus.serverInfo">Server Info</a> section shows information such as
+		your server's <code>Time zone</code>, <code>Database type</code> and <code>Database size</code>.
+	</p>
+
+	<p>
+		The <code>Database size</code> is the currently amount of storage space consumed by the Mango database. The majority of space is
+		typically taken up by report instances, point readings, and events. To minimize the database size the purging
+		characteristics for each of these items should be set as aggressively as is practical. For more information on how to 
+		prevent Mango from running out of disk space see this
+		<a href="https://docs-v4.mango-os.com/managing-disk-space" target="_blank">help article</a>.
+	</p>
+
+	<img md-whiteframe="5" style="max-width: 100%"
+		 src="./images/Help-ScreenShots-SystemStatus-ServerInfo.png"
+		 alt="Help-ScreenShots-SystemStatus-ServerInfo"/>
+
+	<p>
+		Click the <code>Get Point Counts</code> button to view a table of point counts. A point's count refers to the number of
+		histories that are stored in the database for a specific data point.
+	</p>
+
+	<img md-whiteframe="5" style="max-width: 100%"
+		 src="./images/Help-ScreenShots-SystemStatus-ServerPointCounts.png"
+		 alt="Help-ScreenShots-SystemStatus-ServerPointCounts"/>
+
+	<p>
+		The table can be sorted by <code>Point Name</code>, <code>Point ID</code>, or <code>Count</code>.
+	</p>
+
+	<br>
+
+	<h2>Threads</h2>
+
+	<p>
+		The <a ui-sref="ui.settings.systemStatus.threads">Threads</a> section shows all the processor threads running on your
+		system. Threads can be sorted by their <code>Name</code>, <code>CPU Time</code>, <code>User Time</code>, or
+		<code>State</code>. The entire thread dump can be downloaded as a json file by clicking the <code>Download Thread Dump</code> button.
+	</p>
+
+	<img md-whiteframe="5" style="max-width: 100%" src="./images/Help-ScreenShots-SystemStatus-Threads.png" alt="Help-ScreenShots-SystemStatus-Threads"/>
+
+	<p>
+		Clicking any row will show the <code>Stack Trace</code> for that selected thread. These details can be useful for
+		debugging blocked threads.
+	</p>
+
+	<img md-whiteframe="5" style="max-width: 100%" src="./images/Help-ScreenShots-SystemStatus-ThreadTrace.png" alt="Help-ScreenShots-SystemStatus-ThreadTrace"/>
+
+	<br><br><br>
+
+	<h2>Work Items</h2>
+
+	<p>
+		The <a ui-sref="ui.settings.systemStatus.workItems">Work Items</a> section shows information on various tasks that are
+		running in your system. Tasks are organized by type and priority. The <code>Rejected Stats</code> and
+		<code>Running Stats</code> tables will show data specific to those types.
+	</p>
+
+	<img md-whiteframe="5" style="max-width: 100%"
+		 src="./images/Help-ScreenShots-SystemStatus-WorkItems.png"
+		 alt="Help-ScreenShots-SystemStatus-WorkItems"/>
+</div>

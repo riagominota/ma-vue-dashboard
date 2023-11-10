@@ -1,0 +1,32 @@
+<div class="ma-help-doc-container">
+    <h1 ma-tr="systemSettings.emailSettings"></h1>
+	<p>
+	  Email settings are used for all emailing activities within the application instance.
+	</p>
+	
+	<p>
+	  <strong>SMTP host</strong> is the name of the host where your MTA is running. If your host requires authentication, check the 
+	  <strong>Use authorization</strong> box, and fill in the <strong>Username</strong> and <strong>Password</strong> fields. Check the <strong>Enable TLS</strong>
+	  checkbox if your server requires it.
+	</p>
+	
+	<p><strong>SMTP connection timeout</strong> is in milliseconds with 0 being no timeout.</p>
+	
+	<p>
+	  The <strong>'From' address</strong> is the address that will be used as the from address on each email. The <strong>'From' name</strong> 
+	  is an optional field with which to specify an alias&mdash;or 'personal' name&mdash;to display as the email sender.
+	</p>
+	
+	<p>
+	  Use the <strong>Content type</strong> select box to choose the type of content you wish to have in the Mango emails. By default
+	  <strong>HTML and text</strong> is selected, which causes Mango to create a multi-part MIME email with both "text/html" and 
+	  "text/text" parts. If <strong>HTML only</strong> is chosen the email may still be a multi-part if there are attachments or 
+	  in-line content, but will be otherwise be single part. If <strong>Text only</strong> is chosen, the email will always be a 
+	  simple single part.
+	</p>
+	
+	<p>
+	  When you are finished with your email settings, you can test them by clicking the Send Test Email 
+	  button. This will attempt to send an email to your email address using the settings you have entered.
+	</p>
+</div>

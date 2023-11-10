@@ -1,0 +1,115 @@
+/* Default styles to match the default theme, used pre-bootstrap, before angular-material is loaded */
+
+body {
+	background-color: rgb(34, 44, 51);
+	color: rgba(255, 255, 255, 0.87);
+}
+
+@media (prefers-color-scheme: light) {
+    body {
+	   background-color: rgb(250, 253, 255);
+	   color: rgba(0, 0, 0, 0.87);
+    }
+}
+
+a {
+    color: rgb(208, 106, 73);
+    border-bottom-color: rgba(208, 106, 73, 0.3);
+}
+
+a:hover, a:focus {
+    color: rgb(152, 78, 54);
+    border-bottom-color: rgb(152, 78, 54);
+}
+
+a.md-button,
+a.md-button:hover,
+a.md-button:focus {
+	color: currentColor;
+}
+
+.pre-bootstrap-error {
+  margin-top: 20px;
+  color: #FF5722;
+  max-width: 1024px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.pre-bootstrap-error pre {
+  margin-top: 10px;
+  text-align: left;
+}
+
+.pre-bootstrap-error code {
+  display: block;
+}
+
+.app-loading {
+	text-align: center;
+	width: 100%;
+	padding-top: 50px;
+}
+
+.missing-module {
+  width: 100%;
+  text-align: center;
+  padding-top: 50px;
+  font-size: 36px;
+}
+
+/* Loading spinner */
+
+svg.ma-ui-spinner {
+  animation: spinner-rotator 1.6s linear infinite;
+}
+
+@keyframes spinner-rotator {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(270deg);
+  }
+}
+
+svg.ma-ui-spinner circle {
+  stroke-dasharray: 187;
+  stroke-dashoffset: 0;
+  transform-origin: center;
+  animation: spinner-dash 1.6s ease-in-out infinite;
+  stroke: rgb(208, 106, 73);
+}
+
+@keyframes spinner-dash {
+  0% {
+    stroke-dashoffset: 187;
+  }
+  50% {
+    stroke-dashoffset: 46.75;
+    transform: rotate(135deg);
+  }
+  100% {
+    stroke-dashoffset: 187;
+    transform: rotate(450deg);
+  }
+}
+
+/* AngularJS CSP */
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak],
+.ng-cloak, .x-ng-cloak,
+.ng-hide:not(.ng-hide-animate) {
+  display: none !important;
+}
+
+ng\:form {
+  display: block;
+}
+
+.ng-animate-shim {
+  visibility:hidden;
+}
+
+.ng-anchor {
+  position:absolute;
+}

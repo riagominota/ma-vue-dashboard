@@ -1,0 +1,9 @@
+<ma-serial-chart points="$ctrl.chartedPoints" values="$ctrl.chartValues" legend="$ctrl.legend" 
+    balloon="$ctrl.balloon" export="$ctrl.export" graph-options="$ctrl.graphOptions" options="$ctrl.chartOptions">
+</ma-serial-chart>
+
+<ma-point-values points="$ctrl.chartedPoints" values="$ctrl.chartValues" from="$ctrl.from" to="$ctrl.to" rollup="{{$ctrl.rollupType}}"
+  rollup-interval="{{$ctrl.rollupIntervals}} {{$ctrl.rollupIntervalPeriod}}" rendered="true"
+  converted="true" on-values-updated="$ctrl.valuesUpdatedHandler($values)"
+  simplify-tolerance="$ctrl.simplifyTolerance">
+</ma-point-values>

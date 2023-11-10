@@ -1,0 +1,118 @@
+<md-toolbar class="md-whiteframe-1dp md-hue-3">
+    <div class="md-toolbar-tools">
+        <md-button class="watch-list-back md-icon-button" ng-click="$ctrl.clearWatchList()" ng-if="!$ctrl.$mdMedia('gt-md')"><md-icon>arrow_back</md-icon></md-button>
+        <h2><span ng-bind="$ctrl.watchList.name" ng-if="$ctrl.$mdMedia('gt-md')"></span></h2>
+        
+        <div flex></div>
+        
+        <md-button class="md-primary md-raised" ng-click="$ctrl.saveSettings()"
+                ng-disabled="!$ctrl.watchList.isNew() && !$ctrl.User.current.hasPermission($ctrl.watchList.editPermission)">
+            <md-icon>save</md-icon>
+            <span ma-tr="common.save"></span>
+            <md-tooltip>
+                <span ng-if="!$ctrl.watchList.isNew()" ma-tr="ui.app.saveSettings"></span>
+                <span ng-if="$ctrl.watchList.isNew()" ma-tr="ui.app.saveAsNewWatchList"></span>
+            </md-tooltip>
+        </md-button>
+        <md-button class="md-raised" ui-sref="ui.settings.watchListBuilder({watchListXid: $ctrl.watchList.xid})"
+                ng-if="!$ctrl.watchList.isNew()"
+                ng-disabled="!$ctrl.User.current.hasPermission($ctrl.watchList.editPermission)">
+            <md-icon>edit</md-icon>
+            <span ma-tr="common.edit"></span>
+        </md-button>
+        <md-button class="md-raised" ng-click="$ctrl.showDownloadDialog($event)">
+            <md-icon>file_download</md-icon>
+            <span ma-tr="common.download"></span>
+            <md-tooltip>
+                <span ma-tr="ui.app.downloadPointValues"></span>
+            </md-tooltip>
+        </md-button>
+        
+        <md-button class="md-icon-button" ng-click="$ctrl.selectColumnToolbarOpen = !$ctrl.selectColumnToolbarOpen">
+            <md-icon>{{$ctrl.selectColumnToolbarOpen ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}}</md-icon>
+            <md-tooltip>
+                <span ma-tr="ui.app.selectColumns"></span>
+            </md-tooltip>
+        </md-button>
+    </div>
+</md-toolbar>
+<md-toolbar class="md-hue-2" ng-if="$ctrl.selectColumnToolbarOpen">
+    <div class="md-toolbar-tools">
+        <md-button class="md-icon-button" ng-click="$ctrl.sortOrder = ''; $ctrl.sortOrPageChangedBound()">
+            <md-icon>format_list_numbered</md-icon>
+            <md-tooltip ma-tr="ui.app.resetSort"></md-tooltip>
+        </md-button>
+        
+        <div flex></div>
+        
+        <ma-data-point-tag-key-select class="ma-watchlist-tag-select" ng-model="$ctrl.selectedTags" ng-change="$ctrl.watchListSettingChanged()"
+                select-multiple="true" no-float="true" selected-text="'ui.app.selectTags' | maTr">
+        </ma-data-point-tag-key-select>
+
+        <md-input-container class="ma-watchlist-column-select" md-no-float="true">
+            <md-select md-selected-text="'ui.app.selectColumns' | maTr" multiple="true"
+                    ng-model="$ctrl.selectedColumns" ng-model-options="{trackBy: '$value.name'}" ng-change="$ctrl.watchListSettingChanged()">
+                <md-option ng-repeat="column in $ctrl.columns track by column.name" ng-value="column"><span ma-tr="{{column.label}}"></span></md-option>
+            </md-select>
+        </md-input-container>
+
+    </div>
+</md-toolbar>
+
+<ma-watch-list-parameters ng-if="$ctrl.watchList.hasParamOptions()" watch-list="$ctrl.watchList"
+    ng-model="$ctrl.watchListParams" ng-change="$ctrl.getPoints()"
+	class="parameter-inputs md-padding" layout layout-wrap>
+</ma-watch-list-parameters>
+
+<md-table-container ng-class="{'lg-screen': $ctrl.$mdMedia('gt-lg')}">
+    <table md-table md-row-select multiple ng-model="$ctrl.selected"
+            md-progress="$ctrl.pointsPromise" class="ma-watch-list-table">
+        <thead md-head md-order="$ctrl.sortOrder" md-on-reorder="$ctrl.sortOrPageChangedBound">
+            <tr md-row ma-fix-sort-icons>
+                <th ng-repeat="tagKey in $ctrl.selectedTags" md-column
+                    md-order-by="tags.{{tagKey}}"
+                    ma-tr="ui.app.tag" ma-tr-args="[tagKey]">
+                </th>
+                <th ng-repeat="col in $ctrl.selectedColumns | orderBy:'order'" md-column
+                    md-order-by="{{col.disableSort ? '' : col.name}}"
+                    ng-class="{'ma-point-value-column': col.name === 'value', 'point-time': col.name === 'time'}"
+                    ma-tr="{{col.label}}"
+                    md-numeric="col.name === 'value'">
+                </th>
+            </tr>
+        </thead>
+        <tbody md-body>
+            <tr ng-repeat="point in $ctrl.filteredPoints"
+                    md-select="point" md-row md-select-id="xid"
+                    md-on-select="$ctrl.selectedPointsChangedBound"
+                    md-on-deselect="$ctrl.selectedPointsChangedBound">
+                <td ng-repeat="tagKey in $ctrl.selectedTags" md-cell ng-bind="point.tags[tagKey]"></td>
+                <td ng-repeat="col in $ctrl.selectedColumns | orderBy:'order'" md-cell
+                    ng-class="{'ma-point-value-column': col.name === 'value', 'point-time': col.name === 'time'}">
+                    
+                    <ma-point-value ng-if="col.name === 'value'"
+                      point="point"
+                      flash-on-change="true"
+                      enable-popup="left">
+                    </ma-point-value>
+                    
+                    <ma-point-value ng-if="col.name === 'time'"
+                        point="point"
+                        flash-on-change="true"
+                        display-type="dateTime"
+                        same-day-date-time-format="timeSeconds"
+                        hide-event-indicator="true">
+                    </ma-point-value>
+                    
+                    <span ng-if="col.name !== 'value' && col.name !== 'time'" ng-bind="point[col.name]"></span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</md-table-container>
+
+<md-table-pagination md-limit="$ctrl.numberOfRows" md-limit-options="[10, 15, 25, 50, 100, 200]"
+    md-page="$ctrl.pageNumber" md-page-select
+    md-total="{{$ctrl.points.length}}"
+    md-on-paginate="$ctrl.sortOrPageChangedBound">
+</md-table-pagination>

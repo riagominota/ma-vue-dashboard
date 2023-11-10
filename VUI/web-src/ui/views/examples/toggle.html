@@ -1,0 +1,67 @@
+<h1 ma-tr="ui.dox.toggle"></h1>
+
+<p>
+    Binary data points can be set using various methods, some of which are shown below.
+    The <code>toggleValue()</code> method can be used on a point, which works great via
+    a <code>ng-click</code> on a <code>&lt;ma-switch-img&gt;</code> component.
+</p>
+
+<p>
+    HTML checkbox and angular material switch components can be used as well.
+    Set the <code>ng-model</code> to the points <code>valueFn</code> property and
+    set <code ng-nonbinding>ng-model-options="{getterSetter:true}"</code>.
+</p>
+
+<p>
+    See API Documentation for <a ui-sref="ui.docs.ngMango.maSwitchImg"><code>&lt;ma-switch-img&gt;</code></a>
+    and <code>valueFn</code> / <code>toggleValue()</code> methods on the <a
+    ui-sref="ui.docs.ngMangoServices.maPoint"><code>Point</code></a> object.
+</p>
+
+<ma-ui-dual-pane-editor>
+
+<div layout="column">
+    <h3>Select a settable binary point:</h3>
+    <ma-filtering-point-list ng-model="myPoint" data-type="BINARY" auto-init="true"></ma-filtering-point-list>
+
+    <p>
+        <strong>Point value:</strong>
+        {{myPoint.value}},
+
+        <strong>Rendered point value:</strong>
+        <ma-point-value point="myPoint"></ma-point-value>
+    </p>
+    <h3>Toggle via image:</h3>
+    <ma-switch-img point="myPoint" ng-click="myPoint.toggleValue()"
+                   src-false="img/ligthbulb_off.png"
+                   src-true="img/ligthbulb_on.png"
+                   default-src="img/close.png"
+                   style="width: 50px; height: 50px">
+    </ma-switch-img>
+
+    <h3>Toggle via switch:</h3>
+    <md-switch ng-model="myPoint.valueFn" ng-model-options="{getterSetter:true}">
+        Point value: {{ myPoint.value }}
+    </md-switch>
+
+    <h3>Toggle via maSwitch component:</h3>
+    <ma-switch point="myPoint"></ma-switch>
+
+    <h3>Toggle via checkbox:</h3>
+    <md-checkbox ng-model="myPoint.valueFn" ng-model-options="{getterSetter:true}">
+        Point value: {{ myPoint.value }}
+    </md-checkbox>
+
+    <h3>Toggle via an indicator component:</h3>
+    <ma-indicator point="myPoint" toggle-on-click="true" style="width: 30px; height: 30px; border: 2px solid black;">
+    </ma-indicator>
+    
+    <h3>Toggle via an indicator component, using ma-led class:</h3>
+    <ma-indicator
+        point="myPoint"
+        toggle-on-click="true"
+        class="ma-led">
+    </ma-indicator>
+</div>
+
+</ma-ui-dual-pane-editor>

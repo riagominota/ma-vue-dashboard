@@ -1,0 +1,37 @@
+<form name="autoLoginSettings">
+  <div layout="column">
+
+    <div class="md-padding ma-margin-bottom" md-colors="{background: 'warn'}">
+        <div><strong ma-tr="ui.app.autoLoginWarning"></strong></div>
+        <div ma-tr="ui.app.autoLoginNote"></div>
+    </div>
+
+    <md-input-container>
+      <label ma-tr="login.userId"></label>
+      <input required name="username" ng-model="$ctrl.username" ng-change="$ctrl.checkUser()" ng-model-options="{debounce: 1000}">
+      <div ng-messages="autoLoginSettings.username.$error">
+        <div ng-message="required" ma-tr="validate.required"></div>
+        <div ng-message="adminUser" ma-tr="ui.app.cantBeAdminUser"></div>
+        <div ng-message="notFound" ma-tr="ui.app.userNotFound"></div>
+      </div>
+    </md-input-container>
+    
+    <md-input-container>
+      <label ma-tr="login.password"></label>
+      <input required name="password" ng-model="$ctrl.password">
+      <div ng-messages="autoLoginSettings.password.$error">
+        <div ng-message="required" ma-tr="validate.required"></div>
+      </div>
+    </md-input-container>
+    
+    <div><em ma-tr="ui.app.autoLoginTestManually"></em></div>
+    
+    <div>
+      <md-button type="submit" ng-click="$ctrl.saveCredentials()" ma-tr="common.save" class="md-primary md-raised" aria-label="{{'common.save'|maTr}}"></md-button>
+      <md-button ng-disabled="!$ctrl.storedUsername" ng-click="$ctrl.deleteCredentials()" ma-tr="common.delete" class="md-warn md-raised" aria-label="{{'common.delete'|maTr}}"></md-button>
+      
+      <span md-colors="{color: 'accent'}" ng-if="$ctrl.storedUsername" ma-tr="ui.app.savedAutoLoginUser" ma-tr-args="[$ctrl.storedUsername]"></span>
+      <span md-colors="{color: 'accent'}" ng-if="!$ctrl.storedUsername" ma-tr="ui.app.noSavedAutoLoginUser"></span>
+    </div>
+  </div>
+</form>

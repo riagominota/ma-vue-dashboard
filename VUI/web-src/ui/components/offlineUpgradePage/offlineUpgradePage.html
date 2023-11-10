@@ -1,0 +1,52 @@
+<div layout-wrap layout="column" layout-gt-md="row">
+    <div flex layout layout-wrap layout-align="center center" layout-align-gt-md="start center">
+        <md-button class="md-raised" ui-sref="^">
+            <md-icon>arrow_back</md-icon>
+            <span ma-tr="ui.app.backToModules"></span>
+        </md-button>
+    
+        <md-button class="md-raised md-primary" href="/rest/latest/modules/update-license-payload?download=true" download="modules-manifest.json" target="_blank">
+            <md-icon>file_download</md-icon>
+            <span ma-tr="ui.app.downloadManifest"></span>
+        </md-button>
+        
+        <md-button class="md-raised md-primary" ng-click="$ctrl.uploadFilesButtonClicked($event)" ng-disabled="$ctrl.uploading || $ctrl.restarting">
+            <md-icon>file_upload</md-icon>
+            <span ma-tr="ui.app.uploadModuleZipFiles"></span>
+        </md-button>
+        
+        <input style="display:none" type="file" multiple ng-model="dummy" ma-change="$ctrl.uploadFilesChanged($event)" accept=".zip,application/zip,application/x-zip-compressed">
+    </div>
+    
+    <div layout layout-align="center center" layout-align-gt-md="end center">
+        <div class="ma-guid-and-release-channel">
+            <div><span ma-tr="modules.storeUrl"></span>:&nbsp;<strong ng-bind="$ctrl.coreModule.storeUrl"></strong></div>
+            <div><span ma-tr="modules.guid"></span>:&nbsp;<strong ng-bind="$ctrl.coreModule.guid"></strong></div>
+            <div ng-switch="$ctrl.coreModule.upgradeVersionState">
+                <span ma-tr="systemSettings.upgradeVersionState"></span>:&nbsp;
+                <strong ng-switch-when="0" ma-tr="systemSettings.upgradeState.development"></strong>
+                <strong ng-switch-when="1" ma-tr="systemSettings.upgradeState.alpha"></strong>
+                <strong ng-switch-when="2" ma-tr="systemSettings.upgradeState.beta"></strong>
+                <strong ng-switch-when="3" ma-tr="systemSettings.upgradeState.releaseCandidate"></strong>
+                <strong ng-switch-when="4" ma-tr="systemSettings.upgradeState.production"></strong>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div layout="column" layout-align="start start" class="md-padding">
+    <!-- <md-checkbox ng-model="$ctrl.backup"><span ma-tr="modules.versionCheck.advanced.backup"></span></md-checkbox> -->
+    <md-checkbox ng-model="$ctrl.restart" ng-disabled="$ctrl.uploading || $ctrl.restarting"><span ma-tr="ui.app.restartAfterUpload"></span></md-checkbox>
+</div>
+
+<div ng-if="$ctrl.uploading">
+    <md-progress-linear></md-progress-linear>
+    <div flex layout layout-align="center"><span ma-tr="ui.app.uploadingModuleZipFiles"></span></div>
+</div>
+
+<div ng-if="!$ctrl.uploading" flex layout="column" layout-align="center center"
+        ma-dropzone ma-drag-enter="dragOver = true" ma-drag-leave="dragOver = false" ma-drop="dragOver = false; $ctrl.fileDropped($data)"
+        ng-class="{'ma-drag-over': dragOver}">
+        
+    <div ma-tr="ui.app.dragModuleZipFiles"></div>
+</div>

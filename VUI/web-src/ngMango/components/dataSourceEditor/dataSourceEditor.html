@@ -1,0 +1,266 @@
+<div ng-form="$ctrl.form" ma-validation-messages="$ctrl.validationMessages" ma-activate-tab="$ctrl.activeTab = $index"
+    flex="noshrink" layout="column">
+    <md-tabs flex="noshrink" layout="column" ng-attr-md-dynamic-height="{{$ctrl.dynamicHeight}}" md-border-bottom="true"
+        md-swipe-content="false" md-selected="$ctrl.activeTab">
+        <md-tab md-on-select="$ctrl.hideSaveButtons = false">
+            <md-tab-label>
+                <span ma-tr="ui.app.dataSource"></span>
+            </md-tab-label>
+            <md-tab-body>
+                <div class="md-padding ma-no-padding-bottom">
+                    <div layout="row" layout-wrap layout-align="space-between start" class="ma-inputs-container">
+                        <md-input-container flex="100" flex-gt-md="50">
+                            <md-icon>settings</md-icon>
+                            <label ma-tr="dsEdit.dataSourceType"></label>
+                            <ma-drop-down-button ng-disabled="!$ctrl.dataSource.isNew()">
+                                <span
+                                    ng-bind="$ctrl.typesByName[$ctrl.dataSource.modelType].descriptionTranslated"></span>
+                                <ma-drop-down class="ma-model-type-select ma-full-screen-centered" auto-focus="::false">
+                                    <ma-option-list name="modelType" ng-model="$ctrl.dataSource.modelType"
+                                        ng-change="$ctrl.typeChanged()" ng-disabled="!$ctrl.dataSource.isNew()"
+                                        items="$ctrl.types | maFilter:$filter" ma-configure-input-container>
+                                        <ma-option
+                                            ng-repeat="type in $items | orderBy:'descriptionTranslated' track by type.type"
+                                            ng-value="type.type" md-no-ink>
+                                            <span md-highlight-text="$filter"
+                                                md-highlight-flags="ig">{{type.descriptionTranslated}}</span>
+                                        </ma-option>
+                                    </ma-option-list>
+                                </ma-drop-down>
+                            </ma-drop-down-button>
+                            <div ng-messages="$ctrl.form.modelType.$error">
+                                <div ng-message="required" ma-tr="validate.required"></div>
+                                <div ng-message="validationMessage" ng-bind="$ctrl.form.modelType.validationMessage">
+                                </div>
+                            </div>
+                        </md-input-container>
+
+                        <div flex="100" flex-gt-md="50">
+                            <md-checkbox class="ma-input-container-height" name="enabled"
+                                ng-model="$ctrl.dataSource.enabled">
+                                <span ma-tr="common.enabled"></span>
+                                <em class="ma-small-text">(<span
+                                        ma-tr="ui.app.doesNotTakeEffectUntilSaved"></span>)</em>
+                            </md-checkbox>
+                        </div>
+
+                        <md-input-container flex="100" flex-gt-md="50">
+                            <md-icon>label</md-icon>
+                            <label ma-tr="common.name"></label>
+                            <input name="name" ng-model="$ctrl.dataSource.name" required>
+                            <div ng-messages="$ctrl.form.name.$error">
+                                <div ng-message="required" ma-tr="validate.required"></div>
+                                <div ng-message="validationMessage" ng-bind="$ctrl.form.name.validationMessage"></div>
+                            </div>
+                        </md-input-container>
+
+                        <md-input-container flex="100" flex-gt-md="50">
+                            <md-icon>label</md-icon>
+                            <label ma-tr="common.xid"></label>
+                            <input name="xid" ng-model="$ctrl.dataSource.xid" required>
+                            <div ng-messages="$ctrl.form.xid.$error">
+                                <div ng-message="required" ma-tr="validate.required"></div>
+                                <div ng-message="validationMessage" ng-bind="$ctrl.form.xid.validationMessage"></div>
+                            </div>
+                        </md-input-container>
+
+                        <div style="display: none" ng-if-start="$ctrl.showPollingControls()"></div>
+
+                        <ma-duration-editor ng-if="!$ctrl.dataSource.useCron" flex="100" flex-gt-md="50"
+                            name="pollPeriod" ng-model="$ctrl.dataSource.pollPeriod"
+                            allowed-types="::['MILLISECONDS', 'SECONDS', 'MINUTES', 'HOURS']" required>
+                            <ma-periods-label ma-tr="dsEdit.updatePeriod"></ma-periods-label>
+                            <ma-type-label ma-tr="dsEdit.updatePeriod"></ma-type-label>
+                        </ma-duration-editor>
+
+                        <md-input-container flex="100" flex-gt-md="50" ng-if="$ctrl.dataSource.useCron">
+                            <md-icon>access_time</md-icon>
+                            <label ma-tr="dsEdit.cronPattern"></label>
+                            <input name="cronPattern" ng-model="$ctrl.dataSource.cronPattern" required>
+                            <div ng-messages="$ctrl.form.cronPattern.$error">
+                                <div ng-message="required" ma-tr="validate.required"></div>
+                                <div ng-message="validationMessage" ng-bind="$ctrl.form.cronPattern.validationMessage">
+                                </div>
+                            </div>
+                            <md-button class="md-icon-button ma-input-button" ng-click="$ctrl.showCronDialog = {}">
+                                <md-icon>open_in_new</md-icon>
+                            </md-button>
+                        </md-input-container>
+
+                        <div flex="100" flex-gt-md="50" ng-if-end>
+                            <md-checkbox class="ma-input-container-height" name="quantize"
+                                ng-model="$ctrl.dataSource.quantize">
+                                <span ma-tr="dsEdit.quantize"></span>
+                            </md-checkbox>
+                            <md-checkbox class="ma-input-container-height" name="useCron"
+                                ng-model="$ctrl.dataSource.useCron">
+                                <span ma-tr="dsEdit.useCron"></span>
+                            </md-checkbox>
+                        </div>
+                    </div>
+
+                    <ma-permission-editor-container>
+                        <ma-permission-editor name="readPermission" ng-model="$ctrl.dataSource.readPermission">
+                            <span ma-tr="dsEdit.permission.view"></span>
+                        </ma-permission-editor>
+                        <ma-permission-editor name="editPermission" ng-model="$ctrl.dataSource.editPermission">
+                            <span ma-tr="dsEdit.permission.edit"></span>
+                        </ma-permission-editor>
+                    </ma-permission-editor-container>
+
+                    <div ng-include="$ctrl.dataSourceType.templateUrl"></div>
+                </div>
+            </md-tab-body>
+        </md-tab>
+
+        <md-tab md-on-select="$ctrl.hideSaveButtons = false">
+            <md-tab-label>
+                <span ma-tr="dsEdit.events.alarmLevels"></span>
+            </md-tab-label>
+            <md-tab-body>
+                <div class="md-padding ma-no-padding-bottom">
+                    <h3>
+                        <span ma-tr="ui.dox.alarms"></span>
+                        <md-button class="md-icon-button ma-small-button ma-no-margin" ui-sref="ui.help.alarms">
+                            <md-icon>help</md-icon>
+                        </md-button>
+                    </h3>
+                </div>
+                <div class="md-padding ma-no-padding-bottom">
+                    <div layout="row" layout-wrap layout-align="space-between start" class="ma-inputs-container">
+                        <md-input-container flex="100" flex-gt-md="50"
+                            ng-repeat="entry in $ctrl.dataSource.eventAlarmLevels track by entry.eventType">
+                            <label ma-tr="{{entry.descriptionKey}}"></label>
+                            <md-select name="alarmLevels[{{$index}}]" ng-model="entry.level" required
+                                ma-get-ctrl="modelCtrl = $ngModel">
+                                <md-option ng-repeat="level in $ctrl.eventLevels track by level.key"
+                                    ng-value="level.key">
+                                    <md-icon class="fa fa-lg ma-alarm-flag" ng-class="level.classes"></md-icon>
+                                    <span ma-tr="{{level.translation}}"></span>
+                                </md-option>
+                            </md-select>
+                            <div ng-messages="modelCtrl.$error">
+                                <div ng-message="required" ma-tr="validate.required"></div>
+                                <div ng-message="validationMessage" ng-bind="modelCtrl.validationMessage"></div>
+                            </div>
+                        </md-input-container>
+                    </div>
+                </div>
+            </md-tab-body>
+        </md-tab>
+
+        <md-tab md-on-select="$ctrl.hideSaveButtons = false">
+            <md-tab-label>
+                <span ma-tr="dsEdit.logging.purge"></span>
+            </md-tab-label>
+            <md-tab-body>
+                <div class="md-padding ma-no-padding-bottom">
+                    <h3>
+                        <span ma-tr="ui.dox.dsPurgeOverride"></span>
+                        <md-button class="md-icon-button ma-small-button ma-no-margin"
+                            ui-sref="ui.help.dsPurgeOverride">
+                            <md-icon>help</md-icon>
+                        </md-button>
+                    </h3>
+                    <div>
+                        <md-checkbox name="purgeSettings.override" ng-model="$ctrl.dataSource.purgeSettings.override">
+                            <span ma-tr="dsEdit.logging.purgeOverride"></span>
+                        </md-checkbox>
+                    </div>
+
+                    <div layout layout-wrap layout-align="start start" ng-if="$ctrl.dataSource.purgeSettings.override">
+                        <ma-duration-editor flex="100" flex-gt-md="50" name="purgeSettings.frequency"
+                            ng-model="$ctrl.dataSource.purgeSettings.frequency"
+                            allowed-types="::['DAYS', 'WEEKS', 'MONTHS', 'YEARS']" required>
+                            <ma-periods-label ma-tr="pointEdit.logging.after"></ma-periods-label>
+                            <ma-type-label ma-tr="pointEdit.logging.after"></ma-type-label>
+                        </ma-duration-editor>
+                    </div>
+                </div>
+            </md-tab-body>
+        </md-tab>
+
+        <md-tab ng-if="!$ctrl.dataSource.isNew() && $ctrl.dataSourceType && !$ctrl.dataSourceType.hidePointsTab"
+            md-on-select="$ctrl.pointsTabActive = true; $ctrl.hideSaveButtons = true"
+            md-on-deselect="$ctrl.pointsTabActive = false; $ctrl.hideSaveButtons = false">
+            <md-tab-label>
+                <span ma-tr="ui.app.dataPoints"></span>
+            </md-tab-label>
+            <md-tab-body>
+                <div class="md-padding ma-no-padding-bottom">
+                    <ma-bulk-data-point-editor data-source="$ctrl.dataSource" querying-disabled="!$ctrl.pointsTabActive"
+                        selected-points="$ctrl.selectedPoints = $selected" edit-data-points="$ctrl.editDataPointsArray">
+                    </ma-bulk-data-point-editor>
+                </div>
+            </md-tab-body>
+        </md-tab>
+
+        <md-tab ng-if="!$ctrl.dataSource.isNew()" md-on-select="$ctrl.hideSaveButtons = true"
+            md-on-deselect="$ctrl.hideSaveButtons = false">
+            <md-tab-label>
+                <span ma-tr="dsEdit.currentAlarms"></span>
+            </md-tab-label>
+            <md-tab-body>
+                <div class="md-padding ma-no-padding-bottom">
+                    <ma-events-table data-source-id="$ctrl.dataSource.id" limit="15" sort="'-activeTimestamp'"
+                        hide-link="DATA_SOURCE"></ma-events-table>
+                </div>
+            </md-tab-body>
+        </md-tab>
+
+        <md-tab ng-if="!$ctrl.dataSource.isNew()" md-on-select="$ctrl.refreshStatus = {}; $ctrl.hideSaveButtons = true"
+            md-on-deselect="$ctrl.hideSaveButtons = false">
+            <md-tab-label>
+                <span ma-tr="dsEdit.rtStatus"></span>
+            </md-tab-label>
+            <md-tab-body>
+                <div class="md-padding">
+                    <ma-data-source-status ng-if="!!$ctrl.refreshStatus" data-source="$ctrl.dataSource"
+                        refresh="$ctrl.refreshStatus"></ma-data-source-status>
+                </div>
+            </md-tab-body>
+        </md-tab>
+    </md-tabs>
+
+    <div class="md-padding ma-error-text" ng-if="$ctrl.form.validationMessage" ng-bind="$ctrl.form.validationMessage"
+        role="alert"></div>
+
+    <div class="md-padding ma-action-buttons" ng-if="!$ctrl.hideSaveButtons">
+        <md-button class="md-raised md-primary" ng-click="$ctrl.saveItem($event)"
+            ng-disabled="!$ctrl.form || !$ctrl.dataSourceType">
+            <md-icon>save</md-icon>
+            <span ma-tr="common.save"></span>
+        </md-button>
+        <md-button class="md-raised" ng-click="$ctrl.revertItem($event)" ng-disabled="$ctrl.form.$pristine">
+            <md-icon>undo</md-icon>
+            <span ma-tr="ui.app.revert"></span>
+        </md-button>
+        <md-button class="md-raised md-warn" ng-click="$ctrl.deleteItem($event)" ng-disabled="$ctrl.dataSource.isNew()">
+            <md-icon>delete</md-icon>
+            <span ma-tr="common.delete"></span>
+        </md-button>
+        <em ng-if="!$ctrl.dataSourceType" class="ma-color-accent" ma-tr="ui.app.dataSourceTypeNotSupported"></em>
+    </div>
+
+    <ma-dialog show-dialog="$ctrl.showCronDialog">
+        <md-dialog flex="100" flex-gt-sm="50" flex-gt-md="40" flex-gt-lg="30" flex-gt-xl="20">
+            <md-toolbar>
+                <div class="md-toolbar-tools">
+                    <h2>
+                        <span ma-tr="dsEdit.cronPattern"></span>
+                    </h2>
+                    <span flex></span>
+                    <md-button class="md-icon-button" ng-click="$dialog.cancel()">
+                        <md-icon>close</md-icon>
+                    </md-button>
+                </div>
+            </md-toolbar>
+
+            <md-dialog-content layout="column" flex>
+                <div class="md-padding">
+                    <ma-cron-pattern ng-model="$ctrl.dataSource.cronPattern"></ma-cron-pattern>
+                </div>
+            </md-dialog-content>
+        </md-dialog>
+    </ma-dialog>
+</div>

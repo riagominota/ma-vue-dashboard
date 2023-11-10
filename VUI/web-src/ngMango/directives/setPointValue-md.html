@@ -1,0 +1,84 @@
+<form>
+    <div layout="{{$ctrl.enablePopup === 'up' || $ctrl.enablePopup === 'down' ? 'column' : 'row'}}" layout-align="start center" ng-mouseleave="$ctrl.isOpen=false">
+    	<div layout="row" layout-align="start center"  ng-mouseenter="$ctrl.isOpen=true">
+            <label ng-if="$ctrl.label" ng-bind="$ctrl.label"></label>
+            <md-input-container flex ng-if="$ctrl.inputType === 'numeric'">
+                <input type="number" step="{{$ctrl.step}}" ng-model="$ctrl.inputValue"  aria-label="{{'common.value' | maTr}}"
+                       ng-disabled="!$ctrl.point.pointLocator.settable || !$ctrl.point.enabled" md-select-on-focus>
+            </md-input-container>
+            <md-input-container flex ng-if="$ctrl.inputType === 'text'">
+                <input type="text" ng-model="$ctrl.inputValue" aria-label="{{'common.value' | maTr}}"
+                       ng-disabled="!$ctrl.point.pointLocator.settable || !$ctrl.point.enabled" md-select-on-focus>
+            </md-input-container>
+            <md-select flex ng-if="$ctrl.inputType === 'select'"
+                       ng-model="$ctrl.inputValue" ng-change="$ctrl.selectChanged()"
+                       ng-disabled="!$ctrl.point.pointLocator.settable || !$ctrl.point.enabled" aria-label="{{'common.value' | maTr}}"
+                       ng-style="{color: $ctrl.point.getTextRenderer().render($ctrl.inputValue).color}">
+                <md-option ng-repeat="option in $ctrl.options track by option.id" ng-style="option.style" ng-value="option.id" ng-bind="option.label"></md-option>
+            </md-select>
+
+            <md-button type="submit" class="md-raised md-accent" ng-show="$ctrl.showButton"
+                       ng-disabled="!$ctrl.point.pointLocator.settable || $ctrl.result.pending || !$ctrl.point.enabled" ng-click="$ctrl.doSetValue($event)"
+                       ng-class="{'set-pending': $ctrl.result.pending, 'set-success': $ctrl.result.success, 'set-error': $ctrl.result.error, 'md-warn': $ctrl.result.error}"
+                       aria-label="{{'common.set' | maTr}}">
+                <div layout="row" layout-align="center center">
+                    <span ma-tr="common.set"></span>
+                    <md-progress-circular md-diameter="18px" md-mode="indeterminate" ng-if="$ctrl.result.pending"></md-progress-circular>
+                    <md-icon ng-if="$ctrl.result.success" class="md-primary">check</md-icon>
+                    <md-icon ng-if="$ctrl.result.error" class="md-primary">error</md-icon>
+                </div>
+            </md-button>
+            
+            <md-button class="md-raised" ng-show="$ctrl.showRelinquish && ($ctrl.point.pointLocator.modelType === 'PL.BACNET_MSTP' || $ctrl.point.pointLocator.modelType === 'PL.BACNET_IP')"
+                       ng-disabled="!$ctrl.point.pointLocator.settable || $ctrl.relinqushResult.pending || !$ctrl.point.enabled" ng-click="$ctrl.relinqushResult=$ctrl.point.relinquishResult()"
+                       ng-class="{'set-pending': $ctrl.relinqushResult.pending, 'set-success': $ctrl.relinqushResult.success, 'set-error': $ctrl.relinqushResult.error, 'md-warn': $ctrl.relinqushResult.error}"
+                       aria-label="{{'common.relinquish' | maTr}}">
+                <div layout="row" layout-align="center center">
+                    <span ma-tr="common.relinquish"></span>
+                    <md-progress-circular md-diameter="18px" md-mode="indeterminate" ng-if="$ctrl.relinqushResult.pending"></md-progress-circular>
+                    <md-icon ng-if="$ctrl.relinqushResult.success" class="md-primary">check</md-icon>
+                    <md-icon ng-if="$ctrl.relinqushResult.error" class="md-primary">error</md-icon>
+                </div>
+            </md-button>
+        </div>
+
+        <md-fab-speed-dial ng-if="$ctrl.enablePopup && $ctrl.enablePopup!== 'hide' && $ctrl.showStatsDialog" md-direction="{{$ctrl.enablePopup}}" md-open="$ctrl.isOpen"
+                           class="md-scale" ng-cloak
+                           flex-order="{{$ctrl.enablePopup === 'left' || $ctrl.enablePopup === 'up' ? -1 : 1}}">
+            <md-fab-trigger>
+            </md-fab-trigger>
+
+            <md-fab-actions id="popup-btns">
+                <md-button class="md-primary md-raised" ng-click="$ctrl.showStatsDialog($event, $ctrl.point,
+                'stats')">
+                    <md-tooltip md-direction="{{$ctrl.enablePopup === 'up' || $ctrl.enablePopup === 'down' ? 'right' : 'top'}}">
+                        <span ma-tr="ui.components.showStats"></span>
+                    </md-tooltip>
+                    <md-icon>format_list_numbered</md-icon>
+                </md-button>
+                <md-button class="md-primary md-raised" ng-click="$ctrl.showStatsDialog($event, $ctrl.point,
+                'chart')">
+                    <md-tooltip md-direction="{{$ctrl.enablePopup === 'up' || $ctrl.enablePopup === 'down' ? 'right' : 'top'}}">
+                        <span ma-tr="ui.components.showChart"></span>
+                    </md-tooltip>
+                    <md-icon>timeline</md-icon>
+                </md-button>
+                <md-button class="md-primary md-raised" ng-click="$ctrl.showStatsDialog($event, $ctrl.point,
+                'table')">
+                    <md-tooltip md-direction="{{$ctrl.enablePopup === 'up' || $ctrl.enablePopup === 'down' ? 'right' : 'top'}}">
+                        <span ma-tr="ui.components.showTable"></span>
+                    </md-tooltip>
+                    <md-icon>grid_on</md-icon>
+                </md-button>
+                <md-button class="md-primary md-raised"
+                           ng-click="$ctrl.showStatsDialog($event, $ctrl.point, 'events')">
+                    <md-tooltip
+                        md-direction="{{$ctrl.enablePopup === 'up' || $ctrl.enablePopup === 'down' ? 'right' : 'top'}}">
+                        <span ma-tr="ui.components.showEvents"></span>
+                    </md-tooltip>
+                    <md-icon>alarm</md-icon>
+                </md-button>
+            </md-fab-actions>
+        </md-fab-speed-dial>
+    </div>
+</form>

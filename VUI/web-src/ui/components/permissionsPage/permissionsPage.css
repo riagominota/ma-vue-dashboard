@@ -1,0 +1,41 @@
+ma-ui-permissions-page {
+    display: block;
+}
+
+ma-ui-permissions-page .ma-module-name {
+    font-weight: bold;
+    font-size: 2.4rem;
+    font-family: var(--ma-font-heading);
+}
+
+ma-ui-permissions-page .ma-module-header {
+    background-color: rgba(var(--ma-primary-hue-2-value), 0.7);
+    color: var(--ma-primary-hue-2-contrast);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25);
+}
+
+ma-ui-permissions-page .ma-module-header:focus:not([disabled]) {
+    background-color: var(--ma-primary-hue-2);
+}
+
+ma-ui-permissions-page .ma-module-header .ma-toggle-icon {
+    color: inherit;
+    font-size: 3.6rem;
+    transition: transform 0.3s ease-in-out;
+    margin: 8px;
+}
+
+ma-ui-permissions-page .ma-module-header.ma-toggle-open .ma-toggle-icon {
+    transform: rotate(-180deg);
+}
+
+ma-ui-permissions-page .ma-permission-editor-group {
+    margin-bottom: 8px;
+}
+
+ma-ui-permissions-page .ma-permission-editor-subheader {
+    font-size: 1.4rem;
+    font-weight: bold;
+    align-items: flex-end;
+    opacity: 0.7;
+}

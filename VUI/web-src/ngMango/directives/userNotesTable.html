@@ -1,0 +1,23 @@
+<md-table-container ng-init="myOrder='-timestamp'; myPage=1;">
+    <table md-table>
+          <thead md-head md-order="myOrder">
+                <tr md-row>
+                      <th md-column md-order-by="timestamp" ma-tr="ui.app.time"></th>
+                      <th md-column md-order-by="comment" ma-tr="ui.app.note"></th>
+                      <th md-column md-order-by="username" ma-tr="ui.app.user"></th>
+                </tr>
+          </thead>
+          <tbody md-body ng-hide="userNotes.length > 0">
+                <tr md-row>
+                    <td md-cell colspan="3" style="height:60px; font-weight: bold;" ma-tr="ui.app.noCommentsFound"></td>
+                </tr>
+           </tbody>
+          <tbody md-body ng-show="userNotes.length > 0 && !disabled">
+                <tr md-row ng-repeat="note in userNotes | orderBy: myOrder">
+                      <td md-cell ng-bind="formatDate(note.timestamp)"></td>
+                      <td md-cell ng-bind="note.comment"></td>
+                      <td md-cell ng-bind="note.username"></td>
+                </tr>
+          </tbody>
+    </table>
+</md-table-container>

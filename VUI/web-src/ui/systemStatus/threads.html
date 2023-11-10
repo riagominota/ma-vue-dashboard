@@ -1,0 +1,49 @@
+<div layout="column" ng-init="$ctrl.pageChanged('threads')">
+    <div layout layout-align="end">
+        <md-button ng-click="$ctrl.getThreads()" class="md-raised">
+            <md-icon>
+                refresh
+            </md-icon>
+            <span ma-tr="ui.app.refreshTable"></span>
+        </md-button>
+        <md-button href="/rest/latest/threads?stackDepth=30&asFile=true"
+                   class="md-raised">
+            <md-icon>
+                file_download
+            </md-icon>
+            <span ma-tr="ui.settings.systemStatus.downloadThreadDump"></span>
+        </md-button>
+    </div>
+
+    <md-table-container>
+        <table md-table>
+            <thead md-head md-order="sortOrder">
+            <tr md-row>
+                <th md-column md-order-by="name" ma-tr="ui.settings.systemStatus.name"></th>
+                <th md-column md-order-by="cpuTime" ma-tr="ui.settings.systemStatus.cpuTime"></th>
+                <th md-column md-order-by="userTime" ma-tr="ui.settings.systemStatus.userTime"></th>
+                <th md-column md-order-by="state" ma-tr="ui.settings.systemStatus.state"></th>
+                <th md-column md-numeric md-order-by="priority"><span ma-tr="ui.settings.systemStatus.priority"></span></th>
+                <th md-column md-numeric md-order-by="id"><span ma-tr="ui.settings.systemStatus.id"></span></th>
+            </tr>
+            </thead>
+            <tbody md-body>
+            <tr md-row ng-repeat="thread in $ctrl.threads | orderBy: sortOrder"
+                    ng-class="{'blocked-thread': thread.state === 'BLOCKED'}"
+                    ng-click="$ctrl.showStackTrace(thread)">
+                <td md-cell ng-bind="thread.name"></td>
+                <td md-cell>{{thread.cpuTime / 1000000 | maDuration:'seconds'}}s</td>
+                <td md-cell>{{thread.userTime / 1000000 | maDuration:'seconds'}}s</td>
+                <td md-cell>
+                    {{thread.state}}
+                    <md-icon class="md-accent" ng-if="thread.state === 'BLOCKED'" style="font-size: 20px"
+                             ng-click="$ctrl.showBlockedThreadDetails($event, thread)">warning
+                    </md-icon>
+                </td>
+                <td md-cell ng-bind="thread.priority"></td>
+                <td md-cell ng-bind="thread.id"></td>
+            </tr>
+            </tbody>
+        </table>
+    </md-table-container>
+</div>

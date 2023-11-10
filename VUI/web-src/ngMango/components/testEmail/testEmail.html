@@ -1,0 +1,26 @@
+<div ng-if="!$ctrl.hideButton">
+    <md-button class="md-raised" ng-click="$ctrl.sendTestEmail()">
+        <md-icon>email</md-icon> <span ma-tr="common.sendTestEmail"></span>
+    </md-button>
+    <span class="ma-smaller-text" ma-tr="ui.app.sendTestEmailTooltip" ma-tr-args="[($ctrl.user || $ctrl.maUser.current).email]"></span>
+</div>
+
+<ma-dialog show-dialog="$ctrl.sendingEmail" destroy-dialog="true" on-close="$ctrl.sendingEmail = null">
+    <md-dialog>
+        <md-dialog-content flex layout="column" layout-align="center center" class="md-padding">
+            <p ng-if-start="!$ctrl.sendingEmail.error" class="ma-larger-font" ma-tr="common.sendingTestEmail"></p>
+            <md-progress-circular ng-if-end md-diameter="50" class="md-accent"></md-progress-circular>
+            
+            <p ng-if-start="$ctrl.sendingEmail.error" ma-tr="ui.components.errorSendingEmail" class="ma-error-text"
+                ma-tr-args="[$ctrl.sendingEmail.user.email, $ctrl.sendingEmail.error.mangoStatusText]"></p>
+            
+            <div class="ma-test-email-log" ng-if-end ng-bind="$ctrl.sendingEmail.error.data.smtpSessionLog"></div>
+        </md-dialog-content>
+        
+        <md-dialog-actions layout="row" ng-if="$ctrl.sendingEmail.error">
+            <md-button ng-click="$dialog.hide()">
+                <span ma-tr="common.ok"></span>
+            </md-button>
+        </md-dialog-actions>
+    </md-dialog>
+</ma-dialog>

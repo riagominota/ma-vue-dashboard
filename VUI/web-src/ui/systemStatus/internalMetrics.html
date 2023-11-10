@@ -1,0 +1,27 @@
+<div ng-init="$ctrl.pageChanged('internalMetrics')">
+    <div layout layout-align="end">
+        <md-button ng-click="$ctrl.getInternalMetrics()" class="md-raised">
+            <md-icon>
+                refresh
+            </md-icon>
+            <span ma-tr="ui.app.refreshTable"></span>
+        </md-button>
+    </div>
+
+    <md-table-container>
+        <table md-table>
+            <thead md-head md-order="sortOrder">
+                <tr md-row>
+                    <th md-column md-order-by="name" ma-tr="ui.settings.systemStatus.name"></th>
+                    <th md-column md-numeric md-order-by="value"><span ma-tr="ui.settings.systemStatus.value"></span></th>
+                </tr>
+            </thead>
+            <tbody md-body>
+                <tr md-row ng-repeat="metric in $ctrl.internalMetrics | orderBy: sortOrder">
+                    <td md-cell ng-bind="metric.name"></td>
+                    <td md-cell ng-bind="metric.value"></td>
+                </tr>
+            </tbody>
+        </table>
+    </md-table-container>
+</div>

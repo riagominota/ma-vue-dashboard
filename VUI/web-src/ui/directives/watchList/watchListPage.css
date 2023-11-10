@@ -1,0 +1,125 @@
+/* Table Component */
+
+ma-ui-watch-list-page .ma-watchlist-main md-table-container {
+    padding-bottom: 10px;
+}
+
+@media (max-width: 959px) {
+	ma-ui-watch-list-page .ma-watchlist-main .md-toolbar-tools h2 {
+	    line-height: 18px;
+	    font-size: 16px;
+	}
+}
+
+ma-ui-watch-list-page .ma-watchlist-main md-toolbar.md-table-toolbar form > input:focus {
+    outline: none;
+}
+ma-ui-watch-list-page .ma-watchlist-main md-toolbar.md-table-toolbar form > input {
+    width: 100%;
+    margin-left: 16px;
+    border: none;
+}
+ma-ui-watch-list-page .ma-watchlist-main th.md-checkbox-column > md-checkbox {
+    display: none;
+}
+
+@media (max-width: 959px) {
+	ma-ui-watch-list-page .ma-watchlist-main table.md-table td.md-cell,
+	ma-ui-watch-list-page .ma-watchlist-main table.md-table th.md-column {
+	    padding: 0 4px 0 4px !important;
+	}
+	
+	ma-ui-watch-list-page .ma-watchlist-main table.md-table td.md-cell,
+	ma-ui-watch-list-page .ma-watchlist-main table.md-table th.md-column {
+	    font-size: 1.1rem;
+	}
+	
+	ma-ui-watch-list-page .ma-watchlist-main table.md-table td.md-cell.icons {
+	    font-size: 1.5rem;
+	}
+}
+
+ma-ui-watch-list-page .ma-watchlist-main table.md-table td.md-cell {
+    transition: color 0.2s;
+}
+
+ma-ui-watch-list-page table.md-table.md-row-select.ma-watch-list-table th.md-column.ma-point-value-column,
+ma-ui-watch-list-page table.md-table.md-row-select.ma-watch-list-table td.md-cell.ma-point-value-column {
+	width: 100px;
+}
+
+ma-ui-watch-list-page .ma-watchlist-main .md-table-pagination {
+  border: 0;
+}
+
+/* Pagination mobile fixes*/
+ma-ui-watch-list-page .ma-watchlist-main .md-table-pagination {
+    padding: 0 10px 0 0;
+}
+
+ma-ui-watch-list-page .ma-watchlist-main .md-table-pagination md-select {
+    min-width: 40px;
+}
+
+@media (min-width: 1280px) {
+	ma-ui-watch-list-page .ma-watchlist-main {
+	 	margin-left: 16px;
+	}
+}
+
+ma-ui-watch-list-page .ma-watchlist-main md-card {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+ma-ui-watch-list-page .ma-watchlist-main md-card:first-child {
+  margin-top: 0;
+}
+
+ma-ui-watch-list-page .ma-watchlist-main md-card:last-child {
+  margin-bottom: 0;
+}
+
+ma-ui-watch-list-page .watch-list-back.md-button {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+ma-ui-watch-list-page ma-watch-list-chart {
+  height: 400px;
+  width: 100%;
+}
+ma-ui-watch-list-page ma-watch-list-chart path.amcharts-graph-stroke {
+    stroke-width: 2.5px;
+    stroke-opacity: .7;
+}
+ma-ui-watch-list-page ma-watch-list-chart path.amcharts-graph-fill {
+    fill-opacity: 0.5;
+}
+
+ma-ui-watch-list-page ma-watch-list-parameters md-input-container {
+  margin-bottom: 0;
+}
+
+ma-ui-watch-list-page .md-table-pagination > * {
+  height: 32px;
+}
+
+ma-ui-watch-list-page ma-point-value img {
+	max-width: 200px;
+	max-height: 200px;
+}
+
+ma-ui-watch-list-page ma-point-value > md-fab-speed-dial[md-direction=left] {
+	top: -5px;
+}
+
+ma-ui-watch-list-page table.md-table.md-row-select.ma-watch-list-table md-checkbox .md-container:after {
+	top: -2px;
+	bottom: -2px;
+}
+
+ma-ui-watch-list-page .ma-watchlist-tag-select,
+ma-ui-watch-list-page .ma-watchlist-column-select {
+	width: 250px;
+}

@@ -1,0 +1,99 @@
+<form flex layout="column" name="$ctrl.form" ma-validation-messages="$ctrl.validationMessages">
+    <md-card>
+        <md-card-title>
+            <md-card-title-text>
+                <div flex layout>
+                    <div flex>
+                        <span class="md-headline">
+                            <span ma-tr="ui.app.mailingLists.setup"></span>
+                        </span>
+                    </div>
+        
+                    <div flex layout layout-align="end center" class="ma-margin-bottom">
+                        <md-button class="md-raised md-primary" ng-click="$ctrl.save($event)">
+                            <md-icon>save</md-icon> <span ma-tr="common.save"></span>
+                        </md-button>
+                        <md-button class="md-raised md-warn" ng-click="$ctrl.delete($event)" ng-disabled="!$ctrl.form.$valid && !$ctrl.form.$touched">
+                            <md-icon>delete</md-icon> <span ma-tr="common.delete"></span>
+                        </md-button>
+                    </div>
+                </div>
+            </md-card-title-text>
+        </md-card-title>
+        <md-card-content>
+        
+            <div layout="row" layout-align="space-between top" layout-wrap class="ma-inputs-container">
+                <md-input-container flex="100" flex-gt-md="50">
+                    <md-icon>label</md-icon>
+                    <label ma-tr="common.name"></label>
+                    <input name="name" ng-model="$ctrl.list.name" required>
+                    <div ng-messages="$ctrl.form.name.$error">
+                        <div ng-message="required" ma-tr="validate.required"></div>
+                    </div>
+                </md-input-container>
+
+                <md-input-container flex="100" flex-gt-md="50">
+                    <md-icon>label</md-icon>
+                    <label ma-tr="common.xid"></label>
+                    <input name="xid" ng-model="$ctrl.list.xid" required>
+                    <div ng-messages="$ctrl.form.xid.$error">
+                        <div ng-message="required" ma-tr="validate.required"></div>
+                    </div>
+                </md-input-container>
+            </div>
+
+            <ma-permission-editor-container>
+                <ma-permission-editor name="readPermissions" ng-model="$ctrl.list.readPermissions">
+                    <span ma-tr="mailingLists.permission.read"></span>
+                </ma-permission-editor>
+                <ma-permission-editor name="editPermissions" ng-model="$ctrl.list.editPermissions">
+                    <span ma-tr="mailingLists.permission.edit"></span>
+                </ma-permission-editor>
+            </ma-permission-editor-container>
+
+            <div layout="column">
+                <span class="md-headline">
+                    <span ma-tr="ui.eventHandlers.emailRecipients"></span>
+                </span>
+
+                <md-input-container flex="100" class="ma-input-space-between" class="w-100">
+                    <label ma-tr="ui.app.mailingLists.sendAlarmEmail"></label>
+                    <md-select ng-model="$ctrl.list.receiveAlarmEmails" required>
+                        <md-option value="NONE">None</md-option>
+                        <md-option value="INFORMATION">Information</md-option>
+                        <md-option value="IMPORTART">Important</md-option>
+                        <md-option value="WARNING">Warning</md-option>
+                        <md-option value="URGENT">Urgent</md-option>
+                        <md-option value="CRITICAL">Critical</md-option>
+                        <md-option value="LIFE_SAFETY">Safety</md-option>
+                        <md-option value="DO_NOT_LOG">Do Not Log</md-option>
+                        <md-option value="IGNORE">Ignore</md-option>
+                    </md-select>
+                </md-input-container>
+
+                <ma-email-recipients hide-mailing-lists="true" ng-model="$ctrl.list.recipients" type-property="recipientType"></ma-email-recipients>
+            </div>
+
+            <md-divider></md-divider>
+
+            <div ng-if="!$ctrl.list.isNew()" class="ma-margin-top">
+                <span class="md-headline">
+                    <span ma-tr="ui.app.mailingLists.sendTestEmail"></span>
+                </span>
+
+                <ma-mailing-list-email mailing-list="$ctrl.list"></ma-mailing-list-email>
+
+                <md-divider></md-divider>
+            </div>
+
+            <div layout="column" class="weekly-schedule-container">
+                <span class="md-headline">
+                    <span ma-tr="ui.app.inactiveSchedule"></span>
+                </span>
+
+                <ma-weekly-schedule class="w-100 mt-20" ng-model="$ctrl.list.inactiveSchedule" lock-all="false" lock-weekends="false" lock-weekdays="false"></ma-weekly-schedule>
+            </div>
+
+        </md-card-content>
+    </md-card>        
+</form>

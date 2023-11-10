@@ -1,0 +1,34 @@
+<h1 ma-tr="ui.dox.input"></h1>
+
+<p>
+    The <code>&lt;ma-set-point-value&gt;</code> directive will create a form input element to set
+    the value of a point. It can handle numeric, alphanumeric, binary, and multistate point types and will create
+    an appropriate interface element for each point type.
+</p>
+
+<p>
+    Alternatively you can set the value of a point by calling the <code>setValue</code> method on a point.
+    This function can be called from within a <code>ng-click</code> expression for example.
+</p>
+
+<p>
+    See API Documentation for <a ui-sref="ui.docs.ngMango.maSetPointValue"><code>&lt;ma-set-point-value&gt;</code></a>
+    and <code>setValue()</code> method on the <a
+    ui-sref="ui.docs.ngMangoServices.maPoint"><code>Point</code></a> object.
+</p>
+
+<ma-ui-dual-pane-editor>
+
+<h3>Choose a settable data point:</h3>
+<ma-filtering-point-list ng-model="myPoint" auto-init="true"></ma-filtering-point-list>
+
+<ma-get-point-value point="myPoint"></ma-get-point-value>
+
+<h3>Using &lt;ma-set-point-value&gt;</h3>
+<ma-set-point-value point="myPoint"></ma-set-point-value>
+<br>
+
+<h3>Via setValue() method triggered by button click</h3>
+<md-button ng-click="myPoint.setValue(5)" class="md-raised">Set to 5</md-button>
+
+</ma-ui-dual-pane-editor>

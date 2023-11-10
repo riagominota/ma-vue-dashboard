@@ -1,0 +1,84 @@
+ma-drop-down-button {
+    display: flex;
+    align-items: center;
+    cursor: default;
+    color: var(--ma-foreground-3);
+    position: relative;
+}
+
+ma-drop-down-button > div {
+    overflow-x: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+ma-drop-down-button[disabled] {
+    pointer-events: none;
+}
+
+ma-drop-down-button:active,
+ma-drop-down-button:focus {
+    outline: none;
+    background-color: rgba(var(--ma-background-300-value), 0.2);
+}
+
+ma-drop-down-button > div {
+    flex-grow: 1;
+}
+
+ma-drop-down-button:not([disabled]) > md-icon.ma-drop-down-icon {
+    color: var(--ma-foreground-2);
+}
+
+ma-drop-down-button:not([disabled]),
+ma-drop-down-button:not([disabled]) > md-icon.ma-drop-down-icon {
+    cursor: pointer;
+}
+
+ma-drop-down-button:not([disabled]) > div {
+    color: var(--ma-foreground-1);
+}
+
+ma-drop-down-button > md-icon.ma-drop-down-icon {
+    transition: transform 0.3s ease-in-out;
+    color: inherit;
+}
+
+ma-drop-down-button.ma-drop-down-open > md-icon.ma-drop-down-icon {
+    transform: rotate(-180deg);
+}
+
+md-input-container > ma-drop-down-button {
+    box-sizing: border-box;
+    height: 30px;
+    line-height: 26px;
+    padding: 2px 2px 1px;
+    border-width: 0;
+    border-bottom: 1px solid currentColor;
+    border-color: var(--ma-foreground-4);
+}
+
+md-input-container > ma-drop-down-button:focus:not([disabled]),
+md-input-container > ma-drop-down-button:active:not([disabled]),
+md-input-container > ma-drop-down-button.ma-drop-down-open:not([disabled]) {
+    padding-bottom: 0;
+    border-bottom-width: 2px;
+    border-color: var(--ma-primary);
+    background-color: unset;
+}
+
+md-input-container.md-input-invalid > ma-drop-down-button:not([disabled]) {
+    border-color: var(--ma-warn-A700);
+}
+
+md-input-container > ma-drop-down-button[disabled] {
+    border-color: transparent;
+    background-image: linear-gradient(90deg, var(--ma-foreground-3) 0, var(--ma-foreground-3) 33%, transparent 0);
+    background-position: 0 bottom;
+    background-size: 4px 1px;
+    background-repeat: repeat-x;
+}
+
+md-input-container:not(.md-input-invalid).md-input-focused > ma-drop-down-button > md-icon.ma-drop-down-icon {
+    color: var(--ma-foreground-2);
+}

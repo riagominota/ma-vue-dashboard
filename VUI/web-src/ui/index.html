@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title ng-bind="titleText"></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <base href="/ui/">
+
+    <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../img/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../img/icon32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../img/icon16.png">
+    <link rel="shortcut icon" href="../img/favicon.ico">
+    <link rel="manifest" href="/rest/latest/ui-bootstrap/pwa-manifest?loggedIn=false" ng-href="/rest/latest/ui-bootstrap/pwa-manifest?loggedIn={{!!User.current}}" crossorigin="use-credentials">
+
+    <link rel="stylesheet" href="./styles/preBoot.css">
+    <meta name="user-styles-after-here" content="">
+</head>
+
+<body layout="column" ng-class="{'ma-api-down': !mangoWatchdog.apiUp, 'ma-logged-out': !mangoWatchdog.loggedIn}"
+      md-theme="{{uiSettings.activeTheme}}" md-colors="::{background: 'background'}">
+    <div id="loading-bar-container" md-colors="::{color: 'accent-hue-2'}"></div>
+
+	<div ng-if="::appLoading" class="app-loading">
+		<svg class="ma-ui-spinner" width="65px" height="65px" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
+		   <circle fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="30" stroke="#FF8500"></circle>
+		</svg>
+
+        <div class="pre-bootstrap-error" style="display:none">
+            <div></div>
+            <a href="#">Show stack trace</a>
+            <pre style="display:none"><code></code></pre>
+        </div>
+	</div>
+    <div ng-cloak ui-view layout="column" flex class="main-application" ng-class="stateNameClass"></div>
+</body>
+</html>

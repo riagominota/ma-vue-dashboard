@@ -1,0 +1,20 @@
+<div class="ma-help-doc-container">
+  <h1 ma-tr="ui.dox.eventHandlers"></h1>
+
+<p>
+    Event handlers enable the user to define the behavior of the system against the triggering of an event. 
+    Events can be triggered due to various conditions. When this happens, associated event handlers are executed.
+</p>
+
+
+
+<ma-get-service service-name="maUiMenu" service="menu = $service"></ma-get-service>
+
+<h3 ma-tr="js.help.related"></h3>
+<ul>
+    <li ng-repeat="child in menu.menuItemsByName['ui.help.eventHandlers'].children | orderBy:['weight', 'name'] track by child.name">
+        <a ui-sref="{{child.name}}" ma-tr="{{child.menuTr}}"></a>
+    </li>
+</ul>
+
+</div>

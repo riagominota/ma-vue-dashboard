@@ -1,0 +1,128 @@
+<div class="ma-help-doc-container">
+    <h1 ma-tr="ui.dox.alarms"></h1>
+<p>
+  An <strong>Event</strong> is the occurrence of a defined condition within the system. Both system-defined and user-defined 
+  events are available. System-defined events include Data Source operation errors, user logins, and system 
+  startup/shutdown. User-defined events include Point Event Detectors (see "Event Detectors"), and events defined
+  in modules. There are also "audit events", which are raised when users make changes (additions, modifications, 
+  deletions) to runtime-affecting objects including Data Sources, Data Points, Point Event Detectors, Event Handlers,
+  and many events defined by modules.
+</p>
+<p>
+  Once an Event has been detected, it is acted upon by handlers. An <strong>Event Handler</strong> is a user-defined behavior
+  that is to be performed upon the raising of a particular event, such as sending an email or setting the value of a 
+  settable point.
+</p>
+<p>An <strong>Alarm</strong> is an Event with an alarm level. When your application has (an) unacknowledged alarm(s), you will see
+ a flag icon (<md-icon>flag</md-icon>) and an associated description (or count) near the center of the header area. 
+ The color of the icon(s) will indicate the severity of the alarm(s). The levels of alarm are:</p>
+<ul>
+  <li><md-icon class="ma-alarm-level-none ma-margin-right">flag</md-icon>None</li>
+  <li><md-icon class="ma-alarm-level-information ma-margin-right">flag</md-icon>Information</li>
+  <li><md-icon class="ma-alarm-level-important ma-margin-right">flag</md-icon>Important</li>
+  <li><md-icon class="ma-alarm-level-warning ma-margin-right">flag</md-icon>Warning</li>
+  <li><md-icon class="ma-alarm-level-urgent ma-margin-right">flag</md-icon>Urgent</li>
+  <li><md-icon class="ma-alarm-level-critical ma-margin-right">flag</md-icon>Critical</li>
+  <li><md-icon class="ma-alarm-level-life-safety ma-margin-right">flag</md-icon>Safety</li>
+</ul>
+<p>There are 2 additional alarm levels that can be used to reduce the visibility of an event instance.  The can be used if visual notification 
+or acknowledgement is unnecessary.  These levels are: </p>
+
+<ul>
+  <li><md-icon class="ma-alarm-level-do-not-log ma-margin-right">cancel</md-icon>Do Not Log</li>
+  <li><md-icon class="ma-alarm-level-ignore ma-margin-right">block</md-icon>Ignore</li>
+</ul>
+
+<p>The events system is <i>user based</i> meaning that only events pertaining to a given user can be seen by that user.  There are 
+4 ways an event can be used:</p>
+<ul>
+  <li><strong>User Event Cache</strong> is an in memory store of all events per logged in user</li>
+  <li><strong>Event database table</strong> is the persistent store for all logged event instances</li>
+  <li><strong>Event handling</strong> is the application of any handlers to the event instance</li>
+  <li><strong>User Event</strong> is a web-socket notification on the event to any valid users</li>
+</ul>
+
+<p>The following describes how an alarm level effects the event instance:</p>
+<table class="ma-ui-help-alarm-table">
+<tr>
+	<th>Level</th>
+	<th>User Event Cache</th>
+	<th>Database</th>
+	<th>Handled</th>
+	<th>User Event</th>
+</tr>
+<tr>
+	<td><md-icon class="ma-alarm-level-none ma-margin-right">flag</md-icon>None</td>
+	<td>&#x2713;</td>
+	<td>&#x2713;</td>
+	<td>&#x2713;</td>
+	<td>&#x2713;</td>
+</tr>
+<tr>
+	<td><md-icon class="ma-alarm-level-information ma-margin-right">flag</md-icon>Information</td>
+	<td>&#x2713;</td>
+	<td>&#x2713;</td>
+	<td>&#x2713;</td>
+	<td>&#x2713;</td>
+</tr>
+<tr>
+	<td><md-icon class="ma-alarm-level-important ma-margin-right">flag</md-icon>Important</td>
+	<td>&#x2713;</td>
+	<td>&#x2713;</td>
+	<td>&#x2713;</td>
+	<td>&#x2713;</td>
+</tr>
+<tr>
+	<td><md-icon class="ma-alarm-level-warning ma-margin-right">flag</md-icon>Warning</td>
+	<td>&#x2713;</td>
+	<td>&#x2713;</td>
+	<td>&#x2713;</td>
+	<td>&#x2713;</td>
+</tr>
+<tr>
+	<td><md-icon class="ma-alarm-level-urgent ma-margin-right">flag</md-icon>Urgent</td>
+	<td>&#x2713;</td>
+	<td>&#x2713;</td>
+	<td>&#x2713;</td>
+	<td>&#x2713;</td>
+</tr>
+<tr>
+	<td><md-icon class="ma-alarm-level-critical ma-margin-right">flag</md-icon>Critical</td>
+	<td>&#x2713;</td>
+	<td>&#x2713;</td>
+	<td>&#x2713;</td>
+	<td>&#x2713;</td>
+</tr>
+<tr>
+	<td><md-icon class="ma-alarm-level-life-safety ma-margin-right">flag</md-icon>Safety</td>
+	<td>&#x2713;</td>
+	<td>&#x2713;</td>
+	<td>&#x2713;</td>
+	<td>&#x2713;</td>
+</tr>
+<tr>
+	<td><md-icon class="ma-alarm-level-do-not-log ma-margin-right">cancel</md-icon>Do Not Log</td>
+	<td>&#x2717;</td>
+	<td>&#x2717;</td>
+	<td>&#x2713;</td>
+	<td>&#x2717;</td>
+</tr>
+<tr>
+	<td><md-icon class="ma-alarm-level-ignore ma-margin-right">block</md-icon>Ignore</td>
+	<td>&#x2717;</td>
+	<td>&#x2717;</td>
+	<td>&#x2717;</td>
+	<td>&#x2717;</td>
+</tr>
+<tr>
+	<td><strong>Audit</strong></td>
+	<td>&#x2717;</td>
+	<td>&#x2717;</td>
+	<td>&#x2713;</td>
+	<td>&#x2713;</td>
+</tr>
+</table>
+
+<p>*<strong>Audit</strong> events area a special type of event that are are not searchable in the alarms views.  In a future release a view will be provided to 
+reconstruct or revert your Mango configuration to a date and time.</p>
+</div>

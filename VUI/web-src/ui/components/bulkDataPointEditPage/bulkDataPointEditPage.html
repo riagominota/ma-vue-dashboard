@@ -1,0 +1,30 @@
+<div flex="noshrink" layout="row">
+    <ma-point-browser ng-show="$ctrl.browserOpen"
+        flex="20"
+        ng-model="$ctrl.watchList"
+        ng-change="$ctrl.watchListChanged()">
+    </ma-point-browser>
+
+    <div flex layout="column">
+        <md-card ng-if="$ctrl.watchList.hasParamOptions()" class="ma-watch-list-parameters">
+            <ma-watch-list-parameters watch-list="$ctrl.watchList"
+                ng-model="$ctrl.watchListParams"
+                class="md-padding" layout layout-wrap>
+            </ma-watch-list-parameters>
+        </md-card>
+        
+        <!--
+        <md-button class="md-icon-button" ng-click="$ctrl.browserOpen = !$ctrl.browserOpen">
+            <md-icon>{{$ctrl.browserOpen ? 'keyboard_arrow_left' : 'keyboard_arrow_right'}}</md-icon>
+            <md-tooltip>
+                <span ng-if="$ctrl.browserOpen" ma-tr="ui.app.hidePointBrowser"></span>
+                <span ng-if="!$ctrl.browserOpen" ma-tr="ui.app.showPointBrowser"></span>
+            </md-tooltip>
+        </md-button>
+         -->
+        
+        <md-card class="ma-bulk-data-point-edit">
+            <ma-bulk-data-point-editor watch-list="$ctrl.watchList" watch-list-params="$ctrl.watchListParams"></ma-bulk-data-point-editor>
+        </md-card>
+    </div>
+</div>

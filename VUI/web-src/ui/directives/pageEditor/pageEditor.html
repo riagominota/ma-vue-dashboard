@@ -1,0 +1,46 @@
+<ma-ui-page-editor-controls on-page-changed="$ctrl.page = $page">
+    <extra-controls layout>
+        <md-switch ma-form-exclude
+                   ng-model="$ctrl.showEditor"
+                   ma-tr-aria-label="ui.app.editor"
+                   ng-change="$ctrl.showPreview = $ctrl.showEditor ? $ctrl.showPreview : true">
+            <span ma-tr="ui.app.editor"></span>
+        </md-switch>
+        <md-switch ma-form-exclude
+                   ng-model="$ctrl.showPreview"
+                   ma-tr-aria-label="ui.app.preview"
+                   ng-change="$ctrl.showEditor = $ctrl.showPreview ? $ctrl.showEditor : true">
+            <span ma-tr="ui.app.preview"></span>
+        </md-switch>
+    </extra-controls>
+</ma-ui-page-editor-controls>
+
+<div layout="column" layout-gt-md="row">
+    <div flex="100" layout="column" ng-show="$ctrl.showEditor" style="min-width: 50%;">
+        <md-card flex layout="column">
+            <md-card-title flex="nogrow">
+              <md-card-title-text>
+                <span class="md-headline" ma-tr="ui.app.editor"></span>
+              </md-card-title-text>
+            </md-card-title>
+            <md-card-content flex>
+              <ma-ace-editor style="height: 400px; min-height: 100%;"
+                    ng-model="$ctrl.page.jsonData.markup" ng-model-options="{debounce: 1000}"
+                    ng-change="$ctrl.markupChanged()">
+              </ma-ace-editor>
+            </md-card-content>
+        </md-card>
+    </div>
+    <div flex="100" ng-if="$ctrl.showPreview" style="min-width: 50%;">
+        <md-card>
+            <md-card-title>
+              <md-card-title-text>
+                <span class="md-headline" ma-tr="ui.app.preview"></span>
+              </md-card-title-text>
+            </md-card-title>
+            <md-card-content>
+                <div ma-ui-live-preview="$ctrl.page.jsonData.markup"></div>
+            </md-card-content>
+        </md-card>
+    </div>
+</div>

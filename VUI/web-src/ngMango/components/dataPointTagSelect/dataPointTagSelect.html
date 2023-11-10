@@ -1,0 +1,39 @@
+<md-input-container md-no-float="$ctrl.noFloat" flex>
+    <label ng-if="!$ctrl.noFloat" ng-transclude="label"><span ma-tr="{{$ctrl.multiple ? 'ui.components.selectTagValues' : 'ui.components.selectTagValue'}}" ma-tr-args="[$ctrl.key]"></span></label>
+    <ma-drop-down-button>
+        <span ng-if="$ctrl.selectedText" ng-bind="$ctrl.selectedText"></span>
+        <span ng-if="!$ctrl.selectedText">
+            <span ng-repeat="value in ($ctrl.multiple ? $ctrl.selected : [$ctrl.selected])">
+                <em ng-if="value === null" ma-tr="ui.components.noTagKey" ma-tr-args="[$ctrl.key]"></em><!--
+                --><span ng-if="value !== null" class="ma-ellipsis" ng-bind="value"></span><!--
+                --><span ng-if="!$last">,</span>
+            </span>
+        </span>
+        <ma-drop-down auto-focus="::false" class="ma-full-screen-centered" ng-disabled="$ctrl.disabled"
+                      on-open="$ctrl.onOpen()" on-close="$ctrl.onClose()">
+            <ma-option-list ma-form-exclude ma-configure-input-container has-value="$ctrl.multiple ? $value.length : $value !== undefined"
+                            ng-model="$ctrl.selected" ng-change="$ctrl.inputChanged()"
+                            ng-multiple="$ctrl.multiple" ng-required="$ctrl.required" ng-disabled="$ctrl.disabled"
+                            items="$ctrl.doQuery($filter)" reload-items="$ctrl.reloadItems"
+                            filter-placeholder="{{$ctrl.filterPlaceholder}}"
+                            query-on-open="$ctrl.queryOnOpen">
+                <ma-option ng-if="$ctrl.editMode && $ctrl.addNewValue" ng-value="$ctrl.addNewValue">
+                    <md-icon ng-if="$multiple" class="ma-selected-show">check</md-icon>
+                    <span class="ma-ellipsis">
+                        <span ng-bind="$ctrl.addNewValue"></span> (<em ma-tr="ui.components.newTagValue"></em>)
+                    </span>
+                </ma-option>
+                <ma-option ng-if="!$ctrl.multiple && !$ctrl.required" ng-value="undefined"><em ma-tr="ui.app.any"></em></ma-option>
+                <ma-option ng-repeat="value in $items" ng-value="value" ng-disabled="$ctrl.disabledOptionsMap[value]">
+                    <md-icon ng-if="$multiple" class="ma-selected-show">check</md-icon>
+                    <em ng-if="value === null" ma-tr="ui.components.noTagKey" ma-tr-args="[$ctrl.key]"></em>
+                    <span ng-if="value !== null" class="ma-ellipsis" md-highlight-text="$filter" md-highlight-flags="ig">{{value}}</span>
+                </ma-option>
+            </ma-option-list>
+        </ma-drop-down>
+    </ma-drop-down-button>
+    <div ng-messages="$ctrl.ngModelCtrl.$error">
+        <div ng-message="required" ma-tr="validate.required"></div>
+        <div ng-message="validationMessage" ng-bind="$ctrl.ngModelCtrl.validationMessage"></div>
+    </div>
+</md-input-container>

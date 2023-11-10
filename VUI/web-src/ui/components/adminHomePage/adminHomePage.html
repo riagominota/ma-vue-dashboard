@@ -1,0 +1,357 @@
+<md-card class="ma-rounded-border">
+    <md-card-header layout layout-align="space-between center" class="ma-rounded-border">
+        <span layout layout-align="center center">
+            <i class="fa fa-server" aria-hidden="true"></i>
+            <span class="ma-card-title" ma-tr="ui.adminHome.serverStatus"></span>
+        </span>
+        <md-button ma-tr="ui.app.moreDetails" ui-sref="ui.settings.systemStatus"></md-button>
+    </md-card-header>
+    <div layout="column" layout-gt-sm="row" layout-wrap class="ma-server-status-contents">
+        <md-card-content layout-xs="column" layout-sm="row" layout="column" layout-align="space-between stretch"
+            layout-align-gt-sm="start start" class="ma-server-details">
+            <div>
+                <div ng-bind="$ctrl.maUiServerInfo.serverTimezone"></div>
+                <div class="ma-ui-home-page-sub-text" ma-tr="users.timezone"></div>
+            </div>
+            <div>
+                <ma-get-point-value point-xid="internal_mango_uptime_hrs" point="uptimePoint"></ma-get-point-value>
+                <div ng-bind="(uptimePoint.value * 3600000) | maDuration:'humanize'"></div>
+                <div class="ma-ui-home-page-sub-text" ma-tr="ui.adminHome.uptime">
+                </div>
+            </div>
+            <div>
+                <div ng-bind="$ctrl.maUiServerInfo.coreLicenseType"></div>
+                <div class="ma-ui-home-page-sub-text" ma-tr="modules.licenseType"></div>
+            </div>
+        </md-card-content>
+        <md-card-content layout-xs="column" layout="row" layout-align="space-between stretch"
+            layout-align-gt-sm="space-between center" flex ng-class="{'ma-server-details': $ctrl.$mdMedia('xs')}">
+            <div layout="column" layout-align="center center" layout-align-xs="center start">
+                <div ng-include="$ctrl.sqlSvg"></div>
+                <div class="ma-text-centered">
+                    <ma-point-value point-xid="internal_mango_sql_db_size"></ma-point-value>
+                    <span class="ma-ui-home-page-label" ma-tr="ui.adminHome.diskSpace.used"></span>
+                </div>
+                <div class="ma-text-centered">
+                    <ma-point-value point-xid="internal_mango_sql_db_usable_space"></ma-point-value>
+                    <span class="ma-ui-home-page-label" ma-tr="ui.adminHome.diskSpace.available"></span>
+                </div>
+                <div class="ma-ui-home-page-sub-text"
+                    ma-tr="systemInfo.databaseSizeDesc"></div>
+            </div>
+            <div layout="column" layout-align="center center" layout-align-xs="center start">
+                <div ng-include="$ctrl.noSqlSvg"></div>
+                <div class="ma-text-centered">
+                    <ma-point-value point-xid="internal_mango_no_sql_db_size"></ma-point-value>
+                    <span class="ma-ui-home-page-label" ma-tr="ui.adminHome.diskSpace.used"></span>
+                </div>
+                <div class="ma-text-centered">
+                    <ma-point-value point-xid="internal_mango_no_sql_db_usable_space"></ma-point-value>
+                    <span class="ma-ui-home-page-label" ma-tr="ui.adminHome.diskSpace.available"></span>
+                </div>
+                <div class="ma-ui-home-page-sub-text"
+                    ma-tr="systemSettings.noSqlDatabaseSize"></div>
+            </div>
+            <div layout="column" layout-align="center center" layout-align-xs="center start">
+                <div ng-include="$ctrl.diskspaceSvg"></div>
+                <div class="ma-text-centered">
+                    <ma-point-value point-xid="internal_mango_disk_used_space"></ma-point-value>
+                    <span class="ma-ui-home-page-label" ma-tr="ui.adminHome.diskSpace.used"></span>
+                </div>
+                <div class="ma-text-centered">
+                    <ma-point-value point-xid="internal_mango_disk_usable_space"></ma-point-value>
+                    <span class="ma-ui-home-page-label" ma-tr="ui.adminHome.diskSpace.available"></span>
+                </div>
+                <div class="ma-ui-home-page-sub-text"
+                    ma-tr="ui.adminHome.diskSpace"></div>
+            </div>
+        </md-card-content>
+        <md-card-content layout-xs="column" layout="row" layout-align="space-between stretch"
+            layout-align-gt-sm="space-between center" flex flex-md="100" ng-class="{'ma-server-details': $ctrl.$mdMedia('xs'), 'ma-server-details-graph': $ctrl.$mdMedia('gt-xs')}">
+            <div layout="column" layout-align="center center" layout-align-xs="center start">
+                <div ng-include="$ctrl.ramSvg"></div>
+                <div class="ma-text-centered">
+                    <ma-point-value point-xid="internal_jvm_used_memory"></ma-point-value>
+                    <span class="ma-ui-home-page-label" ma-tr="ui.adminHome.memory.used"></span>
+                </div>
+                <div class="ma-text-centered">
+                    <ma-point-value point-xid="internal_jvm_free_memory"></ma-point-value>
+                    <span class="ma-ui-home-page-label" ma-tr="ui.adminHome.memory.available"></span>
+                </div>
+                <div class="ma-ui-home-page-sub-text"
+                    ma-tr="ui.adminHome.memory"></div>
+            </div>
+            <div layout="column" layout-align="center center" layout-align-xs="center start">
+                <div ng-include="$ctrl.cpuloadSvg"></div>
+                <div class="ma-text-centered">
+                    <ma-point-value point-xid="internal_cpu_process_load"></ma-point-value>
+                    <span class="ma-ui-home-page-label" ma-tr="ui.adminHome.cpuLoad.process"></span>
+                </div>
+                <div class="ma-text-centered">
+                    <ma-point-value point-xid="internal_cpu_system_load"></ma-point-value>
+                    <span class="ma-ui-home-page-label" ma-tr="ui.adminHome.cpuLoad.system"></span>
+                </div>
+                <div class="ma-ui-home-page-sub-text"
+                    ma-tr="ui.adminHome.cpuLoad"></div>
+            </div>
+            <div class="ma-ui-home-page-graph">
+                <ma-get-point-value point-xid="internal_cpu_system_load" point="cpuLoad"></ma-get-point-value>
+                <ma-get-point-value point-xid="internal_jvm_used_memory" point="usedRam"></ma-get-point-value>
+                <ma-point-values points="[cpuLoad, usedRam]" values="$ctrl.sparkChartValues" from="$ctrl.maUiDateBar.from"
+                    to="$ctrl.maUiDateBar.to" rollup="{{$ctrl.maUiDateBar.rollupType}}" rendered="::true"
+                    rollup-interval="{{$ctrl.maUiDateBar.rollupIntervals}} {{$ctrl.maUiDateBar.rollupIntervalPeriod}}">
+                </ma-point-values>
+                <ma-serial-chart class="ma-sparkline-chart" points="[cpuLoad, usedRam]"
+                    values="$ctrl.sparkChartValues" balloon="::true" point-title="$point.name"
+                    series-1-color="#6effa3" series-2-color="#49abd0" series-2-axis="right"
+                    options="{autoMargins: false, categoryAxis:{labelsEnabled:false, gridAlpha: 0, axisAlpha: 0}}">
+                </ma-serial-chart>
+            </div>
+        </md-card-content>
+    </div>
+</md-card>
+
+<!-- missing -->
+<div layout="column" layout-gt-md="row" layout-align-gt-md="space-between center" layout-align="space-between stretch">
+    <div layout layout-xs="column" flex>
+        <md-card class="ma-info-card ma-hover" flex ng-if="$ctrl.maUser.current.hasRole('superadmin')">
+            <md-button class="ma-info-card-button" md-no-ink ui-sref="ui.settings.dataSources">
+                <div class="ma-button-icon">
+                    <md-icon>device_hub</md-icon>
+                </div>
+                <div class="ma-content">
+                    <ma-point-value class="ma-button-value" point-xid="internal_mango_num_data_sources"></ma-point-value>
+                    <div class="ma-value-label" ma-tr="ui.app.dataSources"></div>
+                </div>
+                <div class="ma-add">
+                    <md-icon>add_circle_outline</md-icon>
+                </div>
+                <div class="ma-watermark">
+                    <md-icon>device_hub</md-icon>
+                </div>
+            </md-button>
+        </md-card>
+        <md-card class="ma-info-card ma-hover" flex>
+            <md-button class="ma-info-card-button" md-no-ink ui-sref="ui.dataPointDetails">
+                <div class="ma-button-icon">
+                    <md-icon>timeline</md-icon>
+                </div>
+                <div class="ma-content">
+                    <ma-point-value class="ma-button-value" point-xid="internal_mango_num_data_points"></ma-point-value>
+                    <div class="ma-value-label" ma-tr="ui.app.dataPoints"></div>
+                </div>
+                <div class="ma-add">
+                    <md-icon>add_circle_outline</md-icon>
+                </div>
+                <div class="ma-watermark">
+                    <md-icon>timeline</md-icon>
+                </div>
+            </md-button>
+        </md-card>
+    </div>
+    <div layout layout-xs="column" flex>
+        <md-card class="ma-info-card ma-hover" flex>
+            <md-button class="ma-info-card-button" md-no-ink ui-sref="ui.watchList">
+                <div class="ma-button-icon">
+                    <md-icon>remove_red_eye</md-icon>
+                </div>
+                <div class="ma-content">
+                    <ma-point-value class="ma-button-value" point-xid="internal_mango_num_watchlists"></ma-point-value>
+                    <div class="ma-value-label" ma-tr="ui.app.watchLists"></div>
+                </div>
+                <div class="ma-add">
+                    <md-icon>add_circle_outline</md-icon>
+                </div>
+                <div class="ma-watermark">
+                    <md-icon>remove_red_eye</md-icon>
+                </div>
+            </md-button>
+        </md-card>
+        <md-card class="ma-info-card ma-hover" flex ng-if="$ctrl.maUser.current.hasRole('superadmin')">
+            <md-button class="ma-info-card-button" md-no-ink ui-sref="ui.settings.publishers">
+                <div class="ma-button-icon">
+                    <md-icon>publish</md-icon>
+                </div>
+                <div class="ma-content">
+                    <ma-point-value class="ma-button-value" point-xid="internal_mango_num_publishers"></ma-point-value>
+                    <div class="ma-value-label" ma-tr="ui.app.publishers"></div>
+                </div>
+                <div class="ma-add">
+                    <md-icon>add_circle_outline</md-icon>
+                </div>
+                <div class="ma-watermark">
+                    <md-icon>publish</md-icon>
+                </div>
+            </md-button>
+        </md-card>
+    </div>
+</div>
+
+<!-- missing -->
+<div layout="column" layout-gt-md="row" layout-align-gt-xs="space-between stretch">
+    <div layout layout-xs="column" flex>
+        <md-card class="ma-detailed-info-card" flex ng-if="$ctrl.maUser.current.hasRole('superadmin')">
+            <div class="ma-watermark ma-watermark-big">
+                <md-icon>settings</md-icon>
+            </div>
+            <md-card-header layout layout-align="space-between center">
+                <span layout layout-align="center center">
+                    <md-icon>settings</md-icon>
+                    <span ma-tr="ui.app.system"></span>
+                </span>
+            </md-card-header>
+            <div flex layout="column" layout-align="space-between stretch">
+                <md-button md-no-ink class="ma-info-card-button ma-hover" ui-sref="ui.settings.modules">
+                    <div class="ma-content">
+                        <ma-point-value class="ma-button-value" point-xid="internal_mango_num_updates_available"></ma-point-value>
+                        <div class="ma-value-label" ma-tr="ui.app.modules"></div>
+                    </div>
+                </md-button>
+                <md-button md-no-ink class="ma-info-card-button ma-hover" ui-sref="{{::$ctrl.hasDashboardDesigner ? 'ui.settings.dashboardDesigner' : 'ui.settings.editPages'}}">
+                    <div class="ma-content">
+                        <div class="ma-button-value" ng-bind="$ctrl.pageCount"></div>
+                        <div class="ma-value-label" ma-tr="ui.app.customPages"></div>
+                    </div>
+                </md-button>
+                <md-card-content layout="column" layout-align="center stretch">
+                    <md-button class="ma-redirect md-raised md-primary" ui-sref="ui.settings.system" layout="row">
+                        <div ma-tr="ui.app.systemSettings" flex></div>
+                        <md-icon>subdirectory_arrow_right</md-icon>
+                    </md-button>
+                    <md-button class="ma-redirect md-raised md-primary" ui-sref="ui.settings.importExport" layout="row">
+                        <div ma-tr="header.emport" flex></div>
+                        <md-icon>subdirectory_arrow_right</md-icon>
+                    </md-button>
+                </md-card-content>
+                <!-- <div class="ma-watermark ma-big">
+                    <md-icon>settings</md-icon>
+                </div> -->
+            </div>
+        </md-card>
+        <!-- Missing roles and permisions link -->
+        <md-card class="ma-detailed-info-card" flex ng-if="$ctrl.maUser.current.hasRole('superadmin')">
+            <div class="ma-watermark ma-watermark-big">
+                <md-icon>people</md-icon>
+            </div>
+            <md-card-header layout layout-align="space-between center">
+                <span layout layout-align="center center">
+                    <md-icon>people</md-icon>
+                    <span ma-tr="ui.app.users"></span>
+                </span>
+                <md-button ma-tr="ui.app.viewAll" ui-sref="ui.settings.users"></md-button>
+            </md-card-header>
+            <div flex layout="column" layout-align="space-between stretch">
+                <md-button md-no-ink class="ma-info-card-button ma-hover" ui-sref="ui.settings.users">
+                    <div class="ma-content">
+                        <ma-point-value class="ma-button-value" point-xid="internal_mango_num_users"></ma-point-value>
+                        <div class="ma-value-label" ma-tr="ui.app.users"></div>
+                    </div>
+                </md-button>
+                <md-button md-no-ink class="ma-info-card-button ma-hover">
+                    <div class="ma-content">
+                        <ma-point-value class="ma-button-value" point-xid="internal_mango_num_active_user_sessions"></ma-point-value>
+                        <div class="ma-value-label" ma-tr="ui.app.activeSessions"></div>
+                    </div>
+                </md-button>
+                <md-card-content layout="column" layout-align="center stretch">
+                    <md-button class="ma-redirect md-raised md-primary" layout="row" ui-sref="ui.settings.permissions">
+                        <div ma-tr="header.systemPermissions" flex></div>
+                        <md-icon>subdirectory_arrow_right</md-icon>
+                    </md-button>
+                    <md-button class="ma-redirect md-raised md-primary" layout="row" ui-sref="ui.settings.autoLoginSettings">
+                        <div ma-tr="ui.app.autoLoginSettings" flex></div>
+                        <md-icon>subdirectory_arrow_right</md-icon>
+                    </md-button>
+                </md-card-content>
+            </div>
+        </md-card>
+    </div>
+    <div layout layout-xs="column" flex>
+        <!-- missing section 1 & 2 data point & missing section 3 full card-->
+        <md-card class="ma-detailed-info-card" flex ng-if="$ctrl.maUser.current.hasRole('superadmin')">
+            <div class="ma-watermark ma-watermark-big">
+                <md-icon>alarm</md-icon>
+            </div>
+            <md-card-header layout layout-align="space-between center">
+                <span layout layout-align="center center">
+                    <md-icon>alarm</md-icon>
+                    <span ma-tr="ui.app.events"></span>
+                </span>
+                <md-button ma-tr="ui.app.viewAll" ui-sref="ui.events"></md-button>
+            </md-card-header>
+            <div flex layout="column" layout-align="space-between stretch">
+                <md-button md-no-ink class="ma-info-card-button ma-hover" ui-sref="ui.events({eventType: 'DATA_POINT'})">
+                    <div class="ma-content">
+                        <div class="ma-button-value" ng-bind="$ctrl.eventCounts.dataPoint"></div>
+                        <div class="ma-value-label" ma-tr="ui.app.dataPointEvents"></div>
+                    </div>
+                </md-button>
+                <md-button md-no-ink class="ma-info-card-button ma-hover" ui-sref="ui.events({eventType: 'SYSTEM'})">
+                    <div class="ma-content">
+                        <div class="ma-button-value" ng-bind="$ctrl.eventCounts.system"></div>
+                        <div class="ma-value-label" ma-tr="ui.app.systemEvents"></div>
+                    </div>
+                </md-button>
+                <md-card-content layout="column" layout-align="center stretch">
+                    <md-button class="ma-redirect md-raised md-primary" layout="row">
+                        <ma-point-value point-xid="internal_mango_num_event_detectors"></ma-point-value>
+                        <div ma-tr="ui.app.eventDetectors"></div>
+                    </md-button>
+                    <md-button class="ma-redirect md-raised md-primary" layout="row" ui-sref="ui.settings.eventHandlers">
+                        <ma-point-value point-xid="internal_mango_num_event_handlers"></ma-point-value>
+                        <div ma-tr="ui.app.eventHandlers" flex></div>
+                        <md-icon>subdirectory_arrow_right</md-icon>
+                    </md-button>
+                </md-card-content>
+            </div>
+        </md-card>
+        <!-- missing section 1, test section 2 -->
+        <md-card class="ma-detailed-info-card" flex ng-if="$ctrl.maUser.current.hasRole('superadmin')">
+            <div class="ma-watermark ma-watermark-big">
+                <md-icon>book</md-icon>
+            </div>
+            <md-card-header layout layout-align="space-between center">
+                <span layout layout-align="center center">
+                    <md-icon>book</md-icon>
+                    <span ma-tr="ui.app.reports"></span>
+                </span>
+                <md-button ma-tr="ui.app.viewAll" ui-sref="ui.settings.excelReports"></md-button>
+            </md-card-header>
+            <div flex layout="column" layout-align="space-between stretch">
+                <md-button md-no-ink class="ma-info-card-button ma-hover">
+                    <div class="ma-content">
+                        <ma-point-value class="ma-button-value" point-xid="internal_mango_num_mailing_lists"></ma-point-value>
+                        <div class="ma-value-label" ma-tr="ui.app.mailingLists"></div>
+                    </div>
+                </md-button>
+                <md-button md-no-ink class="ma-info-card-button ma-hover" ui-sref="ui.settings.excelReports">
+                    <div class="ma-content">
+                        <ma-get-point-value point-xid="internal_mango_num_excel_report_templates" point="excelReportTemplates"></ma-get-point-value>
+                        <div class="ma-button-value" ng-bind="excelReportTemplates.value ?  excelReportTemplates.value : 0"></div>
+                        <div class="ma-value-label" ma-tr="ui.app.excelReports"></div>
+                    </div>
+                </md-button>
+                <md-card-content flex></md-card-content>
+            </div>
+        </md-card>
+    </div>
+</div>
+
+<md-card ng-if="::$ctrl.utilityMenuItems.length" class="ma-rounded-border">
+    <md-card-header layout layout-align="space-between center">
+        <span layout layout-align="center center">
+            <i class="fa fa-cogs" aria-hidden="true"></i>
+            <span ma-tr="ui.app.utilities"></span>
+        </span>
+    </md-card-header>
+    <md-card-content layout layout-wrap>
+        <div flex="100" flex-gt-xs="50" flex-gt-md="33" flex-gt-lg="20"
+             ng-repeat="item in ::$ctrl.utilityMenuItems track by item.name"
+             ng-if="$ctrl.maUser.current.hasPermission(item.permission)">
+            <md-button class="md-raised md-primary ma-redirect" layout="row" ui-sref="{{item.name}}">
+                <div ma-tr="{{item.menuTr}}" flex></div>
+                <md-icon>{{item.menuIcon}}</md-icon>
+            </md-button>
+        </div>
+    </md-card-content>
+</md-card>

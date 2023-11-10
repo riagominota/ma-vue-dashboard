@@ -1,0 +1,19 @@
+<md-dialog aria-label="Set {{$ctrl.point.name}} Value">
+    <form>
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>{{ 'ui.app.set' | maTr }} {{$ctrl.point.deviceName}} - {{$ctrl.point.name}}'s {{ 'ui.app.value' | maTr }}
+                </h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="$ctrl.cancel()">
+                    <md-icon>close</md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content>
+            <div class="md-dialog-content">
+                <ma-set-point-value point="$ctrl.point" step="$ctrl.step" on-set="$ctrl.cancel()"></ma-set-point-value>
+            </div>
+        </md-dialog-content>
+    </form>
+</md-dialog>

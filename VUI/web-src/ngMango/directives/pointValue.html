@@ -1,0 +1,90 @@
+<label ng-if="$ctrl.label" class="ma-point-value-label"><span ng-bind="$ctrl.label"></span>:&nbsp;</label>
+<span ng-if="$ctrl.resolvedDisplayType !== 'image'" ng-style="$ctrl.valueStyle" ng-class="$ctrl.valueClasses" class="ma-point-value-value">
+    <span ng-if="$ctrl.noValue" ma-tr="ui.app.noValue"></span>
+    <span ng-if="$ctrl.emptyValue" ma-tr="ui.app.emptyValue"></span>
+    <span ng-if="!$ctrl.noValue && !$ctrl.emptyValue" ng-bind="$ctrl.displayValue"></span>
+</span>
+<img ng-if="$ctrl.resolvedDisplayType === 'image'" ng-style="$ctrl.valueStyle" class="ma-point-value-value" ng-src="{{$ctrl.point.value}}" alt="Image point value">
+<span ng-if="$ctrl.point && !$ctrl.point.enabled" class="ma-disabled-text" ma-tr="common.disabled"></span>
+
+<span ng-if="$ctrl.point.unreliable" class="ma-point-value-status-icon">
+    <md-icon class="md-warn">feedback</md-icon>
+    <md-tooltip md-direction="top">
+        <span ma-tr="ui.components.pointUnreliable"></span>
+    </md-tooltip>
+</span>
+
+<span ng-if="$ctrl.disableEventPopup && !$ctrl.hideEventIndicator && $ctrl.activeEvents().length" class="ma-point-value-status-icon">
+    <md-icon class="md-warn">warning</md-icon>
+    <md-tooltip md-direction="top">
+        <span ma-tr="ui.components.hasActiveEvent"></span>
+    </md-tooltip>
+</span>
+
+<md-button class="md-warn md-icon-button event-indicator" ng-click="$ctrl.showStatsDialog($event, $ctrl.point, 'events')"
+           md-no-ink="true" ng-if="!$ctrl.disableEventPopup && !$ctrl.hideEventIndicator && $ctrl.activeEvents().length">
+    <md-tooltip md-direction="top">
+        <span ma-tr="ui.components.showEvents"></span>
+    </md-tooltip>
+    <md-icon>warning</md-icon>
+</md-button>
+
+<md-fab-speed-dial ng-if="$ctrl.enablePopup && $ctrl.enablePopup !== 'hide'" md-direction="{{$ctrl.enablePopup}}" md-open="$ctrl.isOpen"
+                       class="md-scale" ng-cloak
+                       flex-order="{{::$ctrl.enablePopup === 'left' || $ctrl.enablePopup === 'up' ? -1 : 1}}">
+    <md-fab-trigger>
+    </md-fab-trigger>
+
+    <md-fab-actions id="popup-btns">
+        <md-button ng-if="::$ctrl.showStatsDialog && ($ctrl.quickInfo || $ctrl.quickInfo == null)" class="md-icon-button md-primary md-raised"
+                   md-no-ink="true" ng-click="$ctrl.showStatsDialog($event, $ctrl.point, 'chart')">
+            <md-tooltip md-direction="{{::$ctrl.enablePopup === 'up' || $ctrl.enablePopup === 'down' ? 'right' : 'top'}}">
+                <span ma-tr="ui.components.showQuickInfo"></span>
+            </md-tooltip>
+            <md-icon>launch</md-icon>
+        </md-button>
+        <md-button ng-if="::$ctrl.$state && ($ctrl.dataPointDetails == null || $ctrl.dataPointDetails)" class="md-icon-button md-primary md-raised"
+                 md-no-ink="true" ui-sref="ui.dataPointDetails({pointXid: $ctrl.point.xid})">
+            <md-tooltip md-direction="{{::$ctrl.enablePopup === 'up' || $ctrl.enablePopup === 'down' ? 'right' : 'top'}}">
+                <span ma-tr="ui.app.dataPointDetails"></span>
+            </md-tooltip>
+            <md-icon>timeline</md-icon>
+        </md-button>
+        <md-button class="md-icon-button md-primary md-raised" ng-if="::$ctrl.point.pointLocator.settable" md-no-ink="true"
+                   ng-click="$ctrl.showSetPointDialog($event, $ctrl.point, {step: $ctrl.step})">
+            <md-tooltip md-direction="{{::$ctrl.enablePopup === 'up' || $ctrl.enablePopup === 'down' ? 'right' : 'top'}}">
+                <span ma-tr="ui.components.setPoint"></span>
+            </md-tooltip>
+            <md-icon>edit</md-icon>
+        </md-button>
+        <md-button ng-if="::$ctrl.showStatsDialog && !($ctrl.quickInfo || $ctrl.quickInfo == null)" class="md-icon-button md-primary md-raised"
+                   md-no-ink="true" ng-click="$ctrl.showStatsDialog($event, $ctrl.point, 'stats')">
+            <md-tooltip md-direction="{{::$ctrl.enablePopup === 'up' || $ctrl.enablePopup === 'down' ? 'right' : 'top'}}">
+                <span ma-tr="ui.components.showStats"></span>
+            </md-tooltip>
+            <md-icon>format_list_numbered</md-icon>
+        </md-button>
+        <md-button ng-if="::$ctrl.showStatsDialog && !($ctrl.quickInfo || $ctrl.quickInfo == null)" class="md-icon-button md-primary md-raised"
+                   md-no-ink="true" ng-click="$ctrl.showStatsDialog($event, $ctrl.point, 'chart')">
+            <md-tooltip md-direction="{{::$ctrl.enablePopup === 'up' || $ctrl.enablePopup === 'down' ? 'right' : 'top'}}">
+                <span ma-tr="ui.components.showChart"></span>
+            </md-tooltip>
+            <md-icon>show_chart</md-icon>
+        </md-button>
+        <md-button ng-if="::$ctrl.showStatsDialog && !($ctrl.quickInfo || $ctrl.quickInfo == null)" class="md-icon-button md-primary md-raised"
+                   md-no-ink="true" ng-click="$ctrl.showStatsDialog($event, $ctrl.point, 'table')">
+            <md-tooltip md-direction="{{::$ctrl.enablePopup === 'up' || $ctrl.enablePopup === 'down' ? 'right' : 'top'}}">
+                <span ma-tr="ui.components.showTable"></span>
+            </md-tooltip>
+            <md-icon>grid_on</md-icon>
+        </md-button>
+        <md-button ng-if="::$ctrl.showStatsDialog && !($ctrl.quickInfo || $ctrl.quickInfo == null)" class="md-icon-button md-primary md-raised"
+                    md-no-ink="true" ng-click="$ctrl.showStatsDialog($event, $ctrl.point, 'events')">
+            <md-tooltip
+                md-direction="{{::$ctrl.enablePopup === 'up' || $ctrl.enablePopup === 'down' ? 'right' : 'top'}}">
+                <span ma-tr="ui.components.showEvents"></span>
+            </md-tooltip>
+            <md-icon>alarm</md-icon>
+        </md-button>
+    </md-fab-actions>
+</md-fab-speed-dial>

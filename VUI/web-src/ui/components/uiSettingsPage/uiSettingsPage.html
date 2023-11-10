@@ -1,0 +1,475 @@
+<form name="$ctrl.form">
+    <div>
+        <md-button class="md-raised md-primary" ng-click="$ctrl.save($event)" ng-disabled="$ctrl.promise || !$ctrl.store || $ctrl.form.$pristine"><md-icon>save</md-icon> <span ma-tr="common.save"></span></md-button>
+        <md-button class="md-raised" ng-click="$ctrl.revert($event)" ng-disabled="$ctrl.promise || !$ctrl.store || $ctrl.form.$pristine"><md-icon>undo</md-icon> <span ma-tr="ui.app.revert"></span></md-button>
+        <md-button class="md-raised md-warn" ng-click="$ctrl.resetToDefault($event)" ng-disabled="$ctrl.promise || !$ctrl.store"><md-icon>delete</md-icon> <span ma-tr="ui.app.resetToDefault"></span></md-button>
+    </div>
+
+    <md-card>
+        <md-card-title>
+            <md-card-title-text>
+                <span class="md-headline" ma-tr="ui.app.chooseTheme"></span>
+            </md-card-title-text>
+        </md-card-title>
+        <md-card-content>
+            <div>
+                <md-checkbox name="usePreferredColorScheme" ng-model="$ctrl.data.usePreferredColorScheme">
+                    <span ma-tr="ui.app.usePreferredColorScheme"></span>
+                    <md-tooltip><span ma-tr="ui.app.usePreferredColorSchemeHint"></span></md-tooltip>
+                </md-checkbox>
+            </div>
+
+            <div layout layout-wrap>
+                <div flex="100" flex-gt-md="50" layout layout-align="start center">
+                    <md-button class="ma-preview-theme md-icon-button ma-small-button ma-no-margin" ng-click="$ctrl.previewTheme($ctrl.data.defaultTheme)" ng-disabled="$ctrl.uiSettings.activeTheme === $ctrl.data.defaultTheme">
+                        <md-icon>visibility</md-icon>
+                        <md-tooltip><span ma-tr=ui.app.previewTheme></span></md-tooltip>
+                    </md-button>
+                    <md-button class="md-icon-button ma-small-button ma-no-margin" ng-click="$ctrl.editTheme($ctrl.data.defaultTheme)" ng-disabled="$ctrl.defaultThemes[$ctrl.data.defaultTheme] && $ctrl.data.defaultTheme !== 'userTheme'">
+                        <md-icon>edit</md-icon>
+                        <md-tooltip><span ma-tr="ui.app.editTheme"></span></md-tooltip>
+                    </md-button>
+                    <md-input-container flex>
+                        <label ma-tr="ui.app.defaultColorScheme"></label>
+                        <md-select name="defaultTheme" ng-model="$ctrl.data.defaultTheme" class="ma-theme-select" ng-change="$ctrl.checkThemes(); $ctrl.previewTheme($ctrl.data.defaultTheme)">
+                            <md-option class="ma-theme-select-option" ng-repeat="theme in $ctrl.themes track by theme.name" ng-value="theme.name">
+                                <span ng-bind="theme.name" flex></span>
+                                <ma-theme-preview theme="{{theme.name}}"></ma-theme-preview>
+                            </md-option>
+                        </md-select>
+                    </md-input-container>
+                </div>
+
+                <md-input-container flex="100" flex-gt-md="50">
+                    <label ma-tr="ui.app.logoSource"></label>
+                    <input name="logoSrc" ng-model="$ctrl.data.logoSrc" ma-empty-input ng-model-options="{debounce: 500}">
+                    <md-button class="ma-input-button md-icon-button"
+                    		ma-choose-file="$ctrl.data.logoSrc = $url; $ctrl.form.logoSrc.$setDirty()"
+                    		ma-choose-file-selected="$ctrl.data.logoSrc"
+                    		ma-choose-file-options="{mimeTypes: 'image/*', extensions: 'png,jpg,jpeg,svg', preview:true, store:'public'}">
+    				  	<md-icon>attachment</md-icon>
+    				  	<md-tooltip ma-tr="common.chooseFile"></md-tooltip>
+    				</md-button>
+                </md-input-container>
+
+                 <div flex="100" flex-gt-md="50" layout layout-align="start center" ng-if-start="$ctrl.data.usePreferredColorScheme">
+                    <md-button class="ma-preview-theme md-icon-button ma-small-button ma-no-margin" ng-click="$ctrl.previewTheme($ctrl.data.alternateTheme)" ng-disabled="$ctrl.uiSettings.activeTheme === $ctrl.data.alternateTheme">
+                        <md-icon>visibility</md-icon>
+                        <md-tooltip><span ma-tr=ui.app.previewTheme></span></md-tooltip>
+                    </md-button>
+                    <md-button class="md-icon-button ma-small-button ma-no-margin" ng-click="$ctrl.editTheme($ctrl.data.alternateTheme)" ng-disabled="$ctrl.defaultThemes[$ctrl.data.alternateTheme] && $ctrl.data.alternateTheme !== 'userTheme'">
+                        <md-icon>edit</md-icon>
+                        <md-tooltip><span ma-tr="ui.app.editTheme"></span></md-tooltip>
+                    </md-button>
+                    <md-input-container flex>
+                        <label ma-tr="{{$ctrl.data.themes[$ctrl.data.defaultTheme].dark ? 'ui.app.alternateThemeLight' : 'ui.app.alternateThemeDark'}}"></label>
+                        <md-select name="alternateTheme" ng-model="$ctrl.data.alternateTheme" class="ma-theme-select" ng-change="$ctrl.checkThemes(); $ctrl.previewTheme($ctrl.data.alternateTheme)">
+                            <md-option class="ma-theme-select-option" ng-repeat="theme in $ctrl.themes | filter:{dark: !$ctrl.data.themes[$ctrl.data.defaultTheme].dark} track by theme.name" ng-value="theme.name">
+                                <span ng-bind="theme.name" flex></span>
+                                <ma-theme-preview theme="{{theme.name}}"></ma-theme-preview>
+                            </md-option>
+                        </md-select>
+                    </md-input-container>
+                </div>
+
+                <md-input-container flex="100" flex-gt-md="50" ng-if-end>
+                    <label ma-tr="{{$ctrl.data.themes[$ctrl.data.defaultTheme].dark ? 'ui.app.alternateLogoLight' : 'ui.app.alternateLogoDark'}}"></label>
+                    <input name="alternateLogo" ng-model="$ctrl.data.alternateLogo" ma-empty-input ng-model-options="{debounce: 500}">
+                    <md-button class="ma-input-button md-icon-button"
+                            ma-choose-file="$ctrl.data.alternateLogo = $url; $ctrl.form.alternateLogo.$setDirty()"
+                            ma-choose-file-selected="$ctrl.data.alternateLogo"
+                            ma-choose-file-options="{mimeTypes: 'image/*', extensions: 'png,jpg,jpeg,svg', preview:true, store:'public'}">
+                        <md-icon>attachment</md-icon>
+                        <md-tooltip ma-tr="common.chooseFile"></md-tooltip>
+                    </md-button>
+                </md-input-container>
+            </div>
+            <div>
+                <md-button class="md-raised" ng-click="$ctrl.addNewTheme($event)"><span ma-tr="ui.app.addTheme"></span></md-button>
+            </div>
+        </md-card-content>
+    </md-card>
+
+    <md-card>
+        <md-card-title>
+            <md-card-title-text>
+                <span class="md-headline" ma-tr="ui.settings.fonts"></span>
+            </md-card-title-text>
+        </md-card-title>
+        <md-card-content>
+            <div layout="row" layout-align="space-between center" layout-wrap class="ma-inputs-container">
+                <md-input-container flex="100" flex-gt-md="50">
+                    <label ma-tr="ui.settings.fonts.default"></label>
+                    <input ng-model="$ctrl.data.fonts.default" ma-empty-input>
+                </md-input-container>
+                <md-input-container flex="100" flex-gt-md="50">
+                    <label ma-tr="ui.settings.fonts.heading"></label>
+                    <input ng-model="$ctrl.data.fonts.heading" ma-empty-input>
+                </md-input-container>
+                <md-input-container flex="100" flex-gt-md="50">
+                    <label ma-tr="ui.settings.fonts.paragraph"></label>
+                    <input ng-model="$ctrl.data.fonts.paragraph" ma-empty-input>
+                </md-input-container>
+                <md-input-container flex="100" flex-gt-md="50">
+                    <label ma-tr="ui.settings.fonts.code"></label>
+                    <input ng-model="$ctrl.data.fonts.code" ma-empty-input>
+                </md-input-container>
+            </div>
+        </md-card-content>
+    </md-card>
+
+    <md-card>
+        <md-card-title>
+            <md-card-title-text>
+                <span class="md-headline" ma-tr="ui.app.codeColoring"></span>
+            </md-card-title-text>
+        </md-card-title>
+        <md-card-content>
+            <div layout="column">
+                <div layout>
+            	<md-input-container flex="100" flex-gt-md="33">
+                    <label ma-tr="ui.app.codeColoring"></label>
+                    <md-select ng-model="$ctrl.data.codeTheme">
+                        <md-option value="ambiance">Ambiance</md-option>
+                        <md-option value="chaos">Chaos</md-option>
+                        <md-option value="chrome">Chrome</md-option>
+                        <md-option value="clouds_midnight">Clouds Midnight</md-option>
+                        <md-option value="clouds">Clouds</md-option>
+                        <md-option value="cobalt">Cobalt</md-option>
+                        <md-option value="crimson_editor">Crimson Editor</md-option>
+                        <md-option value="dawn">Dawn</md-option>
+                        <md-option value="dreamweaver">Dreamweaver</md-option>
+                        <md-option value="ecliplse">Eclipse</md-option>
+                        <md-option value="github">Github</md-option>
+                        <md-option value="idle_fingers">Idle Fingers</md-option>
+                        <md-option value="iplastic">iPlastic</md-option>
+                        <md-option value="katzenmilch">Katzenmilch</md-option>
+                        <md-option value="kr_theme">Kr Theme</md-option>
+                        <md-option value="kuroir">Kuroir</md-option>
+                        <md-option value="merbivore_soft">Merbivore Soft</md-option>
+                        <md-option value="merbivore">Merbivore</md-option>
+                        <md-option value="mono_industrial">Mono Industrial</md-option>
+                        <md-option value="monokai">Monokai</md-option>
+                        <md-option value="pastel_on_dark">Pastel On Dark</md-option>
+                        <md-option value="solarized_dark">Solarized Dark</md-option>
+                        <md-option value="solarized_light">Solarized Light</md-option>
+                        <md-option value="sqlserver">Sql Server</md-option>
+                        <md-option value="terminal">Terminal</md-option>
+                        <md-option value="textmate">TextMate</md-option>
+                        <md-option value="tomorrow_night_blue">Tomorrow Night Blue</md-option>
+                        <md-option value="tomorrow_night_bright">Tomorrow Night Bright</md-option>
+                        <md-option value="tomorrow_night_eighties">Tomorrow Night Eighties</md-option>
+                        <md-option value="tomorrow_night">Tomorrow Night</md-option>
+                        <md-option value="tomorrow">Tomorrow</md-option>
+                        <md-option value="twilight">Twilight</md-option>
+                        <md-option value="vibrant_ink">Vibrant Ink</md-option>
+                        <md-option value="xcode">xCode</md-option>
+                    </md-select>
+                </md-input-container>
+                </div>
+                <ma-ace-editor style="height: 60px; min-height:60px;"
+                    ng-model="codePreview" ng-init="codePreview='&lt;h1&gt;Code Coloring Preview&lt;/h1&gt;
+        &lt;ma-calc input=&quot;points | filter:{name:&lsquo;Real Power &lsquo; + phase + &lsquo; (kW)&lsquo;} | maFirst&quot; output=&quot;power&quot;&gt;&lt;/ma-calc&gt;'" theme="{{$ctrl.data.codeTheme}}"></ma-ace-editor>
+            </div>
+        </md-card-content>
+    </md-card>
+
+    <md-card>
+        <md-card-title>
+            <md-card-title-text>
+                <span class="md-headline" ma-tr="ui.app.eventAudioFiles"></span>
+            </md-card-title-text>
+        </md-card-title>
+        <md-card-content>
+            <md-table-container>
+                <table md-table>
+                    <thead md-head>
+                        <tr md-row>
+                            <th md-column ma-tr="ui.app.eventLevel"></th>
+                            <th md-column ma-tr="ui.app.audioFile"></th>
+                            <th md-column ma-tr="ui.app.visualNotification"></th>
+                            <th md-column ma-tr="ui.app.readMessageAloud"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr md-row ng-repeat="level in $ctrl.eventLevels track by level.key">
+                            <td md-cell>
+                                <md-icon class="ma-alarm-flag ma-margin-right" ng-class="level.materialClasses">{{level.materialIcon}}</md-icon>
+                                <span ma-tr="{{level.translation}}"></span>
+                            </td>
+                            <td md-cell>
+                                <md-input-container md-no-float>
+                                    <input name="eventAudioFiles.{{level.key}}" ng-model="$ctrl.data.eventAudioFiles[level.key]" placeholder="{{'ui.app.audioFile' | maTr}}">
+                                    <md-button class="ma-input-button md-icon-button"
+                                            ma-choose-file="$ctrl.data.eventAudioFiles[level.key] = $url; $ctrl.form['eventAudioFiles[level.key]'].$setDirty()"
+                                            ma-choose-file-selected="$ctrl.data.eventAudioFiles[level.key]"
+                                            ma-choose-file-options="{mimeTypes: 'audio/*'}">
+                                        <md-icon>attachment</md-icon>
+                                        <md-tooltip ma-tr="common.chooseFile"></md-tooltip>
+                                    </md-button>
+                                </md-input-container>
+                            </td>
+                            <td md-cell>
+                                <md-switch ng-model="$ctrl.data.eventNotify[level.key]"></md-switch>
+                            </td>
+                            <td md-cell>
+                                <md-switch ng-model="$ctrl.data.eventReadAloud[level.key]"></md-switch>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </md-table-container>
+        </md-card-content>
+    </md-card>
+
+    <md-card>
+        <md-card-title>
+            <md-card-title-text>
+                <span class="md-headline" ma-tr="ui.app.miscSettings"></span>
+            </md-card-title-text>
+        </md-card-title>
+        <md-card-content>
+            <div layout="row" layout-align="space-between center" layout-wrap class="ma-inputs-container">
+                <md-input-container flex="100" flex-gt-md="50">
+                    <label ma-tr="ui.app.googleAnalyticsG4MeasurementId"></label>
+                    <input ng-model="$ctrl.data.googleAnalyticsG4MeasurementId" ma-empty-input>
+                </md-input-container>
+                <md-input-container flex="100" flex-gt-md="50">
+                    <label ma-tr="ui.app.googleAnalyticsPropertyId"></label>
+                    <input ng-model="$ctrl.data.googleAnalyticsPropertyId" ma-empty-input>
+                </md-input-container>
+                <md-input-container flex="100" flex-gt-md="50">
+                    <label ma-tr="ui.app.mapsApiKey"></label>
+                    <input ng-model="$ctrl.data.googleMapsApiKey" ma-empty-input>
+                </md-input-container>
+                <md-input-container flex="100" flex-gt-md="50">
+                    <label ma-tr="ui.app.mapboxAccessToken"></label>
+                    <input ng-model="$ctrl.data.mapboxAccessToken" ma-empty-input>
+                </md-input-container>
+                <md-input-container flex="100" flex-gt-md="50">
+                    <label ma-tr="ui.app.userModuleUrl"></label>
+                    <input name="userModule" ng-model="$ctrl.data.userModule" ma-empty-input>
+
+                    <md-button class="ma-input-button md-icon-button"
+                    		ma-choose-file="$ctrl.data.userModule = $url; $ctrl.form.userModule.$setDirty()"
+                    		ma-choose-file-selected="$ctrl.data.userModule"
+                    		ma-choose-file-options="{mimeTypes: 'application/javascript', extensions: 'js', store:'public'}">
+    				  	<md-icon>attachment</md-icon>
+    				  	<md-tooltip ma-tr="common.chooseFile"></md-tooltip>
+    				</md-button>
+                </md-input-container>
+                <md-input-container flex="100" flex-gt-md="50">
+                    <label ma-tr="ui.app.userCssUrl"></label>
+                    <input name="userCss" ng-model="$ctrl.data.userCss" ma-empty-input>
+
+                    <md-button class="ma-input-button md-icon-button"
+                    		ma-choose-file="$ctrl.data.userCss = $url; $ctrl.form.userCss.$setDirty()"
+                    		ma-choose-file-selected="$ctrl.data.userCss"
+                    		ma-choose-file-options="{mimeTypes: 'text/css', extensions: 'css', store:'public'}">
+    				  	<md-icon>attachment</md-icon>
+    				  	<md-tooltip ma-tr="common.chooseFile"></md-tooltip>
+    				</md-button>
+                </md-input-container>
+                <md-input-container flex="100" flex-gt-md="50">
+                    <label ma-tr="ui.app.pointValuesLimit"></label>
+                    <input ng-model="$ctrl.data.pointValuesLimit" type="number" min="100" max="100000" step="1">
+                </md-input-container>
+                <md-input-container flex="100" flex-gt-md="50">
+                    <label ma-tr="ui.app.showUnacknowlegedEventsIcon"></label>
+                    <md-switch ng-model="$ctrl.data.showUnacknowlegedEventsIcon"></md-switch>
+                </md-input-container>
+            </div>
+        </md-card-content>
+    </md-card>
+
+    <md-card>
+        <md-card-title>
+            <md-card-title-text>
+                <span class="md-headline" ma-tr="ui.app.timeoutSettings"></span>
+            </md-card-title-text>
+        </md-card-title>
+        <md-card-content>
+            <div layout="row" layout-align="space-between center" layout-wrap class="ma-inputs-container">
+                <md-input-container flex="100" flex-gt-md="50">
+                    <label ma-tr="ui.app.timeouts.xhr"></label>
+                    <input ng-model="$ctrl.data.timeouts.xhr" type="number" min="0" step="1"
+                        ma-format-value="$Math.floor($value / 1000)" ma-parse-value="$value * 1000">
+                </md-input-container>
+                <md-input-container flex="100" flex-gt-md="50">
+                    <label ma-tr="ui.app.timeouts.pointValues"></label>
+                    <input ng-model="$ctrl.data.timeouts.pointValues" type="number" min="0" step="1"
+                        ma-format-value="$Math.floor($value / 1000)" ma-parse-value="$value * 1000">
+                </md-input-container>
+                <md-input-container flex="100" flex-gt-md="50">
+                    <label ma-tr="ui.app.timeouts.websocket"></label>
+                    <input ng-model="$ctrl.data.timeouts.websocket" type="number" min="0" step="1"
+                        ma-format-value="$Math.floor($value / 1000)" ma-parse-value="$value * 1000">
+                </md-input-container>
+                <md-input-container flex="100" flex-gt-md="50">
+                    <label ma-tr="ui.app.timeouts.websocketRequest"></label>
+                    <input ng-model="$ctrl.data.timeouts.websocketRequest" type="number" min="0" step="1"
+                        ma-format-value="$Math.floor($value / 1000)" ma-parse-value="$value * 1000">
+                </md-input-container>
+                <md-input-container flex="100" flex-gt-md="50">
+                    <label ma-tr="ui.app.timeouts.moduleUpload"></label>
+                    <input ng-model="$ctrl.data.timeouts.moduleUpload" type="number" min="0" step="1"
+                           ma-format-value="$Math.floor($value / 1000)" ma-parse-value="$value * 1000">
+                </md-input-container>
+                <md-input-container flex="100" flex-gt-md="50">
+                    <label ma-tr="ui.app.timeouts.watchdogStatusDelay"></label>
+                    <input ng-model="$ctrl.data.timeouts.watchdogStatusDelay" type="number" min="0" step="1"
+                           ma-format-value="$Math.floor($value / 1000)" ma-parse-value="$value * 1000">
+                </md-input-container>
+            </div>
+        </md-card-content>
+    </md-card>
+
+    <md-card>
+        <md-card-title>
+            <md-card-title-text>
+                <span class="md-headline" ma-tr="ui.settings.dateFormats"></span>
+            </md-card-title-text>
+        </md-card-title>
+        <md-card-content>
+            <p class="ma-default-font">
+                <span ma-tr="ui.settings.dateFormatsHelp"></span>
+                <a href="https://momentjs.com/docs/#/displaying/format/" target="_blank" ma-tr="ui.settings.dateFormatsHelpLink"></a>
+            </p>
+            <div layout layout-align="space-between center" layout-wrap class="ma-inputs-container ma-date-formats-container">
+                <md-input-container flex="100" flex-gt-md="50" ng-repeat="dateFormat in $ctrl.dateFormats track by dateFormat">
+                    <label ma-tr="ui.settings.dateFormats.{{dateFormat}}"></label>
+                    <input name="dateFormats.{{dateFormat}}" ng-model="$ctrl.data.dateFormats[dateFormat]" required>
+                    <div class="ma-hint" ma-tr="ui.settings.dateFormatsExample" ma-tr-args="[($ctrl.initDate | maDate:$ctrl.data.dateFormats[dateFormat])]"></div>
+                    <div ng-messages="$ctrl.form['dateFormats.' + dateFormat].$error">
+                        <div ng-message="required" ma-tr="validate.required"></div>
+                    </div>
+                </md-input-container>
+            </div>
+        </md-card-content>
+    </md-card>
+
+    <md-card>
+        <md-card-title>
+            <md-card-title-text>
+                <span class="md-headline" ma-tr="ui.app.pwaSettings"></span>
+            </md-card-title-text>
+        </md-card-title>
+        <md-card-content>
+            <p class="ma-default-font">
+                <span ma-tr="ui.app.pwaSettings.information"></span><br>
+            </p>
+            <div layout layout-align="space-between center" layout-wrap class="ma-inputs-container">
+                <md-input-container flex="100" flex-gt-md="50">
+                    <label ma-tr="ui.app.pwaSettings.automaticName"></label>
+                    <md-select ng-model="$ctrl.data.pwaAutomaticName">
+                        <md-option ng-value="::null" ma-tr="ui.app.pwaSettings.automaticName.disable"></md-option>
+                        <md-option ng-value="::'AUTO'" ma-tr="ui.app.pwaSettings.automaticName.auto"></md-option>
+                        <md-option ng-value="::'INSTANCE_DESCRIPTION'" ma-tr="ui.app.pwaSettings.automaticName.instanceDescription"></md-option>
+                        <md-option ng-value="::'HOST'" ma-tr="ui.app.pwaSettings.automaticName.host"></md-option>
+                    </md-select>
+                </md-input-container>
+                <div flex="100" flex-gt-md="50">
+                    <md-checkbox class="ma-input-container-height" ng-model="$ctrl.data.pwaUseThemeColors" ng-change="$ctrl.data.addThemeColorMetaTags()"><span ma-tr="ui.app.pwaSettings.useThemeColors"></span></md-checkbox>
+                </div>
+                <md-input-container ng-if-start="!$ctrl.data.pwaAutomaticName" flex="100" flex-gt-md="50">
+                    <label ma-tr="ui.app.pwaSettings.name"></label>
+                    <input ng-model="$ctrl.data.pwaManifest.name">
+                </md-input-container>
+                <md-input-container ng-if-end flex="100" flex-gt-md="50">
+                    <label ma-tr="ui.app.pwaSettings.shortName"></label>
+                    <input ng-model="$ctrl.data.pwaManifest.short_name">
+                </md-input-container>
+                <div ng-if-start="!$ctrl.data.pwaUseThemeColors" flex="100" flex-gt-md="50" layout layout-align="start center">
+                    <ma-color-picker ng-model="$ctrl.data.pwaManifest.theme_color" ng-change="$ctrl.data.addThemeColorMetaTags()"></ma-color-picker>
+                    <md-input-container flex>
+                        <label ma-tr="ui.app.pwaSettings.themeColor"></label>
+                        <input ng-model="$ctrl.data.pwaManifest.theme_color" ng-change="$ctrl.data.addThemeColorMetaTags()">
+                    </md-input-container>
+                </div>
+                <div ng-if-end flex="100" flex-gt-md="50" layout layout-align="start center">
+                    <ma-color-picker ng-model="$ctrl.data.pwaManifest.background_color" ng-change="$ctrl.data.addThemeColorMetaTags()"></ma-color-picker>
+                    <md-input-container flex>
+                        <label ma-tr="ui.app.pwaSettings.backgroundColor"></label>
+                        <input ng-model="$ctrl.data.pwaManifest.background_color" ng-change="$ctrl.data.addThemeColorMetaTags()">
+                    </md-input-container>
+                </div>
+            </div>
+            <p class="ma-no-margin-top ma-default-font">
+                <span ma-tr="ui.app.pwaSettings.warning" md-colors="::{color: 'warn'}"></span>
+            </p>
+        </md-card-content>
+    </md-card>
+
+    <md-card>
+        <md-card-title>
+            <md-card-title-text>
+                <span class="md-headline" ma-tr="ui.app.autoLoginSettingsAll"></span>
+            </md-card-title-text>
+        </md-card-title>
+        <md-card-content>
+            <div class="md-padding ma-margin-bottom" md-colors="::{background: 'warn'}">
+                <div><strong ma-tr="ui.app.autoLoginWarning"></strong></div>
+                <div ma-tr="ui.app.autoLoginNoteUI"></div>
+            </div>
+            <div layout layout-align="start center" layout-wrap>
+                <md-input-container flex="100" flex-gt-md="50">
+                    <label ma-tr="login.userId"></label>
+                    <input ng-model="$ctrl.data.autoLoginUsername" ma-empty-input>
+                </md-input-container>
+                <md-input-container flex="100" flex-gt-md="50">
+                    <label ma-tr="login.password"></label>
+                    <input ng-model="$ctrl.data.autoLoginPassword" ma-empty-input>
+                </md-input-container>
+            </div>
+        	<div><em ma-tr="ui.app.autoLoginTestManually"></em></div>
+        </md-card-content>
+    </md-card>
+
+    <div>
+        <md-button class="md-raised md-primary" ng-click="$ctrl.save($event)" ng-disabled="$ctrl.promise || !$ctrl.store || $ctrl.form.$pristine"><md-icon>save</md-icon> <span ma-tr="common.save"></span></md-button>
+        <md-button class="md-raised" ng-click="$ctrl.revert($event)" ng-disabled="$ctrl.promise || !$ctrl.store || $ctrl.form.$pristine"><md-icon>undo</md-icon> <span ma-tr="ui.app.revert"></span></md-button>
+        <md-button class="md-raised md-warn" ng-click="$ctrl.resetToDefault($event)" ng-disabled="$ctrl.promise || !$ctrl.store"><md-icon>delete</md-icon> <span ma-tr="ui.app.resetToDefault"></span></md-button>
+    </div>
+
+    <ma-dialog show-dialog="$ctrl.theme" on-close="$ctrl.themeEditorClosed()" lazy-compile="true" destroy-dialog="true">
+        <md-dialog flex="100" flex-gt-sm="80" flex-gt-md="80" flex-gt-lg="60" flex-gt-xl="60">
+            <md-toolbar>
+                <div class="md-toolbar-tools">
+                    <h2>
+                        <span ma-tr="ui.app.editThemeX" ma-tr-args="[$ctrl.themeName]"></span>
+                    </h2>
+                    <span flex></span>
+                    <md-switch class="ma-text-left" ng-model="showAllHues">
+                        <span ma-tr="ui.app.showAllHues" class="ma-standard-text"></span>
+                    </md-switch>
+                </div>
+            </md-toolbar>
+
+            <md-dialog-content class="md-padding" ng-form="theme" ma-get-ctrl="$ctrl.form.$addControl($ngForm)">
+                <div>
+                    <md-checkbox ng-model="$ctrl.theme.dark" ng-change="$ctrl.previewTheme()">
+                        <span ma-tr="ui.app.darkTheme"></span>
+                    </md-checkbox>
+                </div>
+
+                <div layout layout-wrap>
+                    <div flex="50" flex-gt-md="25" layout="column" layout-align="start stretch" ng-repeat="paletteName in ::$ctrl.maTheming.getPaletteNames()">
+                        <!--<h4 layout="column" layout-align="start center" ma-tr="ui.app.{{paletteName}}Palette"></h4>-->
+                        <md-input-container>
+                            <label ma-tr="ui.app.{{paletteName}}Palette"></label>
+                            <md-select ng-model="$ctrl.theme[paletteName + 'Palette']" ng-change="$ctrl.previewTheme()" required>
+                                <md-option ng-repeat="(name, palette) in ::$ctrl.maTheming.getPalettes()" ng-value="name" ng-bind="name"></md-option>
+                            </md-select>
+                        </md-input-container>
+                        <ma-color-preview theme="{{$ctrl.themeName}}" palette="{{paletteName}}"></ma-color-preview>
+                        <ma-color-preview ng-if="showAllHues" theme="{{$ctrl.themeName}}" palette="{{paletteName}}" all-hues="true"></ma-color-preview>
+                    </div>
+                </div>
+            </md-dialog-content>
+            <md-dialog-actions>
+                <md-button class="md-raised md-warn" ng-click="$ctrl.removeTheme(); $dialog.cancel()" ng-disabled="$ctrl.defaultThemes[$ctrl.themeName]"><span ma-tr="common.delete"></span></md-button>
+                <md-button class="md-raised" ng-click="$dialog.hide()"><span ma-tr="common.ok"></span></md-button>
+            </md-dialog-actions>
+        </md-dialog>
+    </ma-dialog>
+</form>

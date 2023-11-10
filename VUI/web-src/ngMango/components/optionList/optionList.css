@@ -1,0 +1,23 @@
+ma-option-list {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+ma-option-list > .ma-option-list-container {
+    overflow-y: auto;
+}
+
+ma-option-list > .ma-option-list-no-items,
+ma-option-list > .ma-option-list-load-more,
+ma-option-list > .ma-option-list-loading-text {
+    padding: 8px;
+    font-style: italic;
+    display: flex;
+    justify-content: center;
+}
+
+ma-option-list > .ma-option-list-load-more:focus {
+    outline: none;
+    background-color: rgba(var(--ma-background-300-value), 0.2);
+}

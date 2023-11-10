@@ -1,0 +1,46 @@
+ma-tree-view,
+ma-tree-view-item {
+    display: block;
+}
+
+ma-tree-view.ma-show-root-label ma-tree-view-item .ma-tree-view-children {
+	margin-left: 30px;
+}
+
+ma-tree-view-item .ma-tree-view-children .ma-tree-view-children {
+	margin-left: 30px;
+}
+
+ma-tree-view-item md-checkbox {
+	margin: 4px 0;
+}
+
+ma-tree-view-item .ma-tree-view-open-icon {
+	transition: transform 0.3s ease-in-out;
+    user-select: none;
+}
+
+ma-tree-view-item.ma-tree-view-open > .ma-tree-view-label .ma-tree-view-open-icon {
+	transform: rotate(-180deg);
+}
+
+ma-tree-view-item .ma-tree-view-loading,
+ma-tree-view-item .ma-tree-view-load-more {
+	font-style: italic;
+}
+
+ma-tree-view-item .ma-tree-view-label {
+	display: inline-block;
+}
+
+ma-tree-view-item .ma-tree-view-label md-checkbox {
+	margin: 0 8px 0 2px;
+}
+
+ma-tree-view-item .ma-tree-view-label md-checkbox .md-label {
+	margin: 0;
+}
+
+ma-tree-view-item .ma-tree-view-item {
+	margin: 4px 0;
+}

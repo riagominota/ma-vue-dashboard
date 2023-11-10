@@ -1,0 +1,22 @@
+<md-input-container>
+    <label ng-bind="labelText"></label>
+    <ma-drop-down-button>
+        <span ng-bind="dsList.selected.name"></span>
+        <ma-drop-down auto-focus="::false" class="ma-full-screen-centered" ng-disabled="disabled">
+            <ma-option-list ma-form-exclude ng-disabled="disabled"
+                            ng-model="dsList.selected" ng-change="onChange()" ng-required="required"
+                            items="queryDataSources($filter)" ma-configure-input-container>
+                <ma-option ng-value="null" ng-if="allowClear && !$filter">
+                    <em class="ma-ellipsis" ma-tr="ui.app.clear"></em>
+                </ma-option>
+                <ma-option ng-repeat="item in $items track by item.xid" ng-value="item">
+                    <span class="ma-ellipsis" md-highlight-text="$filter" md-highlight-flags="ig">{{item.name}}</span>
+                </ma-option>
+            </ma-option-list>
+        </ma-drop-down>
+    </ma-drop-down-button>
+    <div ng-messages="ngModelCtrl.$error">
+        <div ng-message="required" ma-tr="validate.required"></div>
+        <div ng-message="validationMessage" ng-bind="ngModelCtrl.validationMessage"></div>
+    </div>
+</md-input-container>

@@ -1,0 +1,153 @@
+<div layout="column" layout-gt-sm="row" layout-align="start end" class="ma-events-table-controls">
+    <div layout="row" layout-align="start end" class="ma-events-table-csv-buttons">
+        <md-button ng-if-start="!$ctrl.hideCsvButton" class="md-icon-button ma-small-button" ng-href="{{$ctrl.csvUrl}}" download="events.csv">
+            <md-icon>file_download</md-icon>
+            <md-tooltip><span ma-tr="ui.app.downloadCSV"></span></md-tooltip>
+        </md-button>
+        <md-button ng-if-end ng-if="!$ctrl.fixedCsvLimit" class="md-icon-button ma-small-button" ng-click="$ctrl.configureCsv = {targetEvent: $event}">
+            <md-icon>settings</md-icon>
+            <md-tooltip><span ma-tr="ui.app.configureCSVDownload"></span></md-tooltip>
+        </md-button>
+    </div>
+    <md-table-pagination flex class="ma-pagination-underline" md-limit="$ctrl.limit"
+            md-limit-options="[5, 10, 15, 25, 50, 100, 200]" md-page="$ctrl.page" md-total="{{$ctrl.total}}"
+            md-page-select md-on-paginate="$ctrl.onPaginateBound">
+    </md-table-pagination>
+    <md-button ng-if="!$ctrl.hideAckButton" class="md-raised md-primary md-hue-2" ng-click="$ctrl.acknowledgeAll()" ng-disabled="!$ctrl.totalUnAcknowledged">
+        <md-icon>done_all</md-icon>
+        <span ma-tr="ui.app.acknowledgeXEvents" ma-tr-args="[$ctrl.totalUnAcknowledged]"></span>
+    </md-button>
+</div>
+<md-table-container>
+    <table md-table md-progress="$ctrl.tableQueryPromise">
+        <thead md-head md-order="$ctrl.sort" md-on-reorder="$ctrl.onReorderBound">
+            <tr md-row>
+                <th md-column md-order-by="alarmLevel" ma-tr="ui.app.alarmLvl" class="ma-narrow-column ma-text-centered"></th>
+                <th md-column md-order-by="activeTimestamp" ma-tr="ui.app.time" class="ma-medium-column"></th>
+                <th ng-repeat="tagKey in $ctrl.tagColumns" md-column md-order-by="tags.{{tagKey}}"
+                    class="ma-medium-column" ma-tr="ui.app.tag" ma-tr-args="::[tagKey]"></th>
+                <th md-column md-order-by="message" ma-tr="ui.app.msg" class="ma-message-column"></th>
+                <th md-column md-order-by="activeRtn" ma-tr="ui.app.activeStatus" class="ma-medium-column"></th>
+                <th md-column ma-tr="ui.app.duration" class="ma-medium-column"></th>
+                <th ng-if="!$ctrl.hideEventHandlers" md-column ma-tr="ui.app.eventHandlers" class="ma-narrow-column ma-text-centered"></th>
+                <th md-column md-order-by="acknowledgedTimestamp" ma-tr="ui.app.acknowledge" class="ma-narrow-column ma-text-centered"></th>
+            </tr>
+        </thead>
+        <tbody md-body ng-hide="$ctrl.total">
+            <tr md-row>
+                <td md-cell colspan="1000" style="height:60px; font-weight: bold;" ma-tr="ui.app.noEventsFound"></td>
+            </tr>
+        </tbody>
+        <tbody md-body ng-show="$ctrl.total">
+            <tr md-row ng-repeat="event in $ctrl.events track by event.id">
+                <td md-cell class="ma-narrow-column ma-text-centered">
+                    <md-icon class="ma-alarm-flag" ng-class="event.alarmLevel" ng-click="$ctrl.addNote($event, event)">
+                        flag
+                        <md-tooltip md-delay="250" md-direction="right" md-autohide>
+                            <!--<span ma-tr="ui.app.addUserNote"></span> - -->
+                            <span ng-bind="event.alarmLevel"></span> -
+                            (<span ma-tr="ui.app.eventId"></span>: {{event.id}})
+                        </md-tooltip>
+                    </md-icon>
+                </td>
+
+                <td md-cell class="ma-medium-column" ng-bind="$ctrl.formatDate(event.activeTimestamp)"></td>
+
+                <td ng-repeat="tagKey in $ctrl.tagColumns" md-cell class="ma-medium-column"
+                    ng-bind="event.eventType.reference1.tags[tagKey]"></td>
+
+                <td md-cell class="ma-message-column" ng-class="{'ma-truncated' : !toggle}" ng-click="toggle = !toggle"
+                        ng-init="linkInfo = $ctrl.linkInfo[event.eventType.eventType] || $ctrl.linkInfo[event.eventType.systemEventType]">
+                    <a class="ma-no-border" ng-if="linkInfo && (!$ctrl.hideLink || $ctrl.hideLink !== event.eventType.eventType && $ctrl.hideLink !== event.eventType.systemEventType)"
+                            ng-init="linkParams = linkInfo.stateParams(event)" ui-state="linkInfo.stateName" ui-state-params="linkParams">
+                        <md-icon md-colors="::{color: 'accent-hue-2'}">
+                            {{linkInfo.icon}}
+                            <md-tooltip md-delay="250" md-direction="right" md-autohide><span ma-tr="{{linkInfo.tooltipTranslation}}"></span></md-tooltip>
+                        </md-icon>
+                    </a>
+
+                    <md-icon ng-if="event.comments.length">
+                        speaker_notes
+                        <md-tooltip md-delay="250" md-direction="right" md-autohide ma-tr="ui.app.hasNotes"></md-tooltip>
+                    </md-icon>
+
+                    <span ng-bind="event.message"></span>
+
+                    <div ng-if="toggle" class="ma-user-comments">
+                        <div ng-repeat="userComment in event.comments track by userComment.xid">
+                            <em>{{userComment.comment}}</em> ({{userComment.username}} &mdash; {{$ctrl.formatDate(userComment.timestamp)}})
+                        </div>
+                    </div>
+                </td>
+
+                <!-- Status column -->
+                <td md-cell ng-switch="event.rtnApplicable">
+                    <span ng-switch-when="true">
+                        <span ng-if="event.active" md-colors="::{color: 'accent-hue-2'}" class="ma-active-status" ma-tr="common.active"></span>
+                        <span ng-if="event.rtnTimestamp != null">
+                            <span ng-bind="event.rtnMessage"></span> &mdash;
+                            <span ng-bind="$ctrl.formatDate(event.rtnTimestamp)"></span>
+                        </span>
+                    </span>
+                    <span ng-switch-default>
+                        <span ma-tr="common.nortn"></span>
+                    </span>
+                </td>
+
+                <!-- Duration column -->
+                <td md-cell class="ma-medium-column" ng-switch="event.rtnApplicable">
+                    <span ng-switch-when="true" ng-bind="$ctrl.formatDuration(event.duration)"></span>
+                    <span ng-switch-default ma-tr="ui.app.instantaneous"></span>
+                </td>
+
+                <td ng-if="!$ctrl.hideEventHandlers" md-cell class="ma-narrow-column ma-text-centered" ng-init="handlerCount = $ctrl.handlersForType.count(event.eventType); handlerLink = $ctrl.linkInfo.EVENT_HANDLERS_LINK; handlerParams = handlerLink.stateParams(event);">
+                    <a ui-state="handlerLink.stateName" ui-state-params="handlerParams" class="ma-no-border">
+                        <md-icon>
+                            {{handlerCount > 0 ? 'assignment_turned_in' : 'link'}}
+                            <md-tooltip><span ma-tr="ui.app.xEventHandlers" ma-tr-args="[handlerCount]"></span></md-tooltip>
+                        </md-icon>
+                    </a>
+                </td>
+
+                <td md-cell class="ma-narrow-column ma-text-centered">
+                    <md-icon class="ma-acknowledged-checkbox" ng-click="$ctrl.acknowledgeEvent(event);" ng-if="!$ctrl.hideAckButton && !event.acknowledged">
+                        done
+                        <md-tooltip ma-tr="events.acknowledge"></md-tooltip>
+                    </md-icon>
+                    <md-icon class="ma-acknowledged-checkbox ma-acknowledged" ng-if="event.acknowledged">
+                        check_circle
+                        <md-tooltip>
+                            <span ng-if="event.alternateAckSource" ng-bind="event.alternateAckSource"></span>
+                            <span ng-if="!event.alternateAckSource" ma-tr="ui.app.acknowledgedByAt" ma-tr-args="[event.acknowledgedByUsername, (event.acknowledgedTimestamp | maDate:'shortDateTime')]"></span>
+                        </md-tooltip>
+                    </md-icon>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</md-table-container>
+
+<ma-dialog show-dialog="$ctrl.configureCsv" ng-if="!$ctrl.fixedCsvLimit">
+    <md-dialog>
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>
+                    <span ma-tr="ui.app.configureCSVDownload"></span>
+                </h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="$dialog.cancel()">
+                    <md-icon>close</md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content>
+            <div class="md-padding" layout>
+                <md-input-container flex>
+                    <label ma-tr="ui.app.csvLimit"></label>
+                    <input type="number" ng-model="$ctrl.csvLimit" ng-model-options="{debounce: 1000}"
+                           ng-change="$ctrl.saveCsvLimit()" ma-form-exclude>
+                </md-input-container>
+            </div>
+        </md-dialog-content>
+    </md-dialog>
+</ma-dialog>

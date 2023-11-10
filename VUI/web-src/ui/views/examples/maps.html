@@ -1,0 +1,47 @@
+<h1>Maps</h1>
+
+<p>
+    Maps can be added to your custom pages using the <code>&lt;ma-tile-map&gt;</code> component.
+    The example shown here demonstrates how you can use markers to toggle popup windows that contain other components, change
+    marker icons, make markers draggable, and add additional tile layers.
+</p>
+
+<h2>Notes</h2>
+<ul>
+    <li>
+    The <code>&lt;ma-tile-map&gt;</code> component uses map tiles from the <a href="https://www.openstreetmap.org/" target="_blank">OpenStreetMap</a> community by default.
+    <a href="https://www.mapbox.com/" target="_blank">Mapbox</a> provides an alternate source of high quality imagery (including satellite).
+    Mapbox is a paid service but includes a free tier.
+    If you enter your Mapbox access token on the <a ui-sref="ui.settings.uiSettings">UI Settings</a> page you will be
+    able to use tiles from the Mapbox API automatically.
+    </li>
+    <li>
+        Please read the <a ui-sref="ui.docs.ngMango.maTileMap">API documentation</a> for <code>&lt;ma-tile-map&gt;</code>
+    </li>
+</ul>
+
+<ma-ui-dual-pane-editor>
+<p ng-init="marker = [-12.90, -38.41]">The blue marker is at {{marker[0]}}, {{marker[1]}}</p>
+
+<ma-tile-map center="{lat: -12.95, lng: -38.45}" zoom="12">
+    <!-- This tile layer is included by default -->
+    <ma-tile-map-tile-layer tile-layer-id="openstreetmap" name="OpenStreetMap"></ma-tile-map-tile-layer>
+    <!-- You need a Mapbox access token to use this layer -->
+    <ma-tile-map-tile-layer tile-layer-id="mapbox.satellite" name="Mapbox Satellite"></ma-tile-map-tile-layer>
+    <!-- Add a layer from ArcGIS using a URL -->
+    <ma-tile-map-tile-layer name="NatGeo" url="https://services.arcgisonline.com/arcgis/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}"></ma-tile-map-tile-layer>
+
+    <ma-tile-map-marker coordinates="marker" tooltip="This is the tooltip" on-drag="marker[0] = $coordinates.lat; marker[1] = $coordinates.lng" options="{draggable: true}">
+        <!-- This is the popup contents -->
+        <div>The map center is {{$map.getCenter()}}</div>
+        <div>The zoom level is {{$map.getZoom()}}</div>
+        <div><a ng-click="$marker.closePopup()">Close popup</a></div>
+    </ma-tile-map-marker>
+
+    <!-- Use the leaflet object to define some icons, note the divs are not rendered anywhere -->
+    <div ng-init="onIcon = $leaflet.icon({iconUrl: '/ui/img/ligthbulb_on.png', iconSize: [48,48], iconAnchor: [24,48], popupAnchor: [0,-48]})"></div>
+    <div ng-init="offIcon = $leaflet.icon({iconUrl: '/ui/img/ligthbulb_off.png', iconSize: [48,48], iconAnchor: [24,48], popupAnchor: [0,-48]})"></div>
+
+    <ma-tile-map-marker coordinates="[-12.90, -38.52]" on-click="lightOn = !lightOn" icon="lightOn ? onIcon : offIcon"></ma-tile-map-marker>
+</ma-tile-map>
+</ma-ui-dual-pane-editor>

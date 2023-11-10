@@ -1,0 +1,68 @@
+<md-menu md-position-mode="target-right bottom" md-offset="0 9" ng-if="$ctrl.user && !$ctrl.user.isNew()">
+    <md-button class="md-icon-button" ng-click="$mdMenu.open($event)">
+        <md-icon md-menu-origin>more_vert</md-icon>
+        <md-tooltip><span ma-tr="ui.app.moreOptions"></span></md-tooltip>
+    </md-button>
+    <md-menu-content width="4" class="ma-no-padding" md-colors="::{background: 'background-hue-3'}">
+        <md-menu-item ng-if="$ctrl.isSuperAdmin">
+            <md-button class="ma-no-padding-right" ng-click="$ctrl.switchUser($event)" ng-disabled="$ctrl.switchingUser || $ctrl.isCurrentUser">
+                <div layout="row" flex>
+                    <div flex ma-tr="users.su"></div>
+                    <md-icon md-menu-align-target>swap_horiz</md-icon>
+                </div>
+            </md-button>
+        </md-menu-item>
+        <md-menu-item>
+            <md-button class="ma-no-padding-right" ng-click="$ctrl.resettingPassword = {}" ng-disabled="$ctrl.resettingPassword || !$ctrl.hasEditPermission || $ctrl.isCurrentUser">
+                <div layout="row" flex>
+                    <div flex ma-tr="header.resetPassword"></div>
+                    <md-icon md-menu-align-target>settings_backup_restore</md-icon>
+                </div>
+            </md-button>
+        </md-menu-item>
+        <md-menu-item ng-if="$ctrl.isSuperAdmin">
+            <md-button class="ma-no-padding-right" ng-click="$ctrl.sendEmail = {}" ng-disabled="$ctrl.sendingEmail">
+                <div layout="row" flex>
+                    <div flex ma-tr="common.sendTestEmail"></div>
+                    <md-icon md-menu-align-target>send</md-icon>
+                </div>
+            </md-button>
+        </md-menu-item>
+        <md-menu-item>
+            <md-button class="ma-no-padding-right" ng-click="$ctrl.sendEmailVerification($event)" ng-disabled="$ctrl.sendingEmailVerification || !$ctrl.hasEditPermission">
+                <div layout="row" flex>
+                    <div flex ma-tr="users.sendVerificationEmail"></div>
+                    <md-icon md-menu-align-target>send</md-icon>
+                </div>
+            </md-button>
+        </md-menu-item>
+        <md-menu-item ng-if="$ctrl.onCopy && $ctrl.isSuperAdmin">
+            <md-button class="ma-no-padding-right" ng-click="$ctrl.copyUser($event)">
+                <div layout="row" flex>
+                    <div flex ma-tr="common.copy"></div>
+                    <md-icon md-menu-align-target>content_copy</md-icon>
+                </div>
+            </md-button>
+        </md-menu-item>
+    </md-menu-content>
+</md-menu>
+
+<ma-test-email hide-button="true" send-email="$ctrl.sendEmail" user="$ctrl.user"></ma-test-email>
+
+<ma-dialog show-dialog="$ctrl.resettingPassword" destroy-dialog="true" on-close="$ctrl.resettingPassword = null">
+    <md-dialog>
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2 ma-tr="users.resetPasswordFor" ma-tr-args="[$ctrl.user.username]"></h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="$dialog.cancel()">
+                    <md-icon>close</md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+
+        <md-dialog-content class="md-padding">
+            <ma-reset-password-create-link user="$ctrl.user"></ma-reset-password-create-link>
+        </md-dialog-content>
+    </md-dialog>
+</ma-dialog>

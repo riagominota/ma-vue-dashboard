@@ -1,0 +1,99 @@
+<div class="ma-help-doc-container">
+    <h1 ma-tr="ui.app.uiSettings"></h1>
+
+    <p>
+        The <a ui-sref="ui.settings.uiSettings">UI Settings</a> page can be used to change the
+        <code>Theme hues</code> (colors) of the dashboard, load a different <code>Logo</code>, and set the <code>Code coloring.</code>
+    </p>
+    
+    <img md-whiteframe="5" style="max-width: 100%" src="./images/Help-ScreenShots-UiSettings.png"
+         alt="Help-ScreenShots-UiSettings"/>
+
+    <br><br><br>
+
+    <h2>Custom Logo</h2>
+
+    <p>
+        If you would like to use your own logo, you can upload the file by clicking the paper clip icon to open the file store
+        dialog. Once selected the image path should display in the <code>Logo source</code> input and you should save the UI
+        settings to see the dashboard logo update. We recommend using a <code>.png</code>  or <code>.svg</code> image with a
+        transparent background for the best look.
+    </p>
+
+    <br>
+
+    <h2>Custom UI Theme</h2>
+
+    <p>
+        If you choose the <code>userTheme</code> option in the <code>Choose theme</code> select, you can choose from the 
+        <a href="https://material.io/guidelines/style/color.html#color-color-schemes" target="_blank">20 Material Design Color Palettes</a>
+        to use within the Mango UI.
+    </p>
+    <p>
+        Per the <a href="https://material.io/guidelines/style/color.html#color-color-system" target="_blank">Material Design Color Spec</a>, you
+        choose one color palette for each of the three color intentions plus one for the background palette.
+    </p>
+    
+    <ul>
+        <li><strong>Primary palette</strong> - Used to represent primary interface elements.</li>
+        <li><strong>Accent palette</strong> - Used to represent secondary interface elements.</li>
+        <li><strong>Warning palette</strong> - Used to represent interface elements that the user should be careful of.</li>
+    </ul>
+    
+    <p>
+        The Mango UI will automatically update it's interface elements to use the color palettes, so remember to save
+        before leaving the page!
+    </p>
+
+    <p>
+        Advanced users can modify <code>${MA_HOME}/web/modules/mangoUI/web/ui/uiSettings.json</code>
+        if they wish to take color customization to the next level. Using the method explained in this
+        <a href="https://docs-v4.mango-os.com/creating-a-custom-theme" target="_blank">support article</a> you can
+        create your own custom color palettes and themes that utilize the exact colors you specify.
+    </p>
+    
+    <p> 
+        You can turn on <code>Dark theme</code> on any theme by checking the <code>Dark theme</code> option.
+        A dark version of the background palette will be used and white text will display on top for maximum contrast.
+    </p>
+    
+    <p> 
+        Additionally you can set the <code>Code coloring</code> theme to be used across the dashboard. 
+        Choose a theme from the dropdown and you will see a live preview of the code coloring below.
+        Once saved, the <code>Code coloring</code>  will be used in <code>Edit pages</code>, <code>Play area</code>, and <code>
+        Examples</code> pages.
+    </p>
+
+    <br>
+
+    <h2>Google API Settings</h2>
+
+    <p>
+        In addition you can also set your <code>Google Maps API Key</code> used for working the the <code>&lt;ma-map&gt;</code>
+        component and a <code>Google Analytics Property ID</code> used for tracking visitor activity on your Mango Server.
+    </p>
+
+    <img md-whiteframe="5" style="max-width: 100%" src="./images/Help-ScreenShots-UiSettings-GoogleApiKeys.png"
+         alt="Help-ScreenShots-UiSettings-GoogleApiKeys"/>
+
+    <br><br><br>
+
+    <h2>User Module Settings</h2>
+
+    <p>
+        You may want to extend the dashboard tools you have available by writing your own AngularJS code. Using the <code>User module
+        URL</code> feature you can add your own Angular components, directives, filters and controllers. Read the full
+        <a href="https://docs-v4.mango-os.com/user-module-setup" target="_blank">support article</a> to
+        learn how to leverage writing your own Angular code to extend the application. You can also add your own custom
+        <code>.css</code> file to the <code>User stylesheet URL</code> to apply to all your pages or override the dashboard UI.
+    </p>
+
+    <br><br><br>
+
+    <h2>Show unacknowledged events icon in toolbar</h2>
+
+    <p>
+        You can hide the icon in the toolbar and prevent the UI from making queries for unacknowledged events
+        on every page load by disabling this setting.  By default this is enabled.
+    </p>
+</div>

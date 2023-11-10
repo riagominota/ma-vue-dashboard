@@ -1,0 +1,71 @@
+<ma-point-statistics point="point" point-xid="{{pointXid}}" statistics="statistics"
+					 from="from" to="to"></ma-point-statistics>
+
+<md-table-container>
+<table md-table class="ma-statistics">
+	<tbody md-body ng-if="!statistics.hasData">
+		<tr md-row>
+			<td md-cell colspan="2" ma-tr="common.stats.noDataForPeriod"></td>
+		</tr>
+	</tbody>
+	<tbody md-body ng-if="statistics.hasData">
+		<tr md-row ng-if="statistics.first" class="ma-statistics-first">
+			<td md-cell ma-tr="common.stats.start"></td>
+			<td md-cell><span ng-bind="statistics.first.value"></span> @ <span ng-bind="formatTimestamp(statistics.first.timestamp)"></span></td>
+		</tr>
+		<tr md-row ng-if="statistics.last" class="ma-statistics-last">
+			<td md-cell ma-tr="common.stats.end"></td>
+            <td md-cell><span ng-bind="statistics.last.value"></span> @ <span ng-bind="formatTimestamp(statistics.last.timestamp)"></span></td>
+		</tr>
+
+		<tr md-row ng-if="!isAggregated() && statistics.minimum" class="ma-statistics-minimum">
+			<td md-cell ma-tr="common.stats.min"></td>
+			<td md-cell><span ng-bind="statistics.minimum.value"></span> @ <span ng-bind="formatTimestamp(statistics.minimum.timestamp)"></span></td>
+		</tr>
+		<tr md-row ng-if="!isAggregated() && statistics.maximum" class="ma-statistics-maximum">
+			<td md-cell ma-tr="common.stats.max"></td>
+			<td md-cell><span ng-bind="statistics.maximum.value"></span> @ <span ng-bind="formatTimestamp(statistics.maximum.timestamp)"></span></td>
+		</tr>
+		<tr md-row ng-if="!isAggregated() && statistics.average" class="ma-statistics-average">
+			<td md-cell ma-tr="common.stats.avg"></td>
+			<td md-cell>{{statistics.average.value}}</td>
+		</tr>
+
+		<tr md-row ng-if="isAggregated() && statistics.minimumInPeriod" class="ma-statistics-minimum-in-period">
+			<td md-cell ma-tr="common.stats.minimumInPeriod"></td>
+			<td md-cell>{{statistics.minimumInPeriod.value}}</td>
+		</tr>
+		<tr md-row ng-if="isAggregated() && statistics.maximumInPeriod" class="ma-statistics-maximum-in-period">
+			<td md-cell ma-tr="common.stats.maximumInPeriod"></td>
+			<td md-cell>{{statistics.maximumInPeriod.value}}</td>
+		</tr>
+		<tr md-row ng-if="isAggregated() && statistics.arithmeticMean" class="ma-statistics-arithmetic-mean">
+			<td md-cell ma-tr="common.stats.arithmeticMean"></td>
+			<td md-cell>{{statistics.arithmeticMean.value}}</td>
+		</tr>
+
+		<tr md-row ng-if="!isAggregated() &&statistics.integral" class="ma-statistics-integral">
+			<td md-cell ma-tr="common.stats.integral"></td>
+			<td md-cell>{{statistics.integral.value}}</td>
+		</tr>
+		<tr md-row ng-if="statistics.sum" class="ma-statistics-sum">
+			<td md-cell ma-tr="common.stats.sum"></td>
+			<td md-cell>{{statistics.sum.value}}</td>
+		</tr>
+		<tr md-row ng-if="statistics.count" class="ma-statistics-count">
+			<td md-cell ma-tr="common.stats.count"></td>
+			<td md-cell>{{statistics.count}}</td>
+		</tr>
+		<tr md-row ng-if="statistics.changes" class="ma-statistics-changes">
+			<td md-cell ma-tr="common.stats.changes"></td>
+			<td md-cell>{{statistics.changes}}</td>
+		</tr>
+		<tr md-row ng-if="statistics.startsAndRuntimes && !hideStartsAndRuntimes" class="ma-statistics-summary">
+			<td md-cell ma-tr="ui.app.summary"></td>
+			<td md-cell>
+				<ma-starts-and-runtimes-table starts-and-runtimes="statistics.startsAndRuntimes"></ma-starts-and-runtimes-table>
+			</td>
+		</tr>
+	</tbody>
+</table>
+</md-table-container>

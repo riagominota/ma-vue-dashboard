@@ -1,0 +1,84 @@
+ma-permission-editor-container {
+    display: flex;
+    overflow-x: auto;
+    /* required to stop the ink on the checkbox at the bottom overflowing and causing the table to resize */
+    padding-bottom: 8px;
+}
+
+ma-permission-editor-container:not(:first-child) {
+    margin-top: 16px;
+}
+
+ma-permission-editor-container:not(:last-child) {
+    margin-bottom: 16px;
+}
+
+ma-permission-editor-container .ma-permission-editor-table {
+    flex: 1 0 auto;
+}
+
+ma-permission-editor-container .ma-permission-editor-row {
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+}
+
+ma-permission-editor-container .ma-permission-editor-cell {
+    padding: 8px;
+    flex: 1 0 auto;
+    width: 50px;
+}
+
+ma-permission-editor-container .ma-permission-editor-description-column,
+ma-permission-editor-container .ma-permission-editor-other-column {
+    width: 200px;
+    flex-grow: 2;
+}
+
+ma-permission-editor-container .ma-permission-editor-checkbox-column,
+ma-permission-editor-container .ma-permission-editor-other-column {
+    text-align: center;
+}
+
+ma-permission-editor-container .ma-permission-editor-header {
+    font-weight: bold;
+    font-size: 1.4rem;
+    border-bottom: 1px solid var(--ma-foreground-4);
+}
+
+ma-permission-editor-container .ma-permission-editor-header > .ma-permission-editor-row {
+    align-items: flex-end;
+}
+
+ma-permission-editor-container .ma-permission-editor-header .ma-permission-editor-description-column > span {
+    font-size: 1.8rem;
+}
+
+ma-permission-editor-container md-input-container.ma-filter {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+ma-permission-editor-container md-input-container.ma-filter > input.md-input {
+    border-color: transparent;
+    font-size: 1.6rem;
+}
+
+ma-permission-editor-container .ma-permissions-title > * {
+    vertical-align: middle;
+}
+
+.ma-permission-editor-container-role-selector:not(.ma-full-screen) {
+    width: 400px;
+}
+
+.ma-permission-editor-container-role-selector md-switch,
+.ma-permission-editor-container-role-selector md-switch:last-of-type {
+    margin: 8px 8px 0;
+}
+
+/* We add our own OK/cancel buttons */
+.ma-permission-editor-container-role-selector .ma-ok-button {
+    display: none;
+}

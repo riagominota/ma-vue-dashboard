@@ -1,0 +1,33 @@
+<h1 ma-tr="ui.dox.stateChart"></h1>
+
+<p>
+    This example show how to use <code>&lt;ma-state-chart&gt;</code> to show the proportion of time a multistate or
+    binary data point has been in a particular state.
+</p>
+
+<p>
+    See API Documentation for <a ui-sref="ui.docs.ngMango.maStateChart"><code>&lt;ma-state-chart&gt;</code></a>.
+</p>
+
+<ma-ui-dual-pane-editor>
+
+<div layout="row" layout-xs="column">
+    <ma-filtering-point-list flex ng-model="point1" data-type="MULTISTATE" auto-init="true"></ma-filtering-point-list>
+    <ma-filtering-point-list flex ng-model="point2" data-type="MULTISTATE" auto-init="true"></ma-filtering-point-list>
+</div>
+
+<ma-point-values point="point1" values="point1Values" from="dateBar.to | maMoment:'subtract':1:'day'" to="dateBar.to"
+                 rollup="FIRST"
+                 rollup-interval="1 hours">
+</ma-point-values>
+<ma-point-values point="point2" values="point2Values" from="dateBar.to | maMoment:'subtract':1:'day'" to="dateBar.to"
+                 rollup="FIRST"
+                 rollup-interval="1 hours">
+</ma-point-values>
+
+<ma-state-chart style="height: 500px; width: 100%"
+                series-1-title="{{point1.name}}" series-1-values="point1Values" series-1-labels="point1.getTextRenderer().values"
+                series-2-title="{{point2.name}}" series-2-values="point2Values" series-2-labels="point2.getTextRenderer().values">
+</ma-state-chart>
+
+</ma-ui-dual-pane-editor>

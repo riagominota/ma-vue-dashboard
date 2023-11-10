@@ -1,0 +1,37 @@
+<div layout layout-align="space-between center" layout-wrap class="ma-inputs-container">
+    <md-input-container flex="100" flex-gt-md="50">
+        <md-icon>code</md-icon>
+        <label ma-tr="script.scriptEngine"></label>
+        <md-select name="engineName" ng-model="$ctrl.eventHandler.engineName" ng-change="$ctrl.updateEditMode()" required>
+            <md-option ng-repeat="engine in $ctrl.engines | orderBy:'engineName' track by engine.engineName" ng-value="engine.engineName">
+                <span ng-bind="engine.engineName"></span> (<span ng-bind="engine.languageName"></span> &mdash; <span ng-bind="engine.languageVersion"></span>)
+            </md-option>
+        </md-select>
+        <div ng-messages="editor.form.engineName.$error">
+            <div ng-message="required" ma-tr="validate.required"></div>
+            <div ng-message="validationMessage" ng-bind="editor.form.engineName.validationMessage"></div>
+        </div>
+    </md-input-container>
+    <md-input-container flex="100" flex-gt-md="50">
+        <md-icon>group</md-icon>
+        <label ma-tr="ui.app.scriptRoles"></label>
+        <ma-drop-down-button>
+            <span ng-bind="editor.eventHandler.scriptRoles.join(', ')"></span>
+            <ma-drop-down class="ma-script-roles-selector ma-full-screen-centered">
+                <ma-role-selector name="scriptRoles" ng-model="editor.eventHandler.scriptRoles"
+                                  ma-format-array="{xid: $item}" ma-parse-array="$item.xid"
+                                  ng-multiple="::true" ma-configure-input-container></ma-role-selector>
+            </ma-drop-down>
+        </ma-drop-down-button>
+        <div ng-messages="editor.form.scriptRoles.$error">
+            <div ng-message="validationMessage" ng-bind="editor.form.scriptRoles.validationMessage"></div>
+        </div>
+    </md-input-container>
+</div>
+
+<ma-ace-editor mode="{{$ctrl.editMode}}" show-gutter="true" required name="script" ng-model="$ctrl.eventHandler.script"></ma-ace-editor>
+
+<div ng-if="editor.form.script.$error" ng-messages="editor.form.script.$error" role="alert" md-colors="::{color: 'warn'}">
+    <div ng-message="required" ma-tr="validate.required"></div>
+    <div ng-message="validationMessage" ng-bind="editor.form.script.validationMessage"></div>
+</div>

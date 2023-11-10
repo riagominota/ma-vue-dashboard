@@ -1,0 +1,18 @@
+ma-heat-map {
+	display: block;
+	position: relative;
+	overflow: hidden;
+}
+
+ma-heat-map > .ma-heat-map-tooltip {
+	pointer-events: none;
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+ma-heat-map > .ma-heat-map-tooltip-builtin {
+	padding: 8px;
+	border: 1px solid currentColor;
+	border-radius: 8px;
+}

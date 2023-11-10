@@ -1,0 +1,37 @@
+<div ng-form="$ctrl.form" ma-validation-messages="$ctrl.validationMessages" ma-enter="$ctrl.registerUser()">
+    <div layout="column" class="ma-login-form-container">
+        <md-input-container class="ma-has-hint">
+            <md-icon>code</md-icon>
+            <label ma-tr="login.emailVerification.token"></label>
+            <input name="token" ng-model="$ctrl.token" autofocus ma-autofocus tabindex="1"
+                required md-no-asterisk ng-change="$ctrl.parseToken()" ma-jwt-input="{typ: 'emailverify'}">
+            <div ng-messages="$ctrl.form.token.$error">
+                <div ng-message="required" ma-tr="login.emailVerification.validation.tokenRequired"></div>
+                <div ng-message="jwtParse" ma-tr="login.emailVerification.validation.unparsableToken"></div>
+                <div ng-message="jwtClaims" ma-tr="login.emailVerification.validation.invalidToken"></div>
+                <div ng-message="jwtExpired" ma-tr="login.emailVerification.validation.expiredToken"></div>
+                <div ng-message="serverValid" ma-tr="login.emailVerification.validation.invalidToken"></div>
+                <div ng-message="server" ma-tr="login.emailVerification.validation.invalidToken" ma-tr-args="[$ctrl.serverErrors.invalidToken]"></div>
+            </div>
+            <div ng-if="$ctrl.claims" class="ma-hint" ma-tr="login.tokenExpiryMessage" ma-tr-args="[$ctrl.expiration, $ctrl.expirationDuration]"></div>
+        </md-input-container>
+
+        <ma-now update-interval="1 SECONDS" on-change="$ctrl.updateExpiry($value)"></ma-now>
+        
+        <ma-user-editor ng-model="$ctrl.user" name="user" register-mode="::true"></ma-user-editor>
+
+        <div ng-messages="$ctrl.serverErrors">
+            <div ng-message="invalidToken" ma-tr="login.emailVerification.errorVerifying" ma-tr-args="[$ctrl.serverErrors.invalidToken]"></div>
+            <div ng-message="other" ma-tr="login.userRegistration.error" ma-tr-args="[$ctrl.serverErrors.other]"></div>
+        </div>
+    </div>
+    <div layout="row" layout-align="start center" class="ma-action-buttons">
+        <div ng-transclude="links" layout="column">
+            <a ui-sref="login" ma-tr="login.loginPage"></a>
+        </div>
+        <div flex></div>
+        <md-button type="submit" ng-click="$ctrl.registerUser()"
+            ma-tr=login.userRegistration.register class="md-accent md-raised" ng-disabled="$ctrl.disableButton">
+        </md-button>
+    </div>
+</div>

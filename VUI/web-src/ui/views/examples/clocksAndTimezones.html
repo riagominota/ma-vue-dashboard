@@ -1,0 +1,35 @@
+<h1 ma-tr="ui.dox.clocksAndTimezones"></h1>
+
+<p>
+    This example demonstrates using the <code>&lt;ma-clock&gt;</code> directive to display an analog style clock. By default dates and times
+    are formatted as the server or user timezone but you can set the timezone attribute to display the time in a specific timezone.
+</p>
+
+<p>
+    See API Documentation for <a ui-sref="ui.docs.ngMango.maClock"><code>&lt;ma-clock&gt;</code></a>.
+</p>
+
+<ma-ui-dual-pane-editor>
+
+<ma-now update-interval="1 SECONDS" output="time" browser-timezone="browserTz"></ma-now>
+
+<div layout="row" layout-wrap>
+    <div flex="50" layout="column" layout-align="center center">
+        <span>{{time|maMoment:'tz':browserTz|maMoment:'format':'ll LTS Z'}}</span>
+        <ma-clock style="width: 100%; height: 200px;" time="time" timezone="{{browserTz}}" text="Browser timezone"></ma-clock>
+    </div>
+    <div flex="50" layout="column" layout-align="center center">
+        <span>{{time|maMoment:'format':'ll LTS Z z'}}</span>
+        <ma-clock style="width: 100%; height: 200px;" time="time" text="User/server timezone"></ma-clock>
+    </div>
+    <div flex="50" layout="column" layout-align="center center">
+        <span>{{time|maMoment:'tz':'Australia/Sydney'|maMoment:'format':'ll LTS Z z'}}</span>
+        <ma-clock style="width: 100%; height: 200px;" time="time" timezone="Australia/Sydney" text="Sydney"></ma-clock>
+    </div>
+    <div flex="50" layout="column" layout-align="center center">
+        <span>{{time|maMoment:'tz':'America/Denver'|maMoment:'format':'ll LTS Z z'}}</span>
+        <ma-clock style="width: 100%; height: 200px;" time="time" timezone="America/Denver" text="Denver"></ma-clock>
+    </div>
+</div>
+
+</ma-ui-dual-pane-editor>

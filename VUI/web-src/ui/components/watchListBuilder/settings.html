@@ -1,0 +1,29 @@
+<div class="md-padding watchlist-settings" layout="column">
+  <md-radio-group ng-model="$ctrl.watchlist.type" ng-change="$ctrl.typeChanged()" layout="row" flex="100" flex-gt-md="50">
+    <md-radio-button ng-value="'static'" class="md-primary"><span ma-tr="ui.app.static"></span></md-radio-button>
+    <md-radio-button ng-value="'query'"><span ma-tr="ui.app.pointQuery"></span></md-radio-button>
+    <md-radio-button ng-value="'tags'"><span ma-tr="ui.app.watchListTypeTags"></span></md-radio-button>
+  </md-radio-group>
+  <div layout="row" layout-wrap>
+    <md-input-container flex="100" flex-gt-md="50">
+      <label ma-tr="common.name"></label>
+      <input name="name" ng-model="$ctrl.watchlist.name" required>
+      <div ng-messages="$ctrl.watchListForm.name.$error">
+        <div ng-message="required" ma-tr="validate.required"></div>
+        <div ng-message="validationMessage" ng-bind="$ctrl.watchListForm.name.validationMessage"></div>
+      </div>
+    </md-input-container>
+    <md-input-container flex="100" flex-gt-md="50">
+      <label ma-tr="common.xid"></label>
+      <input ng-model="$ctrl.watchlist.xid">
+    </md-input-container>
+  </div>
+  <ma-permission-editor-container>
+    <ma-permission-editor name="readPermission" ng-model="$ctrl.watchlist.readPermission">
+      <span ma-tr="ui.watchList.permission.read"></span>
+    </ma-permission-editor>
+    <ma-permission-editor name="editPermission" ng-model="$ctrl.watchlist.editPermission">
+      <span ma-tr="ui.watchList.permission.edit"></span>
+    </ma-permission-editor>
+  </ma-permission-editor-container>
+</div>

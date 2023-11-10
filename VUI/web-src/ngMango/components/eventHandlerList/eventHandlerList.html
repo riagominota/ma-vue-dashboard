@@ -1,0 +1,19 @@
+<md-list class="ma-no-padding ma-no-text-overflow">
+    <md-list-item class="md-2-line" ng-click="$ctrl.newEventHandler($event)" ng-class="{'ma-list-selected': $ctrl.selected.isNew()}">
+        <div class="md-list-item-text">
+            <h3 ma-tr="ui.app.new"></h3>
+            <p ma-tr="ui.eventHandlers.createEventHandler"></p>
+        </div>
+        <md-button class="md-secondary md-icon-button" ng-click="$ctrl.newEventHandler($event)">
+            <md-icon>add</md-icon>
+        </md-button>
+    </md-list-item>
+    
+    <md-list-item ng-repeat="eventHandler in $ctrl.eventHandlers | orderBy:'name' track by eventHandler.xid" ng-click="$ctrl.selectEventHandler(eventHandler)" class="md-2-line"
+            ng-class="{'ma-list-selected': $ctrl.selected.xid === eventHandler.xid}">
+        <div class="md-list-item-text">
+            <h3 ng-bind="eventHandler.name"></h3>
+            <p ng-bind="eventHandler.xid"></p>
+        </div>
+    </md-list-item>
+</md-list>

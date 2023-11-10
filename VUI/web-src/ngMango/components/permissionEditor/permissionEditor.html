@@ -1,0 +1,25 @@
+<div class="ma-permission-editor-cell ma-permission-editor-description-column">
+    <span ng-class="{'ma-error-text': $ctrl.ngModelCtrl.$invalid}" class="ma-permission-editor-label">
+        <span ng-transclude>
+            <span md-highlight-text="$ctrl.containerCtrl.filter" md-highlight-flags="ig">{{$ctrl.description || $ctrl.systemPermission.description}}</span>
+        </span>
+        <span ng-if="$ctrl.hasMultipleValues" class="ma-permission-editor-multiple-values">
+            (<span ma-tr="ui.permissions.multipleValues"></span>)
+        </span>
+        <ma-promise-indicator ng-if="$ctrl.systemPermission" promise="$ctrl.systemPermission.promise"></ma-promise-indicator>
+    </span>
+    <div ng-messages="$ctrl.ngModelCtrl.$error || $ctrl.systemPermission.errors" class="ma-small-text">
+        <div ng-message="validationMessage" ng-bind="$ctrl.ngModelCtrl.validationMessage || $ctrl.systemPermission.validationMessage"></div>
+    </div>
+</div>
+<div class="ma-permission-editor-cell ma-permission-editor-checkbox-column" ng-repeat="column in $ctrl.columns track by column.minterm.id">
+    <md-checkbox ng-model="column.checked" ng-change="$ctrl.columnChanged(column)" ng-disabled="column.hasSuperadmin || $ctrl.disabled"></md-checkbox>
+</div>
+<div class="ma-permission-editor-cell ma-permission-editor-other-column">
+    <div ng-repeat="minterm in $ctrl.additionalMinterms track by minterm.id" class="ma-ellipsis">
+        <a role="button" ng-click="$ctrl.containerCtrl.addColumn(minterm)">
+            <span ng-repeat="roleXid in minterm.roles"><span ng-bind="$ctrl.containerCtrl.getRoleName(roleXid)"></span><span ng-if="!$last"> &amp; </span></span><!--
+            --><md-tooltip><span ma-tr="ui.permissions.addRoleAsColumn" ma-tr-args="[minterm.size]"></span></md-tooltip></a><!--
+            --><span ng-if="!$last">,</span><!--
+    --></div>
+</div>

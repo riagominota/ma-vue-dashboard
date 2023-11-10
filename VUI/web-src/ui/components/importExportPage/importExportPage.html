@@ -1,0 +1,16 @@
+<div layout="row" layout-align="start start">
+  <ma-config-export on-export="$ctrl.jsonString = $json" flex="100" flex-gt-sm="50"></ma-config-export>
+  <ma-config-import json-string="$ctrl.jsonString" flex="100" flex-gt-sm="50"></ma-config-import>
+</div>
+
+<md-button class="md-raised" ng-click="$ctrl.clear()"><md-icon>clear</md-icon> <span ma-tr="ui.app.clear"></span></md-button>
+<!-- <md-button class="md-raised" ng-click="$ctrl.copyToClipboard()" ng-disabled="true"><md-icon>content_copy</md-icon> <span ma-tr="ui.app.copyToClipboard"></span></md-button> -->
+
+<md-checkbox ng-model="$ctrl.usePlainEditor"><span ma-tr="ui.app.usePlainTextArea"></span></md-checkbox>
+
+<div layout>
+  <textarea flex ng-if="$ctrl.usePlainEditor" style="height: 600px;" ng-model="$ctrl.jsonString" ng-change="$ctrl.editorChanged()" class="ma-code-font"></textarea>
+  <div flex ng-if="!$ctrl.usePlainEditor">
+    <ma-ace-editor style="height: 600px;" ng-model="$ctrl.jsonString" ng-change="$ctrl.editorChanged()" mode="json" copy-to-clipboard="$ctrl.doCopy"></ma-ace-editor>
+  </div>
+</div>

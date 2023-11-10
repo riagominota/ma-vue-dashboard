@@ -1,0 +1,88 @@
+<ma-point-statistics point="point" point-xid="{{pointXid}}" statistics="statistics"
+					 from="from" to="to"></ma-point-statistics>
+
+<table class="ma-statistics">
+	<thead>
+		<tr>
+			<th></th>
+			<th ma-tr="common.value"></th>
+			<th ma-tr="common.time"></th>
+		</tr>
+	</thead>
+	<tbody ng-if="!statistics.hasData">
+		<tr>
+			<td colspan="3" ma-tr="common.stats.noDataForPeriod"></td>
+		</tr>
+	</tbody>
+	<tbody ng-if="statistics.hasData">
+		<tr ng-if="statistics.first" class="ma-statistics-first">
+			<td ma-tr="common.stats.start"></td>
+			<td ng-bind="statistics.first.value"></td>
+			<td ng-bind="formatTimestamp(statistics.first.timestamp)"></td>
+		</tr>
+		<tr ng-if="statistics.last" class="ma-statistics-last">
+			<td ma-tr="common.stats.end"></td>
+			<td ng-bind="statistics.last.value"></td>
+			<td ng-bind="formatTimestamp(statistics.last.timestamp)"></td>
+		</tr>
+
+		<tr ng-if="!isAggregated() && statistics.minimum" class="ma-statistics-minimum">
+			<td ma-tr="common.stats.min"></td>
+			<td ng-bind="statistics.minimum.value"></td>
+			<td ng-bind="formatTimestamp(statistics.minimum.timestamp)"></td>
+		</tr>
+		<tr ng-if="!isAggregated() && statistics.maximum" class="ma-statistics-maximum">
+			<td ma-tr="common.stats.max"></td>
+			<td ng-bind="statistics.maximum.value"></td>
+			<td ng-bind="formatTimestamp(statistics.maximum.timestamp)"></td>
+		</tr>
+		<tr ng-if="!isAggregated() && statistics.average" class="ma-statistics-average">
+			<td ma-tr="common.stats.avg"></td>
+			<td ng-bind="statistics.average.value"></td>
+			<td ng-bind="formatTimestamp(statistics.average.timestamp)"></td>
+		</tr>
+
+		<tr ng-if="isAggregated() && statistics.minimumInPeriod" class="ma-statistics-minimum-in-period">
+			<td ma-tr="common.stats.minimumInPeriod"></td>
+			<td ng-bind="statistics.minimumInPeriod.value"></td>
+			<td ng-bind="formatTimestamp(statistics.minimumInPeriod.timestamp)"></td>
+		</tr>
+		<tr ng-if="isAggregated() && statistics.maximumInPeriod" class="ma-statistics-maximum-in-period">
+			<td ma-tr="common.stats.maximumInPeriod"></td>
+			<td ng-bind="statistics.maximumInPeriod.value"></td>
+			<td ng-bind="formatTimestamp(statistics.maximumInPeriod.timestamp)"></td>
+		</tr>
+		<tr ng-if="isAggregated() && statistics.arithmeticMean" class="ma-statistics-arithmetic-mean">
+			<td ma-tr="common.stats.arithmeticMean"></td>
+			<td ng-bind="statistics.arithmeticMean.value"></td>
+			<td ng-bind="formatTimestamp(statistics.arithmeticMean.timestamp)"></td>
+		</tr>
+
+		<tr ng-if="!isAggregated() && statistics.integral" class="ma-statistics-integral">
+			<td ma-tr="common.stats.integral"></td>
+			<td ng-bind="statistics.integral.value"></td>
+			<td ng-bind="formatTimestamp(statistics.integral.timestamp)"></td>
+		</tr>
+		<tr ng-if="statistics.sum" class="ma-statistics-sum">
+			<td ma-tr="common.stats.sum"></td>
+			<td ng-bind="statistics.sum.value"></td>
+			<td ng-bind="formatTimestamp(statistics.sum.timestamp)"></td>
+		</tr>
+		<tr ng-if="statistics.count" class="ma-statistics-count">
+			<td ma-tr="common.stats.count"></td>
+			<td ng-bind="statistics.count"></td>
+			<td></td>
+		</tr>
+		<tr ng-if="statistics.changes" class="ma-statistics-changes">
+			<td ma-tr="common.stats.changes"></td>
+			<td ng-bind="statistics.changes"></td>
+			<td></td>
+		</tr>
+		<tr ng-if="statistics.startsAndRuntimes && !hideStartsAndRuntimes" class="ma-statistics-summary">
+			<td ma-tr="ui.app.summary"></td>
+			<td colspan="2">
+				<ma-starts-and-runtimes-table starts-and-runtimes="statistics.startsAndRuntimes"></ma-starts-and-runtimes-table>
+			</td>
+		</tr>
+	</tbody>
+</table>

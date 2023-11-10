@@ -1,0 +1,130 @@
+<h3 ma-tr="ui.eventHandlers.emailSettings"></h3>
+<div layout layout-align="space-between center" layout-wrap class="ma-inputs-container">
+    <div flex="100" flex-gt-md="50">
+        <md-checkbox name="includeSystemInfo" ng-model="editor.eventHandler.includeSystemInfo"><span ma-tr="eventHandlers.includeSystemInfo"></span></md-checkbox>
+    </div>
+    
+    <div flex="100" flex-gt-md="50">
+        <md-checkbox name="includeLogfile" ng-model="editor.eventHandler.includeLogfile"><span ma-tr="eventHandlers.includeLogfile"></span></md-checkbox>
+    </div>
+    
+    <md-input-container flex="100" flex-gt-md="50">
+        <label ma-tr="eventHandlers.includePointValueCount"></label>
+        <input name="includePointValueCount" ng-model="editor.eventHandler.includePointValueCount" min="0" step="1" type="number">
+        <div ng-messages="editor.form.includePointValueCount.$error">
+            <div ng-message="required" ma-tr="validate.required"></div>
+            <div ng-message="validationMessage" ng-bind="editor.form.includePointValueCount.validationMessage"></div>
+            <div ng-message="min" ma-tr="validate.minNumber" ma-tr-args="::[0]"></div>
+            <div ng-message="step" ma-tr="validate.wholeNumber"></div>
+        </div>
+    </md-input-container>
+    
+    <md-input-container flex="100" flex-gt-md="50">
+        <label ma-tr="eventHandlers.subjectLine"></label>
+        <md-select name="subject" ng-model="editor.eventHandler.subject" required>
+            <md-option value="INCLUDE_NAME"><span ma-tr="eventHandlers.includeName"></span></md-option>
+            <md-option value="INCLUDE_EVENT_MESSAGE"><span ma-tr="eventHandlers.includeEventMessage"></span></md-option>
+        </md-select>
+        <div ng-messages="editor.form.subject.$error">
+            <div ng-message="validationMessage" ng-bind="editor.form.subject.validationMessage"></div>
+        </div>
+    </md-input-container>
+</div>
+
+<h3 ma-tr="ui.eventHandlers.emailRecipients"></h3>
+<ma-email-recipients name="activeRecipients" ng-model="editor.eventHandler.activeRecipients" type-property="recipientType"></ma-email-recipients>
+
+<h3 ma-tr="ui.eventHandlers.escalationEmail"></h3>
+<div>
+    <md-checkbox name="sendEscalation" ng-model="editor.eventHandler.sendEscalation"><span ma-tr="eventHandlers.escal"></span></md-checkbox>
+</div>
+<div ng-if="editor.eventHandler.sendEscalation">
+    <div>
+        <md-checkbox name="repeatEscalations" ng-model="editor.eventHandler.repeatEscalations"><span ma-tr="eventHandlers.repeatEscal"></span></md-checkbox>
+    </div>
+    
+    <div layout="100" flex-gt-md="50" layout-align="start center">
+        <label for="escalationDelay" ma-tr="eventHandlers.escalPeriod"></label>
+        <md-input-container>
+            <input name="escalationDelay" ng-model="editor.eventHandler.escalationDelay" type="number" step="1">
+        </md-input-container>
+        <md-input-container>
+            <ma-interval-type-picker name="escalationDelayType" ng-model="editor.eventHandler.escalationDelayType"></ma-interval-type-picker>
+        </md-input-container>
+    </div>
+    
+    <ma-email-recipients name="escalationRecipients" ng-model="editor.eventHandler.escalationRecipients" type-property="recipientType"></ma-email-recipients>
+</div>
+
+<h3 ma-tr="ui.eventHandlers.inactiveEmail"></h3>
+<div>
+    <md-checkbox name="sendInactive" ng-model="editor.eventHandler.sendInactive"><span ma-tr="eventHandlers.inactiveNotif"></span></md-checkbox>
+</div>
+
+<div ng-if="editor.eventHandler.sendInactive">
+    <div>
+        <md-checkbox name="inactiveOverride" ng-model="editor.eventHandler.inactiveOverride"><span ma-tr="eventHandlers.inactiveOverride"></span></md-checkbox>
+    </div>
+</div>
+
+<ma-email-recipients ng-if="editor.eventHandler.sendInactive && editor.eventHandler.inactiveOverride" type-property="recipientType" name="inactiveRecipients" ng-model="editor.eventHandler.inactiveRecipients"></ma-email-recipients>
+
+<h3 ma-tr="ui.app.scriptContext"></h3>
+<div flex="100" >
+    <ma-script-context ng-model="editor.eventHandler.scriptContext"></ma-script-context>
+</div>
+
+<md-tab>
+    <md-tab-label>
+        <span ma-tr="eventHandlers.customTemplate"></span>
+    </md-tab-label>
+    <md-tab-body>
+        <div class="md-padding ma-no-padding-bottom" id="email-template">
+            <h3 ma-tr="eventHandlers.customTemplate"></h3>
+            <ma-ace-editor name="customTemplate" mode="ftl" ng-model="editor.eventHandler.customTemplate"></ma-ace-editor>
+             <!-- md input containers use warn-A700 -->
+            <div ng-messages="editor.form.customTemplate.$error" role="alert">
+                <div ng-message="validationMessage" ng-bind="editor.form.customTemplate.validationMessage"></div>
+            </div>
+        </div>
+    </md-tab-body>
+</md-tab>
+
+<md-tab>
+    <md-tab-label>
+        <span ma-tr="eventHandlers.script"></span>
+    </md-tab-label>
+    <md-tab-body>
+        <div layout="row" class="md-padding ma-no-padding-bottom">
+            <md-input-container flex="100" flex-gt-md="50">
+                <md-icon>group</md-icon>
+                <label ma-tr="ui.app.scriptRoles"></label>
+                <ma-drop-down-button>
+                    <span ng-bind="editor.eventHandler.scriptPermissions.join(', ')"></span>
+                    <ma-drop-down class="ma-script-roles-selector ma-full-screen-centered">
+                        <ma-role-selector name="scriptPermissions" ng-model="editor.eventHandler.scriptPermissions"
+                                          ma-format-array="{xid: $item}" ma-parse-array="$item.xid"
+                                          ng-multiple="::true" ma-configure-input-container></ma-role-selector>
+                    </ma-drop-down>
+                </ma-drop-down-button>
+                <div ng-messages="editor.form.scriptPermissions.$error">
+                    <div ng-message="validationMessage" ng-bind="editor.form.scriptPermissions.validationMessage"></div>
+                </div>
+            </md-input-container>
+        </div>
+        <div class="md-padding ma-no-padding-bottom">
+            <div flex="100" >
+                <ma-script-context ng-model="editor.eventHandler.scriptContext"></ma-script-context>
+            </div>
+            <h3 ma-tr="eventHandlers.script"></h3>
+            <ma-scripting-editor 
+                name="script" 
+                context="editor.eventHandler.scriptContext" 
+                permissions="editor.eventHandler.scriptPermissions"
+                ng-model="editor.eventHandler.script"
+                wrap-in-function="true"
+                url="/rest/latest/event-handlers/validate-email-handler-script"
+            ></ma-scripting-editor>
+        </div>
+    </md-tab-body>
+</md-tab>

@@ -1,0 +1,30 @@
+.list-container {
+    padding-left: 0; 
+    padding-right: 0;
+}
+
+.w-100 {
+    width: 100%;
+}
+
+.cell {
+    padding-bottom: 0;
+    padding-top: 0;
+}
+
+.mt-20 {
+    margin-top: 20px;
+}
+
+.ma-warn {
+    color: red;
+}
+
+ma-mailing-list-setup .add-button {
+    margin-top: 20px; 
+    margin-bottom: 20px;
+}
+
+ma-mailing-list-setup .weekly-schedule-container {
+    margin-top: 20px;
+}

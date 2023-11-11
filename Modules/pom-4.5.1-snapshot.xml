@@ -13,7 +13,7 @@
     <properties>
         <moduleName>${project.name}</moduleName>
         <descriptionKey>${moduleName}.description</descriptionKey>
-        <zipAssemblyName>m2m2-${moduleName}-${noSnapshotVer}</zipAssemblyName>
+        <zipAssemblyName>${moduleName}-${noSnapshotVer}</zipAssemblyName>
         <webDirectory>${project.build.directory}/web</webDirectory>
         <moduleTagDirectory>${webDirectory}/WEB-INF/tags/${moduleName}</moduleTagDirectory>
         <moduleWebDirectory>${webDirectory}/modules/${moduleName}/web</moduleWebDirectory>

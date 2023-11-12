@@ -5,7 +5,7 @@
 package com.ioconstructs.vui;
 
 /**
- * @author Jared Wiltshire
+ * @author originally Jared Wiltshire
  */
 public class VUICommon {
     private VUICommon() {}

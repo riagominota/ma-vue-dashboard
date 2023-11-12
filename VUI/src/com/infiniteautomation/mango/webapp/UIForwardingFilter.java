@@ -31,9 +31,11 @@ import com.serotonin.m2m2.web.mvc.spring.security.BrowserRequestMatcher;
 @Component
 @WebFilter(
         asyncSupported = true,
-        urlPatterns = {VUIForwardingFilter.FORWARD_FROM_PATH + "/*"},
+        urlPatterns = {UIForwardingFilter.FORWARD_FROM_PATH + "/*"},
         dispatcherTypes = {DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.ASYNC})
-public class VUIForwardingFilter implements Filter {
+
+
+public class UIForwardingFilter implements Filter {
     public static final String ORIG_FORWARD_FROM_PATH = "/ui";
     public static final String ORIG_FORWARD_TO_PATH = "/modules/mangoUI/web";
     public static final String FORWARD_FROM_PATH = "/vui";

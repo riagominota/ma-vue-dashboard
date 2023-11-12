@@ -17,7 +17,7 @@
         <webDirectory>${project.build.directory}/web</webDirectory>
         <moduleTagDirectory>${webDirectory}/WEB-INF/tags/${moduleName}</moduleTagDirectory>
         <moduleWebDirectory>${webDirectory}/modules/${moduleName}/web</moduleWebDirectory>
-        <webpack.mode>production</webpack.mode>
+        <webpack.mode>build</webpack.mode>
         <installNodeAndNpmPhase>generate-resources</installNodeAndNpmPhase>
         <npmVersionPhase>generate-resources</npmVersionPhase>
         <npmInstallPhase>generate-resources</npmInstallPhase>
@@ -81,7 +81,7 @@
         <profile>
             <id>webpack-development</id>
             <properties>
-                <webpack.mode>development</webpack.mode>
+                <webpack.mode>dev</webpack.mode>
             </properties>
         </profile>
     </profiles>
@@ -235,7 +235,7 @@
                                 <goal>npm</goal>
                             </goals>
                             <configuration>
-                                <arguments>run build</arguments>
+                                <arguments>run ${webpack.mode}</arguments>
                             </configuration>
                         </execution>
                         <execution>
@@ -249,7 +249,8 @@
                             </configuration>
                         </execution>
                     </executions>
-                </plugin>            </plugins>
+            </plugin>
+            </plugins>
         </pluginManagement>
     </build>
     <dependencies>

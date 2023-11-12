@@ -36,8 +36,8 @@
         <surefire.fork.count>1</surefire.fork.count>
     </properties>
     <organization>
-        <name>Radix IoT, LLC</name>
-        <url>https://radixiot.com/</url>
+        <name>IO Constructs Ltd</name>
+        <url>mailto::mattfox@ioconstructs.com</url>
     </organization>
     <modules>
         <module>AssemblyDescriptors</module>

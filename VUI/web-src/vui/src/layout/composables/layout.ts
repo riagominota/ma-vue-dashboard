@@ -1,4 +1,4 @@
-import { toRefs, reactive, computed } from 'vue';
+import { toRefs, reactive, computed, Ref } from 'vue';
 
 const layoutConfig = reactive({
     ripple: false,
@@ -7,7 +7,7 @@ const layoutConfig = reactive({
     menuMode: 'static',
     theme: 'lara-light-indigo',
     scale: 14,
-    activeMenuItem: null
+    activeMenuItem: null as string | null
 });
 
 const layoutState = reactive({
@@ -20,16 +20,16 @@ const layoutState = reactive({
 });
 
 export function useLayout() {
-    const changeThemeSettings = (theme, darkTheme) => {
+    const changeThemeSettings = (theme: string, darkTheme: boolean) => {
         layoutConfig.darkTheme = darkTheme;
         layoutConfig.theme = theme;
     };
 
-    const setScale = (scale) => {
+    const setScale = (scale: number) => {
         layoutConfig.scale = scale;
     };
 
-    const setActiveMenuItem = (item) => {
+    const setActiveMenuItem = (item: Ref<string | null>) => {
         layoutConfig.activeMenuItem = item.value || item;
     };
 

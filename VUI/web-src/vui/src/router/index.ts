@@ -1,175 +1,38 @@
-import { createRouter, createWebHashHistory } from 'vue-router';
-import AppLayout from '@/layout/AppLayout.vue';
+import { createMemoryHistory, createRouter, createWebHashHistory, createWebHistory } from 'vue-router';
+import routes from './routes';
+/*
+ * If not building with SSR mode, you can
+ * directly export the Router instantiation;
+ *
+ * The function below can be async too; either use
+ * async/await or return a Promise which resolves
+ * with the Router instance.
+ */
 
-const router = createRouter({
-    history: createWebHashHistory(),
-    routes: [
-        {
-            path: '/',
-            component: AppLayout,
-            children: [
-                {
-                    path: '/',
-                    name: 'dashboard',
-                    component: () => import('@/views/Dashboard.vue')
-                },
-                {
-                    path: '/uikit/formlayout',
-                    name: 'formlayout',
-                    component: () => import('@/views/uikit/FormLayout.vue')
-                },
-                {
-                    path: '/uikit/input',
-                    name: 'input',
-                    component: () => import('@/views/uikit/Input.vue')
-                },
-                {
-                    path: '/uikit/floatlabel',
-                    name: 'floatlabel',
-                    component: () => import('@/views/uikit/FloatLabel.vue')
-                },
-                {
-                    path: '/uikit/invalidstate',
-                    name: 'invalidstate',
-                    component: () => import('@/views/uikit/InvalidState.vue')
-                },
-                {
-                    path: '/uikit/button',
-                    name: 'button',
-                    component: () => import('@/views/uikit/Button.vue')
-                },
-                {
-                    path: '/uikit/table',
-                    name: 'table',
-                    component: () => import('@/views/uikit/Table.vue')
-                },
-                {
-                    path: '/uikit/list',
-                    name: 'list',
-                    component: () => import('@/views/uikit/List.vue')
-                },
-                {
-                    path: '/uikit/tree',
-                    name: 'tree',
-                    component: () => import('@/views/uikit/Tree.vue')
-                },
-                {
-                    path: '/uikit/panel',
-                    name: 'panel',
-                    component: () => import('@/views/uikit/Panels.vue')
-                },
+// const createHistory = process.env.SERVER ? createMemoryHistory : process.env.VUE_ROUTER_MODE === 'history' ? createWebHistory : createWebHashHistory;
 
-                {
-                    path: '/uikit/overlay',
-                    name: 'overlay',
-                    component: () => import('@/views/uikit/Overlay.vue')
-                },
-                {
-                    path: '/uikit/media',
-                    name: 'media',
-                    component: () => import('@/views/uikit/Media.vue')
-                },
-                {
-                    path: '/uikit/menu',
-                    component: () => import('@/views/uikit/Menu.vue'),
-                    children: [
-                        {
-                            path: '/uikit/menu',
-                            component: () => import('@/views/uikit/menu/PersonalDemo.vue')
-                        },
-                        {
-                            path: '/uikit/menu/seat',
-                            component: () => import('@/views/uikit/menu/SeatDemo.vue')
-                        },
-                        {
-                            path: '/uikit/menu/payment',
-                            component: () => import('@/views/uikit/menu/PaymentDemo.vue')
-                        },
-                        {
-                            path: '/uikit/menu/confirmation',
-                            component: () => import('@/views/uikit/menu/ConfirmationDemo.vue')
-                        }
-                    ]
-                },
-                {
-                    path: '/uikit/message',
-                    name: 'message',
-                    component: () => import('@/views/uikit/Messages.vue')
-                },
-                {
-                    path: '/uikit/file',
-                    name: 'file',
-                    component: () => import('@/views/uikit/File.vue')
-                },
-                {
-                    path: '/uikit/charts',
-                    name: 'charts',
-                    component: () => import('@/views/uikit/Chart.vue')
-                },
-                {
-                    path: '/uikit/misc',
-                    name: 'misc',
-                    component: () => import('@/views/uikit/Misc.vue')
-                },
-                {
-                    path: '/blocks',
-                    name: 'blocks',
-                    component: () => import('@/views/utilities/Blocks.vue')
-                },
-                {
-                    path: '/utilities/icons',
-                    name: 'icons',
-                    component: () => import('@/views/utilities/Icons.vue')
-                },
-                {
-                    path: '/pages/timeline',
-                    name: 'timeline',
-                    component: () => import('@/views/pages/Timeline.vue')
-                },
-                {
-                    path: '/pages/empty',
-                    name: 'empty',
-                    component: () => import('@/views/pages/Empty.vue')
-                },
-                {
-                    path: '/pages/crud',
-                    name: 'crud',
-                    component: () => import('@/views/pages/Crud.vue')
-                },
-                {
-                    path: '/documentation',
-                    name: 'documentation',
-                    component: () => import('@/views/utilities/Documentation.vue')
-                }
-            ]
-        },
-        {
-            path: '/landing',
-            name: 'landing',
-            component: () => import('@/views/pages/Landing.vue')
-        },
-        {
-            path: '/pages/notfound',
-            name: 'notfound',
-            component: () => import('@/views/pages/NotFound.vue')
-        },
+const Router = createRouter({
+    scrollBehavior: () => ({ left: 0, top: 0 }),
+    routes,
 
-        {
-            path: '/auth/login',
-            name: 'login',
-            component: () => import('@/views/pages/auth/Login.vue')
-        },
-        {
-            path: '/auth/access',
-            name: 'accessDenied',
-            component: () => import('@/views/pages/auth/Access.vue')
-        },
-        {
-            path: '/auth/error',
-            name: 'error',
-            component: () => import('@/views/pages/auth/Error.vue')
-        }
-    ]
+    history: createWebHashHistory()
 });
+/* Router.beforeEach((to, from, next) => {
+    if (to.name === 'login') {
+        next(); // login route is always  okay (we could use the requires auth flag below). prevent a redirect loop
+     } else if (to.meta && to.meta.requiresAuth === true && !useUserState().isLoggedIn) {
+        next({ name: 'login' }); // always put your redirect as the default case
+      } else if (to.meta && to.meta.requiresAuth === false) {
+        next(); // requires auth is explicitly set to false
+      } else if (useUserState().isLoggedIn) {
+        if (to.name !== '') {
+          next(); // Logged in. carry on
+        } else {
+          next({ name: 'dashboard' });
+        }
+      } else {
+        next({ name: 'login' }); // always put your redirect as the default case
+      }
 
-export default router;
+}); */
+export default Router;

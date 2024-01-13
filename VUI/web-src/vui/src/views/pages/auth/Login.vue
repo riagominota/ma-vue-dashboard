@@ -1,16 +1,20 @@
-<script setup>
+<script lang="ts" setup>
 import { useLayout } from '@/layout/composables/layout';
 import { ref, computed } from 'vue';
 import AppConfig from '@/layout/AppConfig.vue';
-
+import {useUserStore} from '@/stores/UserStore'
 const { layoutConfig } = useLayout();
 const email = ref('');
 const password = ref('');
 const checked = ref(false);
 
+const userStore = useUserStore();
+
 const logoUrl = computed(() => {
     return `layout/images/${layoutConfig.darkTheme.value ? 'logo-white' : 'logo-dark'}.svg`;
 });
+
+
 </script>
 
 <template>
@@ -26,8 +30,8 @@ const logoUrl = computed(() => {
                     </div>
 
                     <div>
-                        <label for="email1" class="block text-900 text-xl font-medium mb-2">Email</label>
-                        <InputText id="email1" type="text" placeholder="Email address" class="w-full md:w-30rem mb-5" style="padding: 1rem" v-model="email" />
+                        <label for="username1" class="block text-900 text-xl font-medium mb-2">Username</label>
+                        <InputText id="username1" type="text" placeholder="Username" class="w-full md:w-30rem mb-5" style="padding: 1rem" v-model="username" />
 
                         <label for="password1" class="block text-900 font-medium text-xl mb-2">Password</label>
                         <Password id="password1" v-model="password" placeholder="Password" :toggleMask="true" class="w-full mb-3" inputClass="w-full" :inputStyle="{ padding: '1rem' }"></Password>
@@ -39,7 +43,7 @@ const logoUrl = computed(() => {
                             </div>
                             <a class="font-medium no-underline ml-2 text-right cursor-pointer" style="color: var(--primary-color)">Forgot password?</a>
                         </div>
-                        <Button label="Sign In" class="w-full p-3 text-xl"></Button>
+                        <Button label="Sign In" v-on:click="userStore.login({username,password})" class="w-full p-3 text-xl"></Button>
                     </div>
                 </div>
             </div>

@@ -1,7 +1,7 @@
-<script setup>
+<script setup lang="ts">
 import { onMounted, reactive, ref, watch } from 'vue';
-import ProductService from '@/service/ProductService';
-import { useLayout } from '@/layout/composables/layout';
+import { useLayout } from '@/layout/composables/layout'
+// import { useLayout } from '@/layout/composables/layout';
 
 const { isDarkTheme } = useLayout();
 
@@ -31,11 +31,11 @@ const items = ref([
     { label: 'Add New', icon: 'pi pi-fw pi-plus' },
     { label: 'Remove', icon: 'pi pi-fw pi-minus' }
 ]);
-const lineOptions = ref(null);
-const productService = new ProductService();
+const lineOptions = ref<Record<string, string | number | Record<string, string | number>> | null>(null);
+const productService = {};
 
 onMounted(() => {
-    productService.getProductsSmall().then((data) => (products.value = data));
+    //  productService.getProductsSmall().then((data) => (products.value = data));
 });
 
 const formatCurrency = (value) => {

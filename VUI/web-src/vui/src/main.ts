@@ -1,7 +1,7 @@
-import { createApp } from 'vue';
+import { createApp, markRaw } from 'vue';
 import App from './App.vue';
 import router from './router';
-
+import pinia from './boot/pinia';
 import PrimeVue from 'primevue/config';
 import AutoComplete from 'primevue/autocomplete';
 import Accordion from 'primevue/accordion';
@@ -103,9 +103,20 @@ import VirtualScroller from 'primevue/virtualscroller';
 import BlockViewer from '@/components/BlockViewer.vue';
 
 import '@/assets/styles.scss';
+import { axios, api } from './boot/axios';
+import constantsObj from './boot/constants';
 
 const app = createApp(App);
 
+/* GLOBAL CONSTANTS */
+app.config.globalProperties.$axios = axios;
+app.config.globalProperties.$api = api;
+app.config.globalProperties = { ...app.config.globalProperties, ...constantsObj };
+/* GLOBAL CONSTANTS */
+
+console.log(app.config.globalProperties);
+
+app.use(pinia); //Must be first to preload states before router
 app.use(router);
 app.use(PrimeVue, { ripple: true });
 app.use(ToastService);

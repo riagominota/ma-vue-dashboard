@@ -2,8 +2,9 @@
  * Copyright (C) 2021 Radix IoT LLC. All rights reserved.
  */
 
-import RqlNode from './RqlNode';
-import { RqlFilter, RqlVisitor } from './RqlFilter';
+import RqlNode, { RqlArg } from './RqlNode';
+import { RqlFilter } from './RqlFilter';
+import { RqlVisitor } from './RqlVisitor';
 
 export type AndOrNot = 'and' | 'or' | 'not'
 export type SortLimit = 'sort'| 'limit';
@@ -16,6 +17,7 @@ function rqlBuilderFactory() {
 
     class RqlBuilder {
         readonly path: RqlNode[];
+
         constructor(root = new RqlNode(), visitorOptions = {}) {
             this.path = [root];
             this.visitorOptions = visitorOptions;
@@ -41,7 +43,7 @@ function rqlBuilderFactory() {
             return new this.constructor(this.root.copy());
         }
 
-        get current() {
+        get current(): RqlNode {
             return this.path[this.path.length - 1];
         }
 
@@ -49,7 +51,7 @@ function rqlBuilderFactory() {
             return this.path[0];
         }
 
-        addAndEnter(name, ...args) {
+        addAndEnter(name: string, ...args) {
             this.checkBuilt();
             const newCurrent = new RqlNode(name, args);
             this.current.args.push(newCurrent);
@@ -60,11 +62,13 @@ function rqlBuilderFactory() {
         up() {
             this.checkBuilt();
             if (this.path.length > 1) {
-                this.path.pop();name
-            return this;
+                this.path.pop();
+                name;
+                return this;
+            }
         }
 
-        add(name, ...args) {
+        add(name: string, ...args) {
             this.checkBuilt();
             this.current.args.push(new RqlNode(name, args));
             return this;
@@ -122,18 +126,17 @@ function rqlBuilderFactory() {
         };
     });
 
-    operators.forEach((name) => {
-        RqlBuilder.prototype[name] = function (...args) {
-            return this.add(name, ...args);
-        };
-    });
+        operators.forEach((name) => {
+            RqlBuilder.prototype[name] = function (...args) {
+                return this.add(name, ...args);
+            };
+        });
 
-    sortLimit.forEach((name) => {
-        RqlBuilder.prototype[name] = function (...args) {
-            return this.sortLimit(name, ...args);
-        };
-    });
-
+        sortLimit.forEach((name) => {
+            RqlBuilder.prototype[name] = function (...args) {
+                return this.sortLimit(name, ...args);
+            };
+        });
     return RqlBuilder;
 }
 

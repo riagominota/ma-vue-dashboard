@@ -1,5 +1,5 @@
 import { AndOrNot } from './RqlBuilder';
-import { RqlArg, RqlNode } from './RqlNode';
+import RqlNode, { RqlArg } from './RqlNode';
 
 type RqlVisitorInstance = { [nodeName: string | ComparitorPredicate | AndOrNot]: RqlVisitor };
 
@@ -14,7 +14,7 @@ const comparatorPredicates: Record<string, (val: number) => boolean> = {
     gt: (val) => val > 0
 };
 
-const tokenSubstitutes = {
+const tokenSubstitutes: Record<string, string> = {
     '\\\\': `\\\\`,
     '\\*': '\\*',
     '\\?': '\\?',
@@ -22,17 +22,18 @@ const tokenSubstitutes = {
     '?': '.'
 };
 export class RqlVisitor {
-    sortComparator: string[] | null = null;
+    sortComparator: string | string[] | null = null;
     limitValue: number = 200;
     offset: number = 0;
+    propertyNameMap: Record<string, string> = {};
 
     constructor(options: RqlVisitorInstance) {
         Object.assign(this, options);
     }
 
-    visit(node: RqlNode): boolean | ((item: RqlVisitor) => boolean) {
+    visit(node: RqlNode): boolean | ((item: RqlVisitorInstance) => boolean) | ((item: RqlVisitor) => boolean) {
         if (typeof this[node.name as AndOrNot] === 'function') {
-            return this[node.name as AndOrNot](node.args);
+            return this[node.name as AndOrNot](node.args as RqlArg[]);
         }
 
         if (!comparatorPredicates.hasOwnProperty(node.name)) {
@@ -40,24 +41,24 @@ export class RqlVisitor {
         }
 
         // default implementation for comparison operations
-        const propertyName = node.args[0];
-        const target = node.args[1];
+        const propertyName = node.args[0] as string;
+        const target = node.args[1] as string;
         const comparator = this.getComparator(propertyName);
         const predicate = comparatorPredicates[node.name as ComparitorPredicate];
-        return (item: RqlVisitor) => predicate(comparator(this.getProperty(item, propertyName), target));
+        return (item: RqlVisitorInstance) => predicate(comparator(this.getProperty(item, propertyName), target));
     }
 
-    and(args: RqlVisitorInstance[]) {
+    and(args: RqlArg[]) {
         const children = args.map((a) => this.visit(a));
         return (item: RqlVisitorInstance) => children.every((p) => p(item));
     }
 
-    or(args: RqlVisitorInstance[]) {
+    or(args: RqlArg[]) {
         const children = args.map((a) => this.visit(a));
         return (item: RqlVisitor) => children.some((p) => p(item));
     }
 
-    not(args: RqlVisitorInstance[]) {
+    not(args: RqlArg[]) {
         return !this.and(args);
     }
 
@@ -69,8 +70,8 @@ export class RqlVisitor {
         return (item: RqlVisitor) => true;
     }
 
-    sort(args: string[]) {
-        this.sortComparator = args.reduce((prev, arg) => {
+    sort(args: any) {
+        this.sortComparator = args.reduce((prev: any, arg: any) => {
             let descending = false;
             let propertyName = null;
 
@@ -110,30 +111,30 @@ export class RqlVisitor {
         };
     }
 
-    match(args) {
+    match(args: string[]) {
         const propertyName = args[0];
         const matchString = args[1];
         const caseSensitive = !!args[2];
 
-        const pattern = this.constructor
+        const pattern = (this.constructor as typeof RqlVisitor)
             .tokenize(Object.keys(tokenSubstitutes), matchString)
             .map((t) => {
-                return tokenSubstitutes.hasOwnProperty(t) ? tokenSubstitutes[t] : this.constructor.regExpEscape(t);
+                return tokenSubstitutes.hasOwnProperty(t) ? tokenSubstitutes[t] : (this.constructor as typeof RqlVisitor).regExpEscape(t);
             })
             .join('');
 
         const regex = new RegExp('^' + pattern + '$', caseSensitive ? '' : 'i');
-        return (item) => {
+        return (item: any) => {
             const propertyValue = this.getProperty(item, propertyName);
             return regex.test(propertyValue);
         };
     }
 
-    contains(args) {
+    contains(args: string[]) {
         const propertyName = args[0];
         const target = args[1];
         const comparator = this.getComparator(propertyName);
-        return (item) => {
+        return (item: any) => {
             const propertyValue = this.getProperty(item, propertyName);
             if (typeof propertyValue === 'string') {
                 return propertyValue.includes(target);
@@ -147,7 +148,7 @@ export class RqlVisitor {
         };
     }
 
-    getProperty(item, propertyName: string) {
+    getProperty(item: any, propertyName: string) {
         if (this.propertyNameMap && this.propertyNameMap.hasOwnProperty(propertyName)) {
             propertyName = this.propertyNameMap[propertyName];
         }
@@ -170,7 +171,7 @@ export class RqlVisitor {
         };
     }
 
-    static compare(a: number | string, b: number | string) {
+    static compare(a: string, b: string) {
         if (a === b) return 0;
         // try using valueOf()
         if (a < b) return -1;
@@ -184,15 +185,15 @@ export class RqlVisitor {
         return 0;
     }
 
-    static reverseComparator(comparator) {
-        return (a, b) => -comparator(a, b);
+    static reverseComparator(comparator: (a: string, b: string) => number) {
+        return (a: string, b: string) => -comparator(a, b);
     }
 
-    static thenComparator(first, second) {
+    static thenComparator(first: (a: string, b: string) => number, second: (a: string, b: string) => number) {
         if (first == null) {
             return second;
         }
-        return (a, b) => first(a, b) || second(a, b);
+        return (a: string, b: string) => first(a, b) || second(a, b);
     }
 
     static regExpEscape(s: string) {

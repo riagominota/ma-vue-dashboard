@@ -1,12 +1,19 @@
-/*
- * Copyright (C) 2021 Radix IoT LLC. All rights reserved.
- */
+import {axios} from '@/boot/axios'
+import { Util } from '@/composables/Util';
+import rqlBuilderFactory from './RqlBuilder';
+import constants from '@/boot/constants';
+import resourceCacheFactory from '@/stores/ResourceCache';
+import NotificationManagerFactory from './NotificationManager';
+import { Interaction } from 'chart.js';
 
-import angular from 'angular';
+const MA_TIMEOUTS = constants.MA_TIMEOUTS;
 
-restResourceFactory.$inject = ['$http', '$q', '$timeout', 'maUtil', 'maNotificationManager', 'maRqlBuilder', 'MA_TIMEOUTS', 'maResourceCache'];
-function restResourceFactory($http, $q, $timeout, maUtil, NotificationManager, RqlBuilder, MA_TIMEOUTS, ResourceCache) {
 
+
+function restResourceFactory() {
+
+    const NotificationManager = NotificationManagerFactory;
+    const RqlBuilder = rqlBuilderFactory();
     const hasSymbol = typeof Symbol === 'function';
     const idProperty = 'xid';
     const originalIdProperty = hasSymbol ? Symbol('originalId') : 'originalId';
@@ -14,18 +21,28 @@ function restResourceFactory($http, $q, $timeout, maUtil, NotificationManager, R
     const httpBodyProperty = hasSymbol ? Symbol('httpBody') : '_httpBody';
     const cacheProperty = hasSymbol ? Symbol('cache') : '_cache';
 
-    class RestResource {
-        constructor(properties) {
-            Object.assign(this, angular.copy(this.constructor.defaultProperties), properties);
+interface objectRecord
+{
+    xidPrefix:string;
+    [key:string]:string
+}
 
-            if (this.constructor.idProperty) {
-                const itemId = this[this.constructor.idProperty];
+    class RestResource implements objectRecord {
+
+        xidPrefix:string = "";
+        
+
+        constructor(properties) {
+            Object.assign(this, JSON.parse(JSON.stringify((this.constructor as typeof RestResource & { [key: string]: string }).defaultProperties)), properties);
+
+            if ((this.constructor as typeof RestResource).idProperty) {
+                const itemId:string = this [ (this.constructor as typeof RestResource).idProperty ];
                 if (itemId) {
                     // item already has an ID store it in a private property so we can use it later when updating the item
                     this.setOriginalId(itemId);
                 } else {
                     // new item, generate a new id for the item
-                    this[this.constructor.idProperty] = (this.constructor.xidPrefix || '') + maUtil.uuid();
+                    this[(this.constructor as typeof RestResource).idProperty] = ((this.constructor as typeof RestResource & { [key: string]: string }).xidPrefix || '') + Util.uuid();
                 }
             }
 
@@ -56,11 +73,11 @@ function restResourceFactory($http, $q, $timeout, maUtil, NotificationManager, R
          * @returns {NotificationManager}
          */
         static get notificationManager() {
-            let notificationManager = this[notificationManagerProperty];
+            let notificationManager:NotificationManager = this[notificationManagerProperty];
 
             if (!notificationManager) {
                 notificationManager = this.createNotificationManager();
-                this[notificationManagerProperty] = notificationManager;
+                this[notificationManagerProperty as symbol | "_notificationManager" ] = notificationManager;
             }
 
             return notificationManager;
@@ -158,7 +175,7 @@ function restResourceFactory($http, $q, $timeout, maUtil, NotificationManager, R
             this.notify(eventType, item, attributes);
         }
 
-        static notify(...args) {
+        static notify(...args: any[]) {
             // we only want to notify the listeners if they dont have a connected websocket
             // otherwise they will get 2 events
             return this.notificationManager.notifyIfNotConnected(...args);
@@ -185,7 +202,7 @@ function restResourceFactory($http, $q, $timeout, maUtil, NotificationManager, R
         }
 
         getEncodedId() {
-            return this.constructor.encodeUriSegment(this.getOriginalId());
+            return (this.constructor as typeof RestResource).encodeUriSegment(this.getOriginalId());
         }
 
         setHttpBody(httpBody) {
@@ -204,7 +221,7 @@ function restResourceFactory($http, $q, $timeout, maUtil, NotificationManager, R
             const copy = angular.copy(this);
 
             if (createWithNewId) {
-                copy[this.constructor.idProperty] = (this.constructor.xidPrefix || '') + maUtil.uuid();
+                copy[(this.constructor as typeof RestResource).idProperty] = ((this.constructor as typeof RestResource).xidPrefix || '') + Util.uuid();
                 delete copy.id;
             } else if (!this.isNew()) {
                 copy.setOriginalId(this.getOriginalId());
@@ -221,15 +238,15 @@ function restResourceFactory($http, $q, $timeout, maUtil, NotificationManager, R
             const originalId = this.getOriginalId();
             opts.resourceInfo = {resourceMethod: 'get', originalId};
 
-            return this.constructor.http({
-                url: this.constructor.baseUrl + '/' + this.constructor.encodeUriSegment(originalId),
+            return (this.constructor as typeof RestResource).http({
+                url: (this.constructor as typeof RestResource).baseUrl + '/' + (this.constructor as typeof RestResource).encodeUriSegment(originalId),
                 method: 'GET',
                 params: opts.params
             }, opts).then(response => {
                 this.itemUpdated(response.data, opts.responseType);
                 this.initialize('get');
-                if (this.constructor.notifyUpdateOnGet) {
-                    this.constructor.notifyCrudOperation('update', this, originalId);
+                if ((this.constructor as typeof RestResource).notifyUpdateOnGet) {
+                    (this.constructor as typeof RestResource).notifyCrudOperation('update', this, originalId);
                 }
                 return this;
             });
@@ -239,15 +256,15 @@ function restResourceFactory($http, $q, $timeout, maUtil, NotificationManager, R
             const originalId = this.getOriginalId();
             opts.resourceInfo = {resourceMethod: 'getById', originalId};
 
-            return this.constructor.http({
-                url: this.constructor.baseUrl + '/by-id/' + this.constructor.encodeUriSegment(this.id),
+            return (this.constructor as typeof RestResource).http({
+                url: (this.constructor as typeof RestResource).baseUrl + '/by-id/' + (this.constructor as typeof RestResource).encodeUriSegment(this.id),
                 method: 'GET',
                 params: opts.params
             }, opts).then(response => {
                 this.itemUpdated(response.data, opts.responseType);
                 this.initialize('get');
-                if (this.constructor.notifyUpdateOnGet) {
-                    this.constructor.notifyCrudOperation('update', this, originalId);
+                if ((this.constructor as typeof RestResource).notifyUpdateOnGet) {
+                    (this.constructor as typeof RestResource).notifyCrudOperation('update', this, originalId);
                 }
                 return this;
             });
@@ -260,9 +277,9 @@ function restResourceFactory($http, $q, $timeout, maUtil, NotificationManager, R
                 }
                 return $q.reject(error);
             }).then(item => {
-                const id = this[this.constructor.idProperty];
+                const id = this[(this.constructor as typeof RestResource).idProperty];
 
-                this.constructor.notificationManager.subscribeToXids([id], (event, updatedItem) => {
+                (this.constructor as typeof RestResource).notificationManager.subscribeToXids([id], (event, updatedItem) => {
                     this.itemUpdated(updatedItem);
                     this.initialize('webSocket.' + event.name);
                 }, $scope);
@@ -279,16 +296,16 @@ function restResourceFactory($http, $q, $timeout, maUtil, NotificationManager, R
 
             let url, method;
             if (originalId) {
-                url = this.constructor.baseUrl + '/' + this.constructor.encodeUriSegment(originalId);
+                url = (this.constructor as typeof RestResource).baseUrl + '/' + (this.constructor as typeof RestResource).encodeUriSegment(originalId);
                 method = 'PUT';
                 opts.resourceInfo.saveType = saveType;
             } else {
-                url = this.constructor.baseUrl;
+                url = (this.constructor as typeof RestResource).baseUrl;
                 method = 'POST';
                 opts.resourceInfo.saveType = saveType;
             }
 
-            return this.constructor.http({
+            return (this.constructor as typeof RestResource).http({
                 url,
                 method,
                 data: this[httpBodyProperty] || this,
@@ -296,7 +313,7 @@ function restResourceFactory($http, $q, $timeout, maUtil, NotificationManager, R
             }, opts).then(response => {
                 this.itemUpdated(response.data, opts.responseType);
                 this.initialize(saveType);
-                this.constructor.notifyCrudOperation(saveType, this, originalId);
+                (this.constructor as typeof RestResource).notifyCrudOperation(saveType, this, originalId);
                 return this;
             });
         }
@@ -308,7 +325,7 @@ function restResourceFactory($http, $q, $timeout, maUtil, NotificationManager, R
                 } else {
                     angular.copy(item, this);
                 }
-                this.setOriginalId(this[this.constructor.idProperty]);
+                this.setOriginalId(this[(this.constructor as typeof RestResource).idProperty]);
             } else {
                 this[httpBodyProperty] = item;
             }
@@ -318,15 +335,15 @@ function restResourceFactory($http, $q, $timeout, maUtil, NotificationManager, R
             const originalId = this.getOriginalId();
             opts.resourceInfo = {resourceMethod: 'delete', originalId};
 
-            return this.constructor.http({
-                url: this.constructor.baseUrl + '/' + this.constructor.encodeUriSegment(originalId),
+            return (this.constructor as typeof RestResource).http({
+                url: (this.constructor as typeof RestResource).baseUrl + '/' + (this.constructor as typeof RestResource).encodeUriSegment(originalId),
                 method: 'DELETE',
                 params: opts.params
             }, opts).then(response => {
                 this.itemUpdated(response.data, opts.responseType);
                 this.deleteOriginalId();
                 this.initialize('delete');
-                this.constructor.notifyCrudOperation('delete', this, originalId);
+                (this.constructor as typeof RestResource).notifyCrudOperation('delete', this, originalId);
                 return this;
             });
         }
@@ -345,12 +362,12 @@ function restResourceFactory($http, $q, $timeout, maUtil, NotificationManager, R
                         httpConfig.timeout.cancelled = true;
                     });
                 } else {
-                    const timeoutPromise = $timeout(angular.noop, timeout, false);
+                    const timeoutPromise = timeout(()=>{}, timeout, false);
                     const userCancelledPromise = opts.cancel.finally(() => {
-                        $timeout.cancel(timeoutPromise);
+                        timeout.cancel(timeoutPromise);
                         httpConfig.timeout.cancelled = true;
                     });
-                    httpConfig.timeout = $q.race([userCancelledPromise, timeoutPromise.catch(angular.noop)]);
+                    httpConfig.timeout = $q.race([userCancelledPromise, timeoutPromise.catch(()=>{})]);
                 }
             }
 

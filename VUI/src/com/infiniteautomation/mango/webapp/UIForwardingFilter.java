@@ -51,41 +51,45 @@ public class UIForwardingFilter implements Filter {
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
         String requestURI = httpRequest.getRequestURI();
-        if (requestURI.startsWith(FORWARD_FROM_PATH)) {
-            String relativePath = requestURI.substring(FORWARD_FROM_PATH.length());
-            URL resourceUrl = httpRequest.getServletContext().getResource(FORWARD_TO_PATH + relativePath);
-
-            // if the resource is not an actual file we return the index.html file so the webapp can display a 404 not found message
-            // only redirect to the index.html file if it's a browser request
-            if (resourceUrl == null && BrowserRequestMatcher.INSTANCE.matches(httpRequest)) {
-                relativePath = "/";
-            }
-
-            if ("/serviceWorker.js".equals(relativePath) || "/".equals(relativePath)) {
-                // use max-age=0 for serviceWorker.js and index.html
-                httpRequest.setAttribute(MangoCacheControlHeaderFilter.CACHE_OVERRIDE_SETTING, CacheControlLevel.DEFAULT);
-            }
-
-            httpRequest.getRequestDispatcher(FORWARD_TO_PATH + relativePath).forward(httpRequest, httpResponse);
-        } /* else
-        if (requestURI.startsWith(ORIG_FORWARD_FROM_PATH)) {
-            String relativePath = requestURI.substring(FORWARD_FROM_PATH.length());
-            URL resourceUrl = httpRequest.getServletContext().getResource(ORIG_FORWARD_TO_PATH + relativePath);
-
-            // if the resource is not an actual file we return the index.html file so the webapp can display a 404 not found message
-            // only redirect to the index.html file if it's a browser request
-            if (resourceUrl == null && BrowserRequestMatcher.INSTANCE.matches(httpRequest)) {
-                relativePath = "/";
-            }
-
-            if ("/serviceWorker.js".equals(relativePath) || "/".equals(relativePath)) {
-                // use max-age=0 for serviceWorker.js and index.html
-                httpRequest.setAttribute(MangoCacheControlHeaderFilter.CACHE_OVERRIDE_SETTING, CacheControlLevel.DEFAULT);
-            }
-
-            httpRequest.getRequestDispatcher(ORIG_FORWARD_TO_PATH + relativePath).forward(httpRequest, httpResponse);
-        } */ else
+         if (requestURI.startsWith(FORWARD_FROM_PATH) || requestURI.startsWith(ORIG_FORWARD_FROM_PATH) )
          {
+            if (requestURI.startsWith(FORWARD_FROM_PATH)) {
+                String relativePath = requestURI.substring(FORWARD_FROM_PATH.length());
+                URL resourceUrl = httpRequest.getServletContext().getResource(FORWARD_TO_PATH + relativePath);
+
+                // if the resource is not an actual file we return the index.html file so the webapp can display a 404 not found message
+                // only redirect to the index.html file if it's a browser request
+                if (resourceUrl == null && BrowserRequestMatcher.INSTANCE.matches(httpRequest)) {
+                    relativePath = "/";
+                }
+
+                // if ("/serviceWorker.js".equals(relativePath) || "/".equals(relativePath)) {
+                //     // use max-age=0 for serviceWorker.js and index.html
+                //     httpRequest.setAttribute(MangoCacheControlHeaderFilter.CACHE_OVERRIDE_SETTING, CacheControlLevel.DEFAULT);
+                // }
+
+                httpRequest.getRequestDispatcher(FORWARD_TO_PATH + relativePath).forward(httpRequest, httpResponse);
+            } 
+            if (requestURI.startsWith(ORIG_FORWARD_FROM_PATH)) {
+                String relativePath = requestURI.substring(ORIG_FORWARD_FROM_PATH.length());
+                URL resourceUrl = httpRequest.getServletContext().getResource(ORIG_FORWARD_TO_PATH + relativePath);
+
+                // if the resource is not an actual file we return the index.html file so the webapp can display a 404 not found message
+                // only redirect to the index.html file if it's a browser request
+                if (resourceUrl == null && BrowserRequestMatcher.INSTANCE.matches(httpRequest)) {
+                    relativePath = "/";
+                }
+
+                if ("/serviceWorker.js".equals(relativePath) || "/".equals(relativePath)) {
+                    // use max-age=0 for serviceWorker.js and index.html
+                    httpRequest.setAttribute(MangoCacheControlHeaderFilter.CACHE_OVERRIDE_SETTING, CacheControlLevel.DEFAULT);
+                }
+
+                httpRequest.getRequestDispatcher(ORIG_FORWARD_TO_PATH + relativePath).forward(httpRequest, httpResponse);
+           }
+        }
+        else
+        {
             chain.doFilter(request, response);
         }
     }

@@ -3,9 +3,13 @@
  */
 
 import angular from 'angular';
+import constants from '@/boot/constants'
+
 
 NotificationManagerFactory.$inject = ['MA_BASE_URL', '$rootScope', 'MA_TIMEOUTS', '$q', '$timeout', 'maEventBus', 'maWatchdog'];
-function NotificationManagerFactory(MA_BASE_URL, $rootScope, MA_TIMEOUTS, $q, $timeout, maEventBus, maWatchdog) {
+function NotificationManagerFactory(maEventBus, maWatchdog) {
+    const MA_BASE_URL = constants.MA_BASE_URL;
+    const MA_TIMEOUTS = constants.MA_TIMEOUTS;
 
     //const READY_STATE_CONNECTING = 0;
     const READY_STATE_OPEN = 1;

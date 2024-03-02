@@ -2,95 +2,118 @@
  * Copyright (C) 2021 Radix IoT LLC. All rights reserved.
  */
 
-eventBusFactory.$inject = ['$log'];
-function eventBusFactory($log) {
+import { umask } from "node:process";
+
+
 
     const SINGLE_LEVEL_WILDCARD = '+';
     const MULTI_LEVEL_WILDCARD = '#';
     const PATH_SEPARATOR = '/';
 
     class EventBusEvent extends CustomEvent {
-        constructor(topic) {
+        constructor(topic:string) {
             super(topic);
         }
     }
 
-    class Topic {
-        constructor(parent) {
-            this.parent = parent;
-            this.subscribers = new Set();
-            this.subtopics = new Map();
-        }
+    export type SubtopicMap<T,P=undefined> = Map<string,Topic<T,P>>
+    export type SubscribeCallback = (event:any,current:any)=>void
+    export type TopicConstructor = <T,P=undefined>(parent?:Topic<T,P>)=>Topic<T,P>
+    export type Listener = {call:(handle:string|undefined,event:Event,...args: any[])=>any,[k:string]:any}
 
-        createSubtopic(name) {
-            let subtopic = this.subtopics.get(name);
+    export interface Topic<T,P=undefined>
+    {
+    publishToSubscribers: (event: any, args: any) => void;
+    publish: (path: any, event: any, args: any, i: number) => void;
+    isEmpty: () => boolean;
+    unsubscribe: (path: string[], listener: Listener, index: number) => any;
+    parent:Topic<P> | undefined
+    subscribers:Set<Listener>
+    subtopics:SubtopicMap<T,P>
+    createSubtopic: <S,T extends P>(name:string)=>Topic<S,T>
+    subscribe (path:string[], listener:Listener , index:number ):void
+}
+
+export const Topic:TopicConstructor = <T,P=undefined>(parent?:Topic<P,Listener>) => 
+    {     
+        const that:Topic<T,P> = this as unknown as Topic<T,P>;
+        that.parent=parent;
+        that.subscribers = new Set<Listener>(),
+        that.subtopics = new Map() as SubtopicMap<T,P>,
+        
+
+        that.createSubtopic = <S=any,P=T>(name: string):Topic<S,  T>=> {
+            let subtopic = that.subtopics.get(name);
             if (!subtopic) {
-                subtopic = new Topic(this);
-                this.subtopics.set(name, subtopic);
+                subtopic = Topic(that);
+                that.subtopics.set(name, subtopic);
             }
             return subtopic;
-        }
+        },
 
-        subscribe(path, listener, i = 0) {
+        that.subscribe = (path: string[], listener:Listener, i = 0 ) => {
             const segment = path[i];
             if (segment == null) {
-                this.subscribers.add(listener);
+                (that.subscribers).add(listener);
             } else {
-                const subtopic = this.createSubtopic(segment);
-                subtopic.subscribe(path, listener, i + 1);
+                const subtopic = that.createSubtopic(segment);
+                subtopic.subscribe(path as string[], listener, i + 1);
             }
-        }
+        },
 
-        unsubscribe(path, listener, i = 0) {
+        that.unsubscribe=(path:string[], listener:Listener, i = 0) => {
             const segment = path[i];
             if (segment == null) {
-                return this.subscribers.delete(listener);
+                return that.subscribers.delete(listener);
             } else {
-                const subtopic = this.subtopics.get(segment);
+                const subtopic = that.subtopics.get(segment);
                 if (subtopic) {
                     const deleted = subtopic.unsubscribe(path, listener, i + 1);
                     if (deleted && subtopic.isEmpty()) {
-                        this.subtopics.delete(segment);
+                        that.subtopics.delete(segment);
                     }
                     return deleted;
                 }
             }
             return false;
-        }
+        },
 
-        isEmpty() {
-            return !this.subscribers.size && !this.subtopics.size;
-        }
+        that.isEmpty=() => {
+            return !that.subscribers.size && !that.subtopics.size;
+        },
 
-        publish(path, event, args, i = 0) {
+        that.publish=(path, event, args, i = 0) => {
             const segment = path[i];
             if (segment == null) {
-                this.publishToSubscribers(event, args);
+                that.publishToSubscribers(event, args);
             } else {
-                const subtopic = this.subtopics.get(segment);
+                const subtopic = that.subtopics.get(segment);
                 if (subtopic) {
                     subtopic.publish(path, event, args, i + 1);
                 }
-                const singleLevelWildcardTopic = this.subtopics.get(SINGLE_LEVEL_WILDCARD);
+                const singleLevelWildcardTopic = that.subtopics.get(SINGLE_LEVEL_WILDCARD);
                 if (singleLevelWildcardTopic) {
                     singleLevelWildcardTopic.publish(path, event, args, i + 1);
                 }
-                const multiLevelWildcardTopic = this.subtopics.get(MULTI_LEVEL_WILDCARD);
+                const multiLevelWildcardTopic = that.subtopics.get(MULTI_LEVEL_WILDCARD);
                 if (multiLevelWildcardTopic) {
                     multiLevelWildcardTopic.publishToSubscribers(event, args);
                 }
             }
-        }
+        },
 
-        publishToSubscribers(event, args) {
-            for (const subscriber of this.subscribers) {
+        that.publishToSubscribers=(event, args) =>{
+            for (const subscriber of that.subscribers) {
                 try {
                     subscriber.call(undefined, event, ...args);
                 } catch (e) {
-                    $log.error(e);
+                    console.error(e);
                 }
             }
-        }
+        };
+
+        return that;
+        
     }
 
     /**
@@ -99,82 +122,5 @@ function eventBusFactory($log) {
      * @description
      * Provides a generic event bus instance which can be shared and used amongst services and components
      */
-    class EventBus {
-        constructor() {
-            this.topic = new Topic();
-        }
+ 
 
-        /**
-         * @ngdoc method
-         * @methodOf ngMangoServices.maEventBus
-         * @name subscribe
-         *
-         * @description
-         * Subscribes a listener callback to a topic. Topic levels are separated by a / character
-         * and may contain a single-level wildcard (+) or a multi-level wildcard (#, at the end only).
-         *
-         * @param {string} topic Topic name
-         * @param {function} listener Listener callback, invoked when a matching event is published. The first argument
-         * is always an Event followed by the arguments passed to the publish method
-         * @returns {function} Unsubscribe function, calling this function will unsubscribe the listener
-         */
-        subscribe(topic, listener) {
-            const path = topic.split(PATH_SEPARATOR);
-            const i = path.indexOf(MULTI_LEVEL_WILDCARD);
-            if (i >= 0 && i < path.length - 1) {
-                throw new Error('Multi-level wildcard can only be at end of topic');
-            }
-
-            this.topic.subscribe(path, listener);
-            return () => {
-                this.topic.unsubscribe(path, listener);
-            };
-        }
-
-        /**
-         * @ngdoc method
-         * @methodOf ngMangoServices.maEventBus
-         * @name unsubscribe
-         *
-         * @description
-         * Unsubscribes a listener callback for a topic.
-         *
-         * @param {string} topic Topic name, must be exactly the same as the topic that was supplied when listener was
-         * subscribed
-         * @param {function} listener Listener callback
-         * @returns {boolean} true if the listener was successfully removed
-         */
-        unsubscribe(topic, listener) {
-            const path = topic.split(PATH_SEPARATOR);
-            return this.topic.unsubscribe(path, listener);
-        }
-
-        /**
-         * @ngdoc method
-         * @methodOf ngMangoServices.maEventBus
-         * @name publish
-         *
-         * @description
-         * Unsubscribes a listener callback for a topic.
-         *
-         * @param {string} topic Topic name, cannot contain wildcards
-         * @param {*} args arbitrary number of arguments which will be passed to the listeners (after the event argument)
-         */
-        publish(topic, ...args) {
-            let event;
-            if (topic instanceof Event) {
-                event = topic;
-                topic = event.type;
-            } else {
-                event = new EventBusEvent(topic);
-            }
-
-            const path = topic.split(PATH_SEPARATOR);
-            this.topic.publish(path, event, args);
-        }
-    }
-
-    return new EventBus();
-}
-
-export default eventBusFactory;

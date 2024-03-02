@@ -1,4 +1,6 @@
 import { createApp, markRaw } from 'vue';
+
+
 import App from './App.vue';
 import router from './router';
 import pinia from './boot/pinia';
@@ -101,6 +103,8 @@ import TriStateCheckbox from 'primevue/tristatecheckbox';
 import VirtualScroller from 'primevue/virtualscroller';
 
 import BlockViewer from '@/components/BlockViewer.vue';
+import MdIcon from './composables/MdIcon.vue';
+
 
 import '@/assets/styles.scss';
 import { axios, api } from './boot/axios';
@@ -116,7 +120,7 @@ app.config.globalProperties = { ...app.config.globalProperties, ...constantsObj 
 
 console.log(app.config.globalProperties);
 
-app.use(pinia); //Must be first to preload states before router
+app.use(pinia.pinia); //Must be first to preload states before router
 app.use(router);
 app.use(PrimeVue, { ripple: true });
 app.use(ToastService);
@@ -128,7 +132,9 @@ app.directive('badge', BadgeDirective);
 app.directive('ripple', Ripple);
 app.directive('styleclass', StyleClass);
 
+
 app.component('BlockViewer', BlockViewer);
+app.component('MdIcon', MdIcon);
 
 app.component('Accordion', Accordion);
 app.component('AccordionTab', AccordionTab);

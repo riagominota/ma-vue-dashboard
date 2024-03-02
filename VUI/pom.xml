@@ -9,7 +9,7 @@
 	<artifactId>vui</artifactId>
 	<name>mangoVUI</name>
 	<version>4.5.10</version>
-	<description>Provides an Vue 3 user interface, including the ability to create custom pages</description>
+	<description>Provides a Vue 3 user interface, including the ability to create custom pages</description>
 	<build>
 		<plugins>
 			<plugin>

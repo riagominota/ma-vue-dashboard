@@ -3,9 +3,10 @@ import { computed } from "vue";
 import { useRouter } from "vue-router";
 import {useUserStore} from "./UserStore";
 import { DateTime } from "luxon";
+import constants from "@/boot/constants";
 
 const routerStore = defineStore('routerStore',()=>{
-    const basePath = '/vui/';
+    const basePath = constants.MA_BASE_URL;
     const userStore = useUserStore()
     const router = useRouter();
     let lastUpgradeTime:DateTime;

@@ -35,7 +35,12 @@ const routes = [
                         component: () => import('@/views/uikit/menu/ConfirmationDemo.vue')
                     }
                 ]
-            }
+            },
+            {
+                path: '/admin-home',
+                name: 'Admin Home',
+                component: () => import('@/views/pages/AdminHome.vue')
+            },
         ]
     },
     {

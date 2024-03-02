@@ -1,6 +1,6 @@
 const constantsObj = () => {
     return {
-        MA_BASE_URL: '',
+        MA_BASE_URL: '/vui',
         MA_TIMEOUTS: {
             // NOTE: update uiSettings.json as well! These timeouts are overridden by the timeouts in the UI Settings
             xhr: 30000, // default XMLHttpRequest timeout

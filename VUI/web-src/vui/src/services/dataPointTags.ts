@@ -1,7 +1,5 @@
-/*
- * Copyright (C) 2021 Radix IoT LLC. All rights reserved.
- */
-
+import {axios} from '@/boot/axios'
+import rqlBuilderFactory from './RqlBuilder';
 dataPointTagsFactory.$inject = ['$http', 'maRqlBuilder', 'maTemporaryRestResource'];
 function dataPointTagsFactory($http, RqlBuilder, TemporaryRestResource) {
 

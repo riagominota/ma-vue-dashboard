@@ -4,21 +4,24 @@
 
 import RqlNode, { RqlArg } from './RqlNode';
 import { RqlFilter } from './RqlFilter';
-import { RqlVisitor } from './RqlVisitor';
+import { RqlVisitor, RqlVisitorInstance } from './RqlVisitor';
 
-export type AndOrNot = 'and' | 'or' | 'not'
-export type SortLimit = 'sort'| 'limit';
+export type AndOrNot = 'and' | 'or' | 'not';
+export type SortLimit = 'sort' | 'limit';
 export type ComparatorOperators = ['eq', 'ne', 'le', 'ge', 'lt', 'gt', 'in', 'match', 'contains'];
 
 function rqlBuilderFactory() {
-    const andOrNot:AndOrNot[] = ['and', 'or', 'not'];
+    const andOrNot: AndOrNot[] = ['and', 'or', 'not'];
     const sortLimit = ['sort', 'limit'];
     const operators = ['eq', 'ne', 'le', 'ge', 'lt', 'gt', 'in', 'match', 'contains'];
 
     class RqlBuilder {
-        readonly path: RqlNode[];
+        private path: RqlNode[];
+        visitorOptions: RqlVisitorInstance;
+        built: RqlNode | RqlArg | RqlArg[] = '';
+        queryFunction?: any;
 
-        constructor(root = new RqlNode(), visitorOptions = {}) {
+        constructor(root = new RqlNode(), visitorOptions: RqlVisitorInstance = {}) {
             this.path = [root];
             this.visitorOptions = visitorOptions;
         }
@@ -40,7 +43,7 @@ function rqlBuilderFactory() {
 
         copy() {
             this.checkBuilt();
-            return new this.constructor(this.root.copy());
+            return new (this.constructor as typeof RqlBuilder)(this.root.copy());
         }
 
         get current(): RqlNode {
@@ -51,7 +54,7 @@ function rqlBuilderFactory() {
             return this.path[0];
         }
 
-        addAndEnter(name: string, ...args) {
+        addAndEnter(name: string, ...args: RqlArg[]) {
             this.checkBuilt();
             const newCurrent = new RqlNode(name, args);
             this.current.args.push(newCurrent);
@@ -68,19 +71,19 @@ function rqlBuilderFactory() {
             }
         }
 
-        add(name: string, ...args) {
+        add(name: string, ...args: RqlArg[]) {
             this.checkBuilt();
             this.current.args.push(new RqlNode(name, args));
             return this;
         }
 
-        sortLimit(name, ...args) {
+        sortLimit(name: string, ...args: RqlArg[]) {
             this.checkBuilt();
             if (this.path.length > 1) {
                 console.warn(`Doing ${name} higher than root`);
             }
 
-            if (this.current.name !== 'and') {
+            if (this.current.name !== 'and' && this.path.length) {
                 const prev = this.path.pop();
                 const replacement = new RqlNode('and', [prev]);
                 this.path.push(replacement);
@@ -94,7 +97,7 @@ function rqlBuilderFactory() {
          * @param opts
          * @returns {Promise}
          */
-        query(opts) {
+        query(opts: string) {
             if (this.queryFunction) {
                 return this.queryFunction(this, opts);
             }
@@ -107,7 +110,7 @@ function rqlBuilderFactory() {
          */
         createFilter() {
             const visitor = new RqlVisitor(this.visitorOptions);
-            return new RqlFilter(this.build(), visitor);
+            return new RqlFilter(this.build() as RqlNode, visitor);
         }
 
         checkBuilt() {
@@ -126,17 +129,17 @@ function rqlBuilderFactory() {
         };
     });
 
-        operators.forEach((name) => {
-            RqlBuilder.prototype[name] = function (...args) {
-                return this.add(name, ...args);
-            };
-        });
+    operators.forEach((name) => {
+        RqlBuilder.prototype[name] = function (...args) {
+            return this.add(name, ...args);
+        };
+    });
 
-        sortLimit.forEach((name) => {
-            RqlBuilder.prototype[name] = function (...args) {
-                return this.sortLimit(name, ...args);
-            };
-        });
+    sortLimit.forEach((name) => {
+        RqlBuilder.prototype[name] = function (...args) {
+            return this.sortLimit(name, ...args);
+        };
+    });
     return RqlBuilder;
 }
 

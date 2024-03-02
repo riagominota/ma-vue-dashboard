@@ -8,9 +8,9 @@ export type RqlArg = string | number | Date;
 
 class RqlNode implements RqlNode {
     readonly name: string;
-    readonly args: RqlArg[];
+    readonly args: (RqlArg | RqlNode | RqlArg)[];
 
-    constructor(name = 'and', args: RqlArg[] = []) {
+    constructor(name = 'and', args: (RqlArg | RqlNode | RqlArg)[] = []) {
         this.name = name;
         this.args = args;
     }

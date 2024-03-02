@@ -1,7 +1,7 @@
 import { AndOrNot } from './RqlBuilder';
 import RqlNode, { RqlArg } from './RqlNode';
 
-type RqlVisitorInstance = { [nodeName: string | ComparitorPredicate | AndOrNot]: RqlVisitor };
+export type RqlVisitorInstance = { [nodeName: string | ComparitorPredicate | AndOrNot]: RqlVisitor };
 
 type ComparitorPredicate = 'eq' | 'ne' | 'le' | 'ge' | 'lt' | 'gt';
 

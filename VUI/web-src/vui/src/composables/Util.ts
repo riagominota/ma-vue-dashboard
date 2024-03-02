@@ -1045,7 +1045,7 @@ function UtilFactory( RqlBuilder ) {
             for (const key in data) {
                 const fieldValue = data[key];
                 const defaultValue = defaults && defaults[key];
-                if (typeof fieldValue !== 'function' && Object..equals(fieldValue, defaultValue)) {
+                if (typeof fieldValue !== 'function' && Object.equals(fieldValue, defaultValue)) {
                     if (fieldValue && typeof fieldValue === 'object' && !Array.isArray(fieldValue)) {
                         const diff = deepDiff(fieldValue, defaultValue);
                         if (Object.keys(diff).length) {

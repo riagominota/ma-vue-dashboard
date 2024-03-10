@@ -16,7 +16,7 @@ import ramSvg from '@/assets/svgs/ram-icon.svg';
                 <template #title>
                     <span layout layout-align="center center">
                         <i class="fa fa-server" aria-hidden="true"></i>
-                        <span class="ma-card-title" ma-tr="vui.adminHome.serverStatus">vui.adminHome.serverStatus</span>
+                        <span class="ma-card-title" v-tr='"vui.adminHome.serverStatus"' v-tr:args="[3]">vui.adminHome.serverStatus</span>
                     </span>
                     <Button ma-tr="vui.app.moreDetails" ui-sref="vui.settings.systemStatus"></Button>
                 </template>

@@ -15,23 +15,21 @@ import Globalize from 'globalize';
 import likelySubtags from 'cldr-data/supplemental/likelySubtags.json';
 import plurals from 'cldr-data/supplemental/plurals.json';
 import {axios} from '@/boot/axios'
-
-import { defineStore } from "pinia";
-import { computed } from "vue";
+import { useEventBusStore } from "./EventBusStore";
+import { Store, defineStore } from "pinia";
+import { computed, inject, reactive } from "vue";
 import {useUserStore} from "./UserStore";
 import constants from "@/boot/constants";
 
-const translationStore = defineStore('translationStore',()=>{
+const useTranslationStore = defineStore('translationStore',()=>{
     
-
+        const EventBusStore = useEventBusStore()
         Globalize.load(likelySubtags);
         Globalize.load(plurals);
         
-        const loadedNamespaces:Record<string,Record<string,Record<string,string>>> = {};
+        const loadedNamespaces = reactive<Record<string,Record<string,Record<string,string>>>>({});
         const pendingRequests:Record<string,Record<string,Record<string,string>>> = {};
-    
-        const loadedTranslations = reactive(loadTranslations());        
-        
+            
         const setLocale = (locale:string) => {
             let globalizeLocale = Globalize.locale();
             if (!globalizeLocale || globalizeLocale.locale !== locale) {
@@ -74,7 +72,7 @@ const translationStore = defineStore('translationStore',()=>{
                         args = key.slice(1);
                         key = key[0];
                     } else if (args != null && !Array.isArray(args)) {
-                        console.warn('Deprecated use of maTranslate.tr()');
+                        console.warn('Deprecated use of Translation.tr()');
                         args = Array.prototype.slice.call(args , 1);
                     }
     
@@ -145,7 +143,7 @@ const translationStore = defineStore('translationStore',()=>{
                     }
     
                     return Promise.resolve().then( async () => {
-                        let namespacePromises = namespaces.map(namespace => {
+                        let namespacePromises = namespaces.map(async namespace => {
                             let loadedNamespace = loadedNamespaces[namespace];
                             if ( Object.prototype.hasOwnProperty.call(loadedNamespace,'then') ) {
                                 return loadedNamespace;
@@ -207,13 +205,17 @@ const translationStore = defineStore('translationStore',()=>{
     
 
     
-            maEventBus.subscribe('maUser/localeChanged', (event, locale) => {
+            EventBusStore.addNewTopic('maUser/localeChanged');
+            EventBusStore.subscribe('maUser/localeChanged', (event, locale) => {
                 const globalizeLocale = Globalize.locale();
                 if (!globalizeLocale || globalizeLocale.locale !== locale) {
                     // clear the translation namespace cache if the user's locale changes
                     clearLoadedNamespaces();
                 }
             });   
+            return {
+                tr
+            }
 });
 
-export default translationStore;
+export default useTranslationStore;

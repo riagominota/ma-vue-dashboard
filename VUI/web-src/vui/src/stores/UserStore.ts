@@ -61,7 +61,7 @@ const useUserStore = defineStore('userStore', () => {
 
     const revokeAuthTokens = async (username: string) => {
         let url = `${authTokenBaseUrl}/revoke`;
-        if (username != null && username !== (current && current.username)) {
+        if (username != null && username !== (current.value && current.value.username)) {
             url += `/${encodeURIComponent(username)}`;
         }
 

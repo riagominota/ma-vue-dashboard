@@ -1,0 +1,280 @@
+{
+  "titleSuffix": "Mango",
+  "logoSrc": "../img/Mango_logo_4c_inverted-01.svg",
+  "defaultTheme": "mangoDark2020",
+  "usePreferredColorScheme": true,
+  "alternateTheme": "mangoLight2020",
+  "alternateLogo": "../img/Mango_logo_4c-01.svg",
+  "codeTheme": "monokai",
+  "googleMapsApiKey": "",
+  "mapboxAccessToken": "",
+  "googleAnalyticsPropertyId": "",
+  "palettes": {
+    "mango-orange": {
+      "50": "#ffffff",
+      "100": "#ffdfbd",
+      "200": "#ffc485",
+      "300": "#ffa23d",
+      "400": "#ff941f",
+      "500": "#ff8500",
+      "600": "#e07500",
+      "700": "#c26500",
+      "800": "#a35500",
+      "900": "#854500",
+      "A100": "#ffba6f",
+      "A200": "#ff921c",
+      "A400": "#ff8500",
+      "A700": "#da7200",
+      "contrastDefaultColor": "light",
+      "contrastDarkColors": "50 100 200 300 A100"
+    },
+    "mango-blue": {
+      "50": "#f9fdff",
+      "100": "#ade8ff",
+      "200": "#75d9ff",
+      "300": "#2dc5ff",
+      "400": "#0fbdff",
+      "500": "#00adef",
+      "600": "#0097d0",
+      "700": "#0081b2",
+      "800": "#006b93",
+      "900": "#005475",
+      "A100": "#6dcaed",
+      "A200": "#24bbf5",
+      "A400": "#00adef",
+      "A700": "#006389",
+      "contrastDefaultColor": "light",
+      "contrastDarkColors": "50 100 200 300 A100"
+    },
+    "mango-blue-2020": {
+		"50": "#E8F0F5",
+		"100": "#A6C5D7",
+		"200": "#7AA9C3",
+		"300": "#4E8CAF",
+		"400": "#387EA5",
+		"500": "#22709B",
+		"600": "#0C6291",
+		"700": "#0B5A84",
+		"800": "#073650",
+		"900": "#052435",
+		"A100": "#D2E2EB",
+		"A200": "#BCD4E1",
+		"A400": "#649BB9",
+		"A700": "#09486A",
+		"contrastDefaultColor": "light",
+		"contrastDarkColors": "50 100 200 A100 A200"
+    },
+    "mango-orange-2020": {
+		"50": "#FAF1EE",
+		"100": "#F2D6CD",
+		"200": "#E5AD9B",
+		"300": "#DC927A",
+		"400": "#D47759",
+		"500": "#D06A49",
+		"600": "#BE6143",
+		"700": "#984E36",
+		"800": "#5F3122",
+		"900": "#391D14",
+		"A100": "#F6E3DD",
+		"A200": "#D06A49",
+		"A400": "#AB573C",
+		"A700": "#723A28",
+		"contrastDefaultColor": "light",
+		"contrastDarkColors": "50 100 200 A100"
+    },
+    "mango-background-2020": {
+		"50": "#FAFDFF",
+		"100": "#E3EBF0",
+		"200": "#DDE4E8",
+		"300": "#CFDDE6",
+		"400": "#C3D0D9",
+		"500": "#B8C4CC",
+		"600": "#123D59",
+		"700": "#113954",
+		"800": "#1F4259",
+		"900": "#17374D",
+		"A100": "#EBF2F7",
+		"A200": "#162F40",
+		"A400": "#222C33",
+		"A700": "#181F24",
+		"contrastDefaultColor": "light",
+		"contrastDarkColors": "50 100 200 300 400 500 A100"
+    }
+  },
+  "themes": {
+    "mangoLight": {
+      "primaryPalette": "mango-blue",
+      "primaryPaletteHues": {
+        "default": "500",
+        "hue-1": "300",
+        "hue-2": "800",
+        "hue-3": "100"
+      },
+      "accentPalette": "mango-orange",
+      "accentPaletteHues": {
+        "default": "A400",
+        "hue-1": "A100",
+        "hue-2": "A200",
+        "hue-3": "A700"
+      },
+      "dark": false
+    },
+    "mangoDark": {
+      "primaryPalette": "mango-blue",
+      "primaryPaletteHues": {
+        "default": "500",
+        "hue-1": "300",
+        "hue-2": "800",
+        "hue-3": "100"
+      },
+      "accentPalette": "mango-orange",
+      "accentPaletteHues": {
+        "default": "A400",
+        "hue-1": "A100",
+        "hue-2": "A200",
+        "hue-3": "A700"
+      },
+      "dark": true
+    },
+    "userTheme": {
+	    "primaryPalette": "yellow",
+	    "accentPalette": "pink",
+	    "warnPalette": "red",
+	    "backgroundPalette": "grey",
+	    "dark": false
+    },
+    "mangoDark2020": {
+      "primaryPalette": "mango-blue-2020",
+      "primaryPaletteHues": {
+        "default": "500",
+        "hue-1": "300",
+        "hue-2": "600",
+        "hue-3": "A100"
+      },
+      "accentPalette": "mango-orange-2020",
+      "accentPaletteHues": {
+        "default": "500",
+        "hue-1": "300",
+        "hue-2": "800",
+        "hue-3": "A100"
+      },
+      "backgroundPalette": "mango-background-2020",
+      "backgroundPaletteHues": {
+        "default": "A400",
+        "hue-1": "800",
+        "hue-2": "900",
+        "hue-3": "A200"
+      },
+      "dark": true
+    },
+    "mangoLight2020": {
+      "primaryPalette": "mango-blue-2020",
+      "primaryPaletteHues": {
+        "default": "500",
+        "hue-1": "300",
+        "hue-2": "600",
+        "hue-3": "A100"
+      },
+      "accentPalette": "mango-orange-2020",
+      "accentPaletteHues": {
+        "default": "500",
+        "hue-1": "300",
+        "hue-2": "800",
+        "hue-3": "A100"
+      },
+      "backgroundPalette": "mango-background-2020",
+      "backgroundPaletteHues": {
+        "default": "50",
+        "hue-1": "A100",
+        "hue-2": "100",
+        "hue-3": "200"
+      },
+      "dark": false
+    }
+  },
+  "fonts": {
+  	"default": "'Roboto Condensed'",
+  	"heading": "Roboto",
+  	"paragraph": "Roboto",
+  	"code": "'Roboto Mono'"
+  },
+  "pointValuesLimit": 5001,
+  "autoLoginUsername": "",
+  "autoLoginPassword": "",
+  "userModule": "",
+  "userCss": "",
+  "eventAudioFiles": {
+  	"NONE": "",
+  	"INFORMATION": "",
+  	"IMPORTANT": "",
+  	"WARNING": "",
+    "URGENT": "/audio/urgent.mp3",
+    "CRITICAL": "/audio/critical.mp3",
+    "LIFE_SAFETY": "/audio/lifesafety.mp3",
+    "DO_NOT_LOG": ""
+  },
+  "eventReadAloud": {
+  	"NONE": false,
+  	"INFORMATION": false,
+  	"IMPORTANT": false,
+  	"WARNING": false,
+    "URGENT": false,
+    "CRITICAL": false,
+    "LIFE_SAFETY": false,
+    "DO_NOT_LOG": false
+  },
+  "eventNotify": {
+  	"NONE": false,
+  	"INFORMATION": false,
+  	"IMPORTANT": false,
+  	"WARNING": false,
+    "URGENT": true,
+    "CRITICAL": true,
+    "LIFE_SAFETY": true,
+    "DO_NOT_LOG": false
+  },
+  "timeouts": {
+    "xhr": 30000,
+    "websocket": 10000,
+    "websocketRequest": 10000,
+    "pointValues": 60000,
+    "watchdogStatusDelay": 30000,
+    "moduleUpload": 300000
+  },
+  "pwaManifest": {
+    "name": "Mango",
+    "start_url": "/ui/",
+    "display": "standalone",
+    "theme_color": "rgba(0, 107, 147, 1)",
+    "background_color": "rgba(48, 48, 48, 1)",
+    "icons": [
+        {
+            "src": "../img/icon192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "../img/icon512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+  },
+  "pwaUseThemeColors": true,
+  "pwaAutomaticName": "AUTO",
+  "pwaAutomaticNamePrefix": "Mango",
+  "dateFormats": {
+    "dateTime": "lll",
+    "shortDateTime": "l LT",
+    "dateTimeSeconds": "ll LTS",
+    "shortDateTimeSeconds": "l LTS",
+    "date": "ll",
+    "shortDate": "l",
+    "time": "LT",
+    "timeSeconds": "LTS",
+    "monthDay": "MMM D",
+    "month": "MMM",
+    "year": "YYYY"
+  },
+  "showUnacknowlegedEventsIcon": true
+}

@@ -1,4 +1,4 @@
-import { createApp, markRaw } from 'vue';
+import {provide, createApp, markRaw } from 'vue';
 
 
 import App from './App.vue';
@@ -110,6 +110,8 @@ import '@/assets/styles.scss';
 import { axios, api } from './boot/axios';
 import constantsObj from './boot/constants';
 
+import { useEventBusStore } from './stores/EventBusStore';
+import Tr from './composables/Tr';
 const app = createApp(App);
 
 /* GLOBAL CONSTANTS */
@@ -118,7 +120,8 @@ app.config.globalProperties.$api = api;
 app.config.globalProperties = { ...app.config.globalProperties, ...constantsObj };
 /* GLOBAL CONSTANTS */
 
-console.log(app.config.globalProperties);
+
+// console.log(app.config.globalProperties);
 
 app.use(pinia.pinia); //Must be first to preload states before router
 app.use(router);
@@ -127,11 +130,21 @@ app.use(ToastService);
 app.use(DialogService);
 app.use(ConfirmationService);
 
+/**
+ * Stores
+ */
+const EVENT_BUS_STORE = useEventBusStore();
+
+/**
+ * Stores
+ */
+
+
 app.directive('tooltip', Tooltip);
 app.directive('badge', BadgeDirective);
 app.directive('ripple', Ripple);
 app.directive('styleclass', StyleClass);
-
+app.directive('tr',Tr);
 
 app.component('BlockViewer', BlockViewer);
 app.component('MdIcon', MdIcon);

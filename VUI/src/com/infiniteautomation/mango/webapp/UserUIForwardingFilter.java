@@ -28,12 +28,13 @@ import com.serotonin.m2m2.web.mvc.spring.security.BrowserRequestMatcher;
  * A request to /user-ui/xyz/non/existing will be rewritten to /modules/mangoUI/web/xyz/
  * @author Jared Wiltshire
  */
+@Override
 @Component
 @WebFilter(
         asyncSupported = true,
         urlPatterns = {UserUIForwardingFilter.FORWARD_FROM_PATH + "/*"},
         dispatcherTypes = {DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.ASYNC})
-
+@Override
 public class UserUIForwardingFilter implements Filter {
     public static final String FORWARD_FROM_PATH = "/user-vui";
     public static final String FORDWARD_TO_PATH = "/modules/mangoVUI/web";

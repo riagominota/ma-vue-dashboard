@@ -1,12 +1,27 @@
-import { defineStore } from "pinia";}
-import {Topic} from '@/services/eventBus' 
+import { defineStore } from "pinia";
+import {EventBusEvent, Topic} from '@/services/eventTopic' 
+ const MULTI_LEVEL_WILDCARD = '#';
+const PATH_SEPARATOR = '/';
+    /**
+     * @ngdoc service
+     * @name EventBusStore
+     * @description
+     * Provides a generic event bus instance which can be shared and used amongst services and components
+     */
+export const useEventBusStore = defineStore('eventBus', ()=> {
 
-export default defineStore('eventBus', {
-    constructor() {
-        this.topic = new Topic();
+    const EventBusCollection:Record<string,Topic<any,any>> = {};
+
+    const addNewTopic = (topic:string,parentTopic?:Topic<any>) =>
+    {
+        if(!Object.prototype.hasOwnProperty.call(EventBusCollection,topic) )
+        {
+            EventBusCollection[topic] = Topic<any>()
+        }
     }
 
-    /**
+
+      /**
      * @ngdoc method
      * @name subscribe
      * Provides a generic event bus instance which can be shared and used amongst services and components
@@ -19,16 +34,16 @@ export default defineStore('eventBus', {
      * is always an Event followed by the arguments passed to the publish method
      * @returns {function} Unsubscribe function, calling this function will unsubscribe the listener
      */
-    subscribe(topic, listener) {
-        const path = topic.split(PATH_SEPARATOR);
+    const subscribe = (topicName:string, listener:(event:Event,...args:any[])=>void):()=>any => {
+        const path = topicName.split(PATH_SEPARATOR);
         const i = path.indexOf(MULTI_LEVEL_WILDCARD);
         if (i >= 0 && i < path.length - 1) {
             throw new Error('Multi-level wildcard can only be at end of topic');
         }
 
-        this.topic.subscribe(path, listener);
+        EventBusCollection[topicName].subscribe(path, listener);
         return () => {
-            this.topic.unsubscribe(path, listener);
+            EventBusCollection[topicName].unsubscribe(path, listener);
         };
     }
 
@@ -44,9 +59,9 @@ export default defineStore('eventBus', {
      * @param {function} listener Listener callback
      * @returns {boolean} true if the listener was successfully removed
      */
-    unsubscribe(topic, listener) {
-        const path = topic.split(PATH_SEPARATOR);
-        return this.topic.unsubscribe(path, listener);
+    const unsubscribe = (topicName:string, listener:(event:Event,...args:any[])=>void) =>{
+        const path = topicName.split(PATH_SEPARATOR);
+        return EventBusCollection[topicName].unsubscribe(path, listener);
     }
 
     /**
@@ -59,7 +74,7 @@ export default defineStore('eventBus', {
      * @param {string} topic Topic name, cannot contain wildcards
      * @param {*} args arbitrary number of arguments which will be passed to the listeners (after the event argument)
      */
-    publish(topic, ...args) {
+    const publish = (topic:EventBusEvent|string, ...args:any[]) => {
         let event;
         if (topic instanceof Event) {
             event = topic;
@@ -69,9 +84,14 @@ export default defineStore('eventBus', {
         }
 
         const path = topic.split(PATH_SEPARATOR);
-        this.topic.publish(path, event, args);
+        EventBusCollection[topic].publish(path, event, args);
     }
-}
 
-return new EventBus();
+
+return {
+    addNewTopic,
+    subscribe,
+    unsubscribe,
+    publish
 }
+})

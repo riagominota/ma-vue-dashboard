@@ -3,14 +3,18 @@
  */
 
 
-import defaultUiSettings from 'src/assets/json/uiSettings.json';
+import defaultUiSettings from '../assets/json/vuiSettings.json';
 import util from './bootstrapUtil.js';
 import {axios} from './axios.js'
 import { AxiosResponse } from 'axios';
 import {apply} from 'ts-merge-patch'
+import { PreLoginData } from '@/types/PreLoginData.js';
+import { useUserStore } from '@/stores/UserStore.js';
+import { VUISettings } from '@/types/VUISettings.js';
 //needs to be in web directory for REST controller to read
 // import './uiSettings.json?fileLoader';
-
+export const boostrapPreLogin = ()=>
+{
 let beforeinstallpromptEvent:Event;
 window.addEventListener('beforeinstallprompt', e => {
     e.preventDefault();
@@ -21,7 +25,7 @@ Promise.resolve().then(() => {
     // clear the autologin credentials if the url parameter is set
     util.checkClearAutoLogin();
     
-    const preLoginDataPromise = axios({
+    const preLoginDataPromise:Promise<PreLoginData> = axios({
         method: 'GET',
         url: '/rest/latest/ui-bootstrap/pre-login'
     }).then((response:AxiosResponse) => {
@@ -31,27 +35,27 @@ Promise.resolve().then(() => {
         return response.data;
     });
     
-    const uiSettingsPromise = preLoginDataPromise.then((preLoginData) => {
-        const uiSettings = Object.assign({},defaultUiSettings);
+    const uiSettingsPromise:Promise<VUISettings> = preLoginDataPromise.then((preLoginData:PreLoginData) => {
+        const uiSettings:VUISettings = Object.assign({},defaultUiSettings);
         const customSettings = preLoginData.uiSettings && preLoginData.uiSettings.jsonData;
         return apply(uiSettings, customSettings);
-    });
+    }) as Promise<VUISettings>;
 
-    const modulesPromise = Promise.all([preLoginDataPromise, uiSettingsPromise]).then(([preLoginData, uiSettings]) => {
+    /* const modulesPromise = Promise.all([preLoginDataPromise, uiSettingsPromise]).then(([preLoginData, uiSettings]:PreLoginData,UISettings) => {
         // const modules = preLoginData.angularJsModules.modules;
-        // const amdModuleNames = modules.map(m => {
-        //     amdConfiguration.moduleVersions[m.name] = m.version;
-        //     return m.url.replace(/\.js$/, '');
-        // });
-
-        if (uiSettings.userModule) {
+        const amdModuleNames = /* modules.map(m => {
+            amdConfiguration.moduleVersions[m.name] = m.version;
+            return m.url.replace(/\.js$/, '');
+        }); */
+      
+      /*   if ((uiSettings as VuiSettings).userModule) {
             let url = uiSettings.userModule;
             // load user module from the /file-stores URL outside of REST so it is not rate limited
             url = url.replace(/^\/rest\/(?:v\d+|latest)\/file-stores\//, '/file-stores/');
             amdModuleNames.push(url);
-        }
+        } */
     
-        const modulePromises = amdModuleNames.map(moduleName => {
+        /* const modulePromises = amdModuleNames.map(moduleName => {
             return new Promise((resolve, reject) => {
                 requirejs([moduleName], module => {
                     resolve(module);
@@ -61,18 +65,18 @@ Promise.resolve().then(() => {
             }).catch(e => {
                 console.error(`Failed to load AMD module ${moduleName}`, e);
             });
-        });
+        }); 
         
         return Promise.all(modulePromises);
-    });
+    }); */
     
-    const userPromise = preLoginDataPromise.then(preLoginData => {
+    const userPromise = preLoginDataPromise.then((preLoginData:PreLoginData) => {
         if (preLoginData.user) {
             preLoginData.user.originalId = preLoginData.user.username;
             return preLoginData.user;
         }
         
-        return uiSettingsPromise.then(uiSettings => {
+        return uiSettingsPromise.then((uiSettings) => {
             return util.autoLogin(uiSettings);
         });
     });
@@ -91,14 +95,14 @@ Promise.resolve().then(() => {
         });
     });
 
-    return Promise.all([uiSettingsPromise, modulesPromise, userPromise, preLoginDataPromise, postLoginDataPromise]);
-}).then(([uiSettings, angularModules, user, preLoginData, postLoginData]) => {
+    return Promise.all([uiSettingsPromise, /* modulesPromise, */ userPromise, preLoginDataPromise, postLoginDataPromise]);
+}).then(([uiSettings, /* angularModules,  */user, preLoginData, postLoginData]) => {
     
-    amdConfiguration.defaultVersion = preLoginData.lastUpgradeTime;
+   /*  amdConfiguration.defaultVersion = preLoginData.lastUpgradeTime; */
 
-    uiSettings.mangoModuleNames = [];
-    const angularJsModuleNames = ['maUiApp'];
-    
+    // uiSettings.mangoModuleNames = [];
+    /* const angularJsModuleNames = ['maUiApp']; */
+    /* 
     angularModules.forEach((angularModule, index, array) => {
         if (angularModule && angularModule.name) {
             if (Array.isArray(angularModule.optionalRequires)) {
@@ -120,19 +124,22 @@ Promise.resolve().then(() => {
                 uiSettings.mangoModuleNames.push(angularModule.name);
             }
         }
-    });
+    }); */
 
     // create a new AngularJS module which depends on the ui module and all the modules' AngularJS modules
-    const maUiBootstrap = angular.module('maUiBootstrap', angularJsModuleNames);
+    /* const maUiBootstrap = angular.module('maUiBootstrap', angularJsModuleNames); */
 
     // configure the the providers using data retrieved before bootstrap
-    maUiBootstrap.config(['maUserProvider', 'maUiSettingsProvider', 'maUiServerInfoProvider', 'MA_UI_INSTALL_PROMPT', 'MA_DEVELOPMENT_CONFIG',
-            (UserProvider, maUiSettingsProvider, maUiServerInfoProvider, installPrompt, developmentConfig) => {
+  /*   maUiBootstrap.config(['maUserProvider', 'maUiSettingsProvider', 'maUiServerInfoProvider', 'MA_UI_INSTALL_PROMPT', 'MA_DEVELOPMENT_CONFIG',
+            (UserProvider, maUiSettingsProvider, maUiServerInfoProvider, installPrompt, developmentConfig) => { */
 
         // store pre-bootstrap user into the User service
-        UserProvider.setCurrentUser(user);
-        UserProvider.setOAuth2Clients(preLoginData.oauth2Clients);
-        maUiSettingsProvider.setUiSettings(uiSettings);
+        // UserProvider.setCurrentUser(user);
+        const UserStore = useUserStore();
+        UserStore.setCurrentUser(user);
+        UserStore.setOAuth2Clients(preLoginData.oauth2Clients);
+// NOTE: REVISIT BELOW LATER
+  /*       maUiSettingsProvider.setUiSettings(uiSettings);
 
         maUiServerInfoProvider.setPreLoginData(preLoginData);
         if (postLoginData) {
@@ -146,27 +153,30 @@ Promise.resolve().then(() => {
             }
         });
 
-        developmentConfig.enabled = !!preLoginData.developmentMode;
+        developmentConfig.enabled = !!preLoginData.developmentMode; 
     }]);
-
+*/
     // promise resolves when DOM loaded
-    return new Promise(resolve => angular.element(resolve));
+  /*   return new Promise(resolve => angular.element(resolve));
 }).then(() => {
     angular.bootstrap(document.documentElement, ['maUiBootstrap'], {strictDi: true});
-}).then(null, error => {
-    const errorDiv = document.querySelector('.pre-bootstrap-error');
-    const msgDiv = errorDiv.querySelector('div');
-    const pre = errorDiv.querySelector('pre');
-    const code = errorDiv.querySelector('code');
-    const link = errorDiv.querySelector('a');
+}).then(null, error => { */
+    const errorDiv:HTMLElement|null = document.querySelector('.pre-bootstrap-error');
+    if(errorDiv)
+    {
+        const msgDiv = errorDiv.querySelector('div');
+        const pre = errorDiv.querySelector('pre');
+        const code = errorDiv.querySelector('code');
+        const link = errorDiv.querySelector('a');
 
-    msgDiv.textContent = 'Error bootstrapping Mango UI app: ' + error.message;
-    code.textContent = error.stack;
-    errorDiv.style.display = 'block';
-    
-    link.onclick = () => {
-        pre.style.display = pre.style.display === 'none' ? 'block' : 'none';
-    };
-    
-    console.error(error);
+        msgDiv!.textContent = 'Error bootstrapping Mango UI app: ' //+ error.message;
+        // code!.textContent = error!.stack;
+        errorDiv.style!.display = 'block';
+
+        link!.onclick = () => {
+            pre!.style.display = pre!.style.display === 'none' ? 'block' : 'none';
+        };
+}
+    // console.error(error);
 });
+}

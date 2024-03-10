@@ -24,20 +24,22 @@ import com.infiniteautomation.mango.webapp.filters.MangoCacheControlHeaderFilter
 import com.serotonin.m2m2.web.mvc.spring.security.BrowserRequestMatcher;
 
 /**
- * Re-writes requests from /user-ui/xyz/ to /modules/mangoUI/web/xyz/
- * A request to /user-ui/xyz/non/existing will be rewritten to /modules/mangoUI/web/xyz/
+ * Re-writes requests from /ui/ to /modules/mangoUI/web/
+ * A request to /ui/non/existing will be rewritten to /modules/mangoUI/web/
  * @author Jared Wiltshire
  */
-@Override
 @Component
 @WebFilter(
         asyncSupported = true,
-        urlPatterns = {UserUIForwardingFilter.FORWARD_FROM_PATH + "/*"},
+        urlPatterns = {VUIForwardingFilter.FORWARD_FROM_PATH + "/*"},
         dispatcherTypes = {DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.ASYNC})
-@Override
-public class UserUIForwardingFilter implements Filter {
-    public static final String FORWARD_FROM_PATH = "/user-vui";
-    public static final String FORDWARD_TO_PATH = "/modules/mangoVUI/web";
+
+
+public class VUIForwardingFilter implements Filter {
+    public static final String ORIG_FORWARD_FROM_PATH = "/ui";
+    public static final String ORIG_FORWARD_TO_PATH = "/modules/mangoUI/web";
+    public static final String FORWARD_FROM_PATH = "/vui";
+    public static final String FORWARD_TO_PATH = "/modules/mangoVUI/web";
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -49,28 +51,27 @@ public class UserUIForwardingFilter implements Filter {
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
         String requestURI = httpRequest.getRequestURI();
-        if (requestURI.startsWith(FORWARD_FROM_PATH)) {
-            String relativePath = requestURI.substring(FORWARD_FROM_PATH.length());
+        
+            if (requestURI.startsWith(FORWARD_FROM_PATH)) {
+                String relativePath = requestURI.substring(FORWARD_FROM_PATH.length());
+                URL resourceUrl = httpRequest.getServletContext().getResource(FORWARD_TO_PATH + relativePath);
 
-            int nextSlash;
-            if ((nextSlash = relativePath.indexOf("/", 1)) >= 0) {
-                String appBase = relativePath.substring(0, nextSlash + 1);
-
-                URL resourceUrl = httpRequest.getServletContext().getResource(FORDWARD_TO_PATH + relativePath);
                 // if the resource is not an actual file we return the index.html file so the webapp can display a 404 not found message
                 // only redirect to the index.html file if it's a browser request
                 if (resourceUrl == null && BrowserRequestMatcher.INSTANCE.matches(httpRequest)) {
-                    relativePath = appBase;
+                    relativePath = "/";
                 }
 
-                if (appBase.equals(relativePath)) {
-                    // use max-age=0 for index.html
-                    httpRequest.setAttribute(MangoCacheControlHeaderFilter.CACHE_OVERRIDE_SETTING, CacheControlLevel.DEFAULT);
-                }
-            }
+                // if ("/serviceWorker.js".equals(relativePath) || "/".equals(relativePath)) {
+                //     // use max-age=0 for serviceWorker.js and index.html
+                //     httpRequest.setAttribute(MangoCacheControlHeaderFilter.CACHE_OVERRIDE_SETTING, CacheControlLevel.DEFAULT);
+                // }
 
-            httpRequest.getRequestDispatcher(FORDWARD_TO_PATH + relativePath).forward(httpRequest, httpResponse);
-        } else {
+                httpRequest.getRequestDispatcher(FORWARD_TO_PATH + relativePath).forward(httpRequest, httpResponse);
+            } 
+            
+        else
+        {
             chain.doFilter(request, response);
         }
     }

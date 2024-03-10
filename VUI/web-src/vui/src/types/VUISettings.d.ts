@@ -1,4 +1,4 @@
-export interface VuiSettings {
+export interface VUISettings {
     titleSuffix: string;
     logoSrc: string;
     defaultTheme: string;

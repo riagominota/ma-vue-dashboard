@@ -1,7 +1,7 @@
 import AbstractResourceApi, { Interceptors } from '@/composables/useAbstractResourceApi';
 import { Action, ReceiveAlarmEmails } from './ModelActions.d.ts';
 import { MangoPermission, Role } from './Permissions';
-import { DateTime } from 'luxon';
+import { DateTime, Zone } from 'luxon';
 
 export interface User {
     name: string;
@@ -58,7 +58,7 @@ export interface UserModel extends User {
     sessionExpirationOverride: boolean;
     sessionExpirationPeriod: SessionTimePeriod;
     systemPermissions: MangoPermission[];
-    timezone: string;
+    timezone: string|Zone;
 }
 
 export class UserResource extends AbstractResourceApi<UserModel> implements UserModel {

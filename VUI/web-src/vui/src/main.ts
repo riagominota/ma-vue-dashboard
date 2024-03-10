@@ -109,9 +109,12 @@ import MdIcon from './composables/MdIcon.vue';
 import '@/assets/styles.scss';
 import { axios, api } from './boot/axios';
 import constantsObj from './boot/constants';
-
+import {boostrapPreLogin} from './boot/bootstrap';
 import { useEventBusStore } from './stores/EventBusStore';
 import Tr from './composables/Tr';
+
+boostrapPreLogin();
+
 const app = createApp(App);
 
 /* GLOBAL CONSTANTS */

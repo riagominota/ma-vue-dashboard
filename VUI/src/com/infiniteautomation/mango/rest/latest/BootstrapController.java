@@ -60,7 +60,6 @@ import io.swagger.annotations.ApiOperation;
 @Api(value="VUI application bootstrap")
 @RestController
 @RequestMapping("/vui-bootstrap")
-@Override
 public class BootstrapController {
 
     private static final String[] PUBLIC_TRANSLATIONS = new String[] {"login", "header", "users", "validate"};

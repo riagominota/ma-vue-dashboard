@@ -8,7 +8,7 @@ const userCfgFn: UserConfigFn = () => {
         plugins: [vue()] as PluginOption[],
         base: '/vui/',
         root: path.resolve(__dirname, 'web-src/vui'),
-        build: { outDir: './web/vui/' },
+        build: { outDir: '../../web' },
         dev: { host: true },
         server: {
             host: true,

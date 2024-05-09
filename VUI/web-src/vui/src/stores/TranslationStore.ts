@@ -116,7 +116,7 @@ const useTranslationStore = defineStore('translationStore',()=>{
                     });
                 }
     
-                function trSync(key:string|string[], args:string[]|undefined){
+                function trSync(key:string|string[], args?:string[]|undefined){
                     if (Array.isArray(key)) {
                         args = key.slice(1);
                         key = key[0];
@@ -214,7 +214,8 @@ const useTranslationStore = defineStore('translationStore',()=>{
                 }
             });   
             return {
-                tr
+                tr,
+                trSync
             }
 });
 

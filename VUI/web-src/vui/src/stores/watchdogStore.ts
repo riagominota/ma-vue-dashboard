@@ -2,10 +2,19 @@
  * Copyright (C) 2021 Radix IoT LLC. All rights reserved.
  */
 
-import angular from 'angular';
+import constants from "@/boot/constants";
+import {axios} from '@/boot/axios';
+import { useEventBusStore } from "./EventBusStore";
+import { useUserStore } from "./UserStore";
+import timeout, { TimeoutPromise } from "@/composables/timeout";
+import { defineStore } from "pinia";
+import { computed } from "vue";
 
-mangoWatchdog.$inject = ['MA_TIMEOUTS', '$http', '$timeout', '$window', 'maEventBus', '$injector', '$rootScope', '$q'];
-function mangoWatchdog(MA_TIMEOUTS, $http, $timeout, window, maEventBus, $injector, $rootScope, $q) {
+
+export const useWatchdogStore = defineStore('watchdog',()=>{
+const MA_TIMEOUTS = constants.MA_TIMEOUTS;
+const EventBus = useEventBusStore();
+const User = useUserStore()
 
     const OFFLINE = 'OFFLINE';
     const API_DOWN = 'API_DOWN';
@@ -14,10 +23,10 @@ function mangoWatchdog(MA_TIMEOUTS, $http, $timeout, window, maEventBus, $inject
     const API_ERROR = 'API_ERROR';
     const LOGGED_IN = 'LOGGED_IN';
 
-    class WatchdogEvent extends CustomEvent {
-        constructor(type, options) {
+    class WatchdogEvent extends CustomEvent<any> {
+        constructor(type:string, options=undefined) {
             super(type);
-            Object.assign(this, options);
+            Object.assign(this, options??{});
         }
     }
 
@@ -34,35 +43,38 @@ function mangoWatchdog(MA_TIMEOUTS, $http, $timeout, window, maEventBus, $inject
      * - <a ui-sref="ui.examples.utilities.watchdog">View Demo</a>
      */
     class MangoWatchdog {
+        status!:string;
+        timeout:number;
+        reconnectDelay:number;
+        statusData!: Record<string, any> | null;
+        timeoutPromise: TimeoutPromise<unknown> | undefined;
+        statusPromise: any;
+
+
         constructor() {
             this.timeout = MA_TIMEOUTS.xhr;
             this.reconnectDelay = MA_TIMEOUTS.watchdogStatusDelay;
 
             // wait until all services are initialized before publishing any events to the bus
             // so that all services which subscribe get the maWatchdog event (e.g. NotificationManager)
-            $rootScope.$applyAsync(() => {
-                this.init();
-            });
+            this.init();
         }
 
         init() {
             if (this.isOffline()) {
                 this.setStatus(OFFLINE);
-            } else if ($injector.get('maUser').current) {
+            } else if (User.current) {
                 this.setStatus(LOGGED_IN);
             } else {
                 this.setStatus(API_UP);
             }
 
             window.addEventListener('online', event => {
-                $rootScope.$apply(() => {
-                    this.checkStatus();
-                });
+                this.checkStatus();
+                
             });
             window.addEventListener('offline', event => {
-                $rootScope.$apply(() => {
                     this.setStatus(OFFLINE);
-                });
             });
         }
 
@@ -77,7 +89,7 @@ function mangoWatchdog(MA_TIMEOUTS, $http, $timeout, window, maEventBus, $inject
          * @param {string} status Status string
          * @param {object=} statusData additional status data
          */
-        setStatus(status, statusData = null) {
+        setStatus(status:string, statusData:Record<string,any>|null = null) {
             const prevStatus = this.status;
             const prevStatusData = this.statusData;
             this.status = status;
@@ -87,15 +99,15 @@ function mangoWatchdog(MA_TIMEOUTS, $http, $timeout, window, maEventBus, $inject
                 if (this.reconnectDelay > 0) {
                     // poll faster during startup as we want to provide a bit more feedback
                     const delay = status === STARTING_UP ? this.reconnectDelay / 3 : this.reconnectDelay;
-                    this.timeoutPromise = $timeout(() => this.checkStatus(), delay);
+                    this.timeoutPromise = timeout(() => this.checkStatus(), delay);
                 }
             } else {
-                this.cancelTimeout();
+                this?.timeoutPromise?.cancel();
             }
 
-            const dispatchEvent = status !== prevStatus || status === 'STARTING_UP' && !angular.equals(statusData, prevStatusData);
+            const dispatchEvent = status !== prevStatus || status === 'STARTING_UP' && (JSON.stringify(statusData)!==JSON.stringify(prevStatusData));
             if (dispatchEvent) {
-                maEventBus.publish(new WatchdogEvent(`maWatchdog/${status}`), this, prevStatus);
+                EventBus.publish(new WatchdogEvent(`maWatchdog/${status}` )as CustomEvent, this, prevStatus);
             }
         }
 
@@ -109,7 +121,7 @@ function mangoWatchdog(MA_TIMEOUTS, $http, $timeout, window, maEventBus, $inject
          */
         cancelTimeout() {
             if (this.timeoutPromise) {
-                $timeout.cancel(this.timeoutPromise);
+                this.timeoutPromise.cancel();
                 delete this.timeoutPromise;
             }
         }
@@ -133,7 +145,9 @@ function mangoWatchdog(MA_TIMEOUTS, $http, $timeout, window, maEventBus, $inject
          * @description
          * Informs the watchdog service that it should check the status
          */
-        checkStatus() {
+        checkStatus()
+        {
+        return computed(()=>{
             if (this.statusPromise) {
                 return;
             }
@@ -145,23 +159,19 @@ function mangoWatchdog(MA_TIMEOUTS, $http, $timeout, window, maEventBus, $inject
                 return;
             }
 
-            this.statusPromise = $http({
+            this.statusPromise = axios({
                 method: 'GET',
                 url: '/status',
                 timeout: this.timeout,
-                ignoreError: true
             }).then(response => {
                 const status = response.data;
                 if (status.stateName === 'RUNNING') {
-                    const User = $injector.get('maUser');
-
                     // dont use User.getCurrent() here as we set ignoreError so the $httpInterceptor does not call
                     // checkStatus() again
-                    return $http({
+                    return axios({
                         method: 'GET',
                         url: '/rest/latest/users/current',
                         timeout: this.timeout,
-                        ignoreError: true
                     }).then(response => {
                         User.setCurrentUser(response.data);
                         this.setStatus(LOGGED_IN, status);
@@ -172,7 +182,7 @@ function mangoWatchdog(MA_TIMEOUTS, $http, $timeout, window, maEventBus, $inject
                             this.setStatus(API_UP, status);
                         } else {
                             // defer to catch block below
-                            return $q.reject(error);
+                            return Promise.reject(error);
                         }
                     });
                 } else {
@@ -188,7 +198,8 @@ function mangoWatchdog(MA_TIMEOUTS, $http, $timeout, window, maEventBus, $inject
             }).finally(() => {
                 delete this.statusPromise;
             });
-        }
+        })
+    }
 
         /**
          * @ngdoc property
@@ -220,8 +231,7 @@ function mangoWatchdog(MA_TIMEOUTS, $http, $timeout, window, maEventBus, $inject
          * @returns {string} the current status, one of OFFLINE, API_DOWN, STARTING_UP, API_UP, API_ERROR, LOGGED_IN
          */
     }
+    const MangoWatchdogInstance = new MangoWatchdog();
+    return MangoWatchdogInstance;
+});
 
-    return new MangoWatchdog();
-}
-
-export default mangoWatchdog;

@@ -1,10 +1,17 @@
 /*
  * Copyright (C) 2021 Radix IoT LLC. All rights reserved.
  */
+import constants from "@/boot/constants";
+import { useWatchdogStore } from "@/stores/watchdogStore";
+import { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
+import useTranslationStore from "@/stores/TranslationStore";
+import { Util } from "@/composables/Util";
 
-mangoHttpInterceptorFactory.$inject = ['MA_BASE_URL', 'MA_TIMEOUTS', '$q', '$injector'];
-function mangoHttpInterceptorFactory(mangoBaseUrl, MA_TIMEOUTS, $q, $injector) {
-
+    const MA_BASE_URL = constants.MA_BASE_URL;    
+    const Watchdog = useWatchdogStore()
+    const mangoBaseUrl = constants.MA_BASE_URL;
+    const MA_TIMEOUTS = constants.MA_TIMEOUTS;
+    const TranslationStore = useTranslationStore();
     /**
      * @ngdoc service
      * @name ngMangoServices.maHttpInterceptor
@@ -13,7 +20,7 @@ function mangoHttpInterceptorFactory(mangoBaseUrl, MA_TIMEOUTS, $q, $injector) {
      * responses with a human readable error message extracted from the response body, headers or generic status.
      */
     class MangoHttpInterceptor {
-        request(config) {
+        request(config:AxiosRequestConfig) {
             if (this.isApiCall(config)) {
                 config.url = mangoBaseUrl + config.url;
             }
@@ -23,17 +30,17 @@ function mangoHttpInterceptorFactory(mangoBaseUrl, MA_TIMEOUTS, $q, $injector) {
             return config;
         }
 
-        responseError(error) {
+        responseError(error: AxiosResponse) {
             // TODO error.xhrStatus abort might be a cancel, but could also be a timeout
             if (error.config && this.isApiCall(error.config) &&
-                !error.config.ignoreError && // ignoreError is set true by maWatchdog service
-                (error.status < 0 && ['timeout', 'error'].includes(error.xhrStatus) || error.status === 401)) {
-
-                $injector.get('maWatchdog').checkStatus();
+                // !error.config.ignoreError && // ignoreError is set true by maWatchdog service
+                (error.status < 0 && ['timeout', 'error'].includes(error.statusText) || error.status === 401)) {
+                    
+                Watchdog.checkStatus();
             }
 
             if (error.data instanceof Blob && error.data.type === 'application/json') {
-                return $injector.get('maUtil').blobToJson(error.data).then(parsedData => {
+                return Util.blobToJson(error.data).then(parsedData => {
                     error.data = parsedData;
                     return this.augmentError(error);
                 }).catch(e => {
@@ -44,14 +51,14 @@ function mangoHttpInterceptorFactory(mangoBaseUrl, MA_TIMEOUTS, $q, $injector) {
             return this.augmentError(error);
         }
 
-        augmentError(error) {
+        augmentError(error: AxiosResponse) {
             let message = error.data && typeof error.data === 'object' && (error.data.message || error.data.localizedMessage);
             // TODO error.data.cause is now the only place containing the exception message, display this if it is available
 
             // try the 'errors' header
-            if (!message) {
-                message = error.headers('errors');
-            }
+            // if (!message) {
+            //     message = error.headers('errors'); // must be some angular bs
+            // }
 
             // try the status text
             if (!message) {
@@ -59,21 +66,23 @@ function mangoHttpInterceptorFactory(mangoBaseUrl, MA_TIMEOUTS, $q, $injector) {
             }
 
             // error.statusText is empty if its an XHR error
-            if (!message && error.xhrStatus !== 'complete') {
-                message = error.xhrStatus === 'abort' && this.safeTranslate('ui.app.xhrAborted', 'Request aborted') ||
-                    error.xhrStatus === 'timeout' && this.safeTranslate('ui.app.xhrTimeout', 'Request timed out') ||
-                    error.xhrStatus === 'error' && this.safeTranslate('ui.app.xhrError', 'Connection error');
+            if (!message && error.statusText !== 'complete') {
+                message = error.statusText === 'abort' && this.safeTranslate('ui.app.xhrAborted', 'Request aborted') ||
+                    error.statusText === 'timeout' && this.safeTranslate('ui.app.xhrTimeout', 'Request timed out') ||
+                    error.statusText === 'error' && this.safeTranslate('ui.app.xhrError', 'Connection error');
             }
 
             // fallback to generic description of HTTP error code
             if (!message) {
                 message = this.safeTranslate(`rest.httpStatus.${error.status}`, `HTTP error ${error.status}`);
             }
-
-            error.mangoStatusText = message;
-            error.mangoStatusTextShort = message;
+            console.error(error)
+            // see if the below are used...
+            // error.mangoStatusText = message;
+            // error.mangoStatusTextShort = message;
 
             if (error.status === 422) {
+                console.error(error)
                 let messages = [];
                 if (error.data.result && Array.isArray(error.data.result.messages)) {
                     messages = error.data.result.messages;
@@ -85,37 +94,36 @@ function mangoHttpInterceptorFactory(mangoBaseUrl, MA_TIMEOUTS, $q, $injector) {
                     const firstMsg = messages[0];
                     let trKeyArgs;
                     if (firstMsg.property) {
-                        trKeyArgs = ['ui.app.errorFirstValidationMsgWithProp', message, firstMsg.property, firstMsg.message];
+                        trKeyArgs = ['vui.app.errorFirstValidationMsgWithProp', message, firstMsg.property, firstMsg.message];
                     } else {
-                        trKeyArgs = ['ui.app.errorFirstValidationMsg', message, firstMsg.message];
+                        trKeyArgs = ['vui.app.errorFirstValidationMsg', message, firstMsg.message];
                     }
-                    error.mangoStatusTextFirstValidationMsg = firstMsg.message;
-                    error.mangoStatusText = this.safeTranslate(trKeyArgs, message);
+                    // find out values here too
+                    // error.mangoStatusTextFirstValidationMsg = firstMsg.message;
+                    // error.mangoStatusText = this.safeTranslate(trKeyArgs, message);
                 }
             }
 
-            return $q.reject(error);
+            return Promise.reject(error);
         }
 
-        safeTranslate(key, fallback) {
+        safeTranslate(key:string, fallback:string) {
             try {
-                return $injector.get('maTranslate').trSync(key);
+                return TranslationStore.trSync(key);
             } catch (e) {
                 return fallback;
             }
         }
 
-        isApiCall(config) {
+        isApiCall(config:AxiosRequestConfig) {
             return String(config.url).startsWith('/');
         }
     }
 
-    const interceptor = new MangoHttpInterceptor();
+    // const interceptor = new MangoHttpInterceptor(); // use in axios interceptor instead
+    
+    
+    
 
-    return {
-        request: interceptor.request.bind(interceptor),
-        responseError: interceptor.responseError.bind(interceptor)
-    };
-}
 
-export default mangoHttpInterceptorFactory;
+export default MangoHttpInterceptor;

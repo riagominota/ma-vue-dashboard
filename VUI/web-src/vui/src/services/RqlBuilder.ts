@@ -5,10 +5,17 @@
 import RqlNode, { RqlArg } from './RqlNode';
 import { RqlFilter } from './RqlFilter';
 import { RqlVisitor, RqlVisitorInstance } from './RqlVisitor';
+import { AxiosResponse } from 'axios';
 
 export type AndOrNot = 'and' | 'or' | 'not';
 export type SortLimit = 'sort' | 'limit';
 export type ComparatorOperators = ['eq', 'ne', 'le', 'ge', 'lt', 'gt', 'in', 'match', 'contains'];
+
+export interface RqlBuilderInstance {
+    [x: string]: any;
+    constructor(root: RqlNode, visitorOptions: RqlVisitorInstance): void;
+    build: () => void;
+}
 
 function rqlBuilderFactory() {
     const andOrNot: AndOrNot[] = ['and', 'or', 'not'];
@@ -19,7 +26,7 @@ function rqlBuilderFactory() {
         private path: RqlNode[];
         visitorOptions: RqlVisitorInstance;
         built: RqlNode | RqlArg | RqlArg[] = '';
-        queryFunction?: any;
+        queryFunction?: (focus: any, opts: any) => Promise<AxiosResponse<any>>;
 
         constructor(root = new RqlNode(), visitorOptions: RqlVisitorInstance = {}) {
             this.path = [root];
@@ -85,7 +92,7 @@ function rqlBuilderFactory() {
 
             if (this.current.name !== 'and' && this.path.length) {
                 const prev = this.path.pop();
-                const replacement = new RqlNode('and', [prev]);
+                const replacement = new RqlNode('and', [prev!]);
                 this.path.push(replacement);
             }
 
@@ -97,7 +104,7 @@ function rqlBuilderFactory() {
          * @param opts
          * @returns {Promise}
          */
-        query(opts: string) {
+        query(opts?: string) {
             if (this.queryFunction) {
                 return this.queryFunction(this, opts);
             }
@@ -121,7 +128,7 @@ function rqlBuilderFactory() {
     }
 
     andOrNot.forEach((name) => {
-        RqlBuilder.prototype[name] = function (...args) {
+        (RqlBuilder as unknown as RqlBuilderInstance).prototype[name] = function (...args: any[]) {
             if (args.length) {
                 return this.add(name, ...args);
             }
@@ -130,13 +137,13 @@ function rqlBuilderFactory() {
     });
 
     operators.forEach((name) => {
-        RqlBuilder.prototype[name] = function (...args) {
+        (RqlBuilder as unknown as RqlBuilderInstance).prototype[name] = function (...args: any[]) {
             return this.add(name, ...args);
         };
     });
 
     sortLimit.forEach((name) => {
-        RqlBuilder.prototype[name] = function (...args) {
+        (RqlBuilder as unknown as RqlBuilderInstance).prototype[name] = function (...args: any[]) {
             return this.sortLimit(name, ...args);
         };
     });

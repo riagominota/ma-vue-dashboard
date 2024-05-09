@@ -1,9 +1,13 @@
-/*
- * Copyright (C) 2021 Radix IoT LLC. All rights reserved.
- */
+import { VUISettings } from "@/types/VUISettings";
+import { defineStore } from "pinia";
+import { computed } from "vue";
 
-const bootstrapUtil = Object.freeze({
-    getCookie(name) {
+
+const useSessionStore = defineStore('sessionStore',()=>
+{
+    const autoLoginKey = 'MangoVuiServices.storedCredentials'
+    const getCookie = (name: string) =>
+    {
         const cookies = document.cookie.split(/\s*;\s*/);
         for (let i = 0; i < cookies.length; i++) {
             const splitCookie = cookies[i].split('=');
@@ -11,9 +15,10 @@ const bootstrapUtil = Object.freeze({
                 return splitCookie[1];
             }
         }
-    },
+    }
     
-    xhrRequest(options) {
+    const xhrRequest = (options: { method: any; url: any; data?: any; }) =>
+    {
         const xhr = new XMLHttpRequest();
         
         return new Promise(resolve => {
@@ -25,7 +30,7 @@ const bootstrapUtil = Object.freeze({
             xhr.setRequestHeader('accept', 'application/json;charset=utf-8');
             
             if (options.method !== 'GET') {
-                const xsrfToken = this.getCookie('XSRF-TOKEN');
+                const xsrfToken = getCookie('XSRF-TOKEN');
                 if (xsrfToken) {
                     xhr.setRequestHeader('X-XSRF-TOKEN', xsrfToken);
                 }
@@ -37,8 +42,8 @@ const bootstrapUtil = Object.freeze({
             } else {
                 xhr.send();
             }
-        }).then(event => {
-            const data = xhr.responseText && JSON.parse(event.target.responseText);
+        }).then((event:any) => {
+            const data = xhr.responseText && JSON.parse(event?.target.responseText as string);
             return {
                 status: xhr.status,
                 statusText: xhr.statusText,
@@ -47,26 +52,26 @@ const bootstrapUtil = Object.freeze({
                 xhr
             };
         });
-    },
+    }
     
-    getLocalStorage(name) {
+    const getLocalStorage=(name:string) =>{
         if (!window.localStorage) return;
         const value = window.localStorage.getItem(name);
         return value && JSON.parse(value);
-    },
+    }
     
-    setLocalStorage(name, value) {
+    const setLocalStorage=(name:string, value:string|number|boolean|Record<string,string|number|boolean>) =>{
         if (!window.localStorage) return;
         window.localStorage.setItem(name, JSON.stringify(value));
-    },
+    }
     
-    removeLocalStorage(name) {
+    const removeLocalStorage = (name:string) =>{
         if (!window.localStorage) return;
         window.localStorage.removeItem(name);
-    },
+    }
     
-    login(credentials) {
-        return this.xhrRequest({
+    const login = (credentials:{username:string,password:string}) => {
+        return xhrRequest({
             method: 'POST',
             url: '/rest/latest/login',
             data: credentials,
@@ -76,26 +81,27 @@ const bootstrapUtil = Object.freeze({
             }
             console.warn('Failed to login, credentials: ', credentials);
         });
-    },
+    }
     
-    autoLoginKey: 'ngMangoServices.storedCredentials',
+    
 
-    checkClearAutoLogin() {
+    const checkClearAutoLogin = ()=> {
         const searchParams = new URL(window.location.href).searchParams;
         if (searchParams) {
             if (searchParams.get('autoLoginDeleteCredentials') != null) {
-                this.removeLocalStorage(this.autoLoginKey);
+                removeLocalStorage(autoLoginKey);
             }
         }
-    },
+    }
     
-    autoLogin(uiSettings) {
+    const autoLogin = (vuiSettings:VUISettings) =>
+    {
         const credentials = {
-            username: uiSettings.autoLoginUsername,
-            password: uiSettings.autoLoginPassword || ''
+            username: vuiSettings.autoLoginUsername,
+            password: vuiSettings.autoLoginPassword || ''
         };
         
-        const localStorageCredentials = this.getLocalStorage(this.autoLoginKey);
+        const localStorageCredentials = getLocalStorage(autoLoginKey);
         if (localStorageCredentials && localStorageCredentials.username) {
             credentials.username = localStorageCredentials.username;
             credentials.password = localStorageCredentials.password || '';
@@ -111,15 +117,26 @@ const bootstrapUtil = Object.freeze({
                 credentials.password = password || '';
                 
                 if (searchParams.get('autoLoginStoreCredentials') != null) {
-                    this.setLocalStorage(this.autoLoginKey, credentials);
+                    setLocalStorage(autoLoginKey, credentials);
                 }
             }
         }
         
         if (credentials && credentials.username) {
-            return this.login(credentials);
+            return login(credentials);
         }
     }
-});
 
-export default bootstrapUtil;
+    return {
+        checkClearAutoLogin,
+        autoLogin,
+        login,
+        getLocalStorage,
+        setLocalStorage,
+        getCookie,
+        removeLocalStorage
+    }
+
+    });
+
+    export {useSessionStore}

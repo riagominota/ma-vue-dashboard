@@ -2,12 +2,17 @@
  * Copyright (C) 2021 Radix IoT LLC. All rights reserved.
  */
 
-import angular from 'angular';
-import constants from '@/boot/constants'
+import constants from '@/boot/constants';
+import { useEventBusStore } from '@/stores/EventBusStore';
+import { useWatchdogStore } from '@/stores/watchdogStore';
+import { resolve } from 'path';
+import { WebSocketConnectionPayload } from 'vite/types/customEvent';
 
-
-NotificationManagerFactory.$inject = ['MA_BASE_URL', '$rootScope', 'MA_TIMEOUTS', '$q', '$timeout', 'maEventBus', 'maWatchdog'];
-function NotificationManagerFactory(maEventBus, maWatchdog) {
+// NotificationManagerFactory.$inject = ['MA_BASE_URL', '$rootScope', 'MA_TIMEOUTS', 'Promise', '$timeout', 'maEventBus', 'maWatchdog'];
+// function NotificationManagerFactory(maEventBus, maWatchdog) {
+function NotificationManagerFactory() {
+    const EventBus = useEventBusStore();
+    const Watchdog = useWatchdogStore();
     const MA_BASE_URL = constants.MA_BASE_URL;
     const MA_TIMEOUTS = constants.MA_TIMEOUTS;
 
@@ -21,30 +26,33 @@ function NotificationManagerFactory(maEventBus, maWatchdog) {
     };
 
     class CrudOperationAttributes {
+        item: any;
+        originalXid: string | undefined;
+        itemId: number | undefined;
+        eventType: any;
         constructor(options) {
             Object.assign(this, options);
         }
 
-        updateArray(array, filterFn) {
+        updateArray(array: any[], filterFn: Function) {
             if (!Array.isArray(array)) return;
 
             const item = this.item;
             const originalXid = this.originalXid;
-            const itemId = this.itemId || item && item.id;
+            const itemId = this.itemId || (item && item.id);
             const eventType = this.eventType;
 
             const filterMatches = typeof filterFn === 'function' ? filterFn(item) : true;
-            if (filterMatches && Number.isFinite(array.$total)) {
+            if (filterMatches && Number.isFinite(array.length)) {
                 if (eventType === 'create') {
-                    array.$total += 1;
+                    //  array.$total += 1;
                 } else if (eventType === 'delete') {
-                    array.$total -= 1;
+                    //  array.$total -= 1;
                 }
             }
 
-            const index = array.findIndex(o => {
-                return itemId && o.id === itemId ||
-                    originalXid && o.xid === originalXid;
+            const index = array.findIndex((o) => {
+                return (itemId && o.id === itemId) || (originalXid && o.xid === originalXid);
             });
             if (index >= 0) {
                 if (!filterMatches || eventType === 'delete') {
@@ -60,26 +68,45 @@ function NotificationManagerFactory(maEventBus, maWatchdog) {
             }
         }
     }
+type DeferredSocket = {resolve: any, reject: any}
+type XidPayload = {action:string,object:Record<string,any>,xid:string,originalXid:string,id:number}
+type NotificationMessage = {messageType:string,notificationType:string,sequenceNumber:number,payload:any,attributes:any}
+type WebSocketRequest = {sequenceNumber:number,messageType:string,requestType:string,notificationTypes:string}
+
 
     class NotificationManager {
-        constructor(options) {
-            angular.extend(this, options);
-
+        listeners: number;
+        subscribedXids: {};
+        subscribedToAllXidsCount: number;
+        eventScope: { notificationManager: NotificationManager };
+        pendingRequests: Record<string,any>;
+        sequenceNumber: number;
+        loggedIn: boolean;
+        socketDeferred: DeferredSocket;
+        webSocketUrl: any;
+        socket?: WebSocket;
+        connectTimer?: NodeJS.Timeout;
+        supportsSubscribe: any;
+        constructor(options: any) {
+            Object.assign(this, options);
+            this.socketDeferred = undefined as unknown as DeferredSocket
             this.listeners = 0;
             this.subscribedXids = {};
             this.subscribedToAllXidsCount = 0;
-            this.eventScope = $rootScope.$new(true);
-            this.eventScope.notificationManager = this;
+            // this.eventScope = $rootScope.$new(true);
+            this.eventScope = { notificationManager: {} as NotificationManager };
+            Object.assign(this.eventScope.notificationManager, this); //one circular, coming right up
             this.pendingRequests = {};
             this.sequenceNumber = 0;
 
-            this.loggedIn = maWatchdog.status === 'LOGGED_IN';
-            maEventBus.subscribe('maWatchdog/#', (event, watchdog) => {
+            this.loggedIn = Watchdog.status === 'LOGGED_IN';
+
+            EventBus.subscribe('maWatchdog/#', (event, watchdog) => {
                 this.loggedIn = watchdog.status === 'LOGGED_IN';
 
                 if (watchdog.status === 'LOGGED_IN' && this.listeners > 0) {
                     // API is up and we are logged in
-                    this.openSocket().catch(angular.noop);
+                    this.openSocket();
                 } else if (watchdog.status === 'API_UP') {
                     // API is up but we aren't logged in
                     this.closeSocket();
@@ -91,16 +118,18 @@ function NotificationManagerFactory(maEventBus, maWatchdog) {
         openSocket() {
             // socket already open
             if (this.socketDeferred) {
-                return this.socketDeferred.promise;
+                return this.socketDeferred;
             }
             if (!('WebSocket' in window)) {
-                return $q.reject('WebSocket not supported in this browser');
+                return Promise.reject('WebSocket not supported in this browser');
             }
             if (!this.webSocketUrl) {
-                return $q.reject('No websocket URL');
+                return Promise.reject('No websocket URL');
             }
-
-            const socketDeferred = this.socketDeferred = $q.defer();
+            let p = new Promise((resolve, reject)=>{
+                this.socketDeferred = { resolve , reject } as DeferredSocket;
+            });
+            const socketDeferred = (this.socketDeferred as DeferredSocket  );
 
             let host = document.location.host;
             let protocol = document.location.protocol;
@@ -109,7 +138,7 @@ function NotificationManagerFactory(maEventBus, maWatchdog) {
                 const i = MA_BASE_URL.indexOf('//');
                 if (i >= 0) {
                     protocol = MA_BASE_URL.substring(0, i);
-                    host = MA_BASE_URL.substring(i+2);
+                    host = MA_BASE_URL.substring(i + 2);
                 } else {
                     host = MA_BASE_URL;
                 }
@@ -117,43 +146,46 @@ function NotificationManagerFactory(maEventBus, maWatchdog) {
 
             protocol = protocol === 'https:' ? 'wss:' : 'ws:';
 
-            const socket = this.socket = new WebSocket(protocol + '//' + host + this.webSocketUrl);
+            const socket = (this.socket = new WebSocket(protocol + '//' + host + this.webSocketUrl));
 
-            this.connectTimer = $timeout(() => {
-                socketDeferred.reject('Timeout opening socket');
+            this.connectTimer = setTimeout(() => {
+                (socketDeferred).reject('Timeout opening socket');
                 this.closeSocket();
             }, MA_TIMEOUTS.websocket);
 
-            socket.onclose = event => {
-                console.warn('WebSocket closed', event.target.url, 'reason:', event.reason);
+            socket.onclose = (event : CloseEvent) => {
+                console.warn('WebSocket closed', (event as {target:{url:string},reason:string}&CloseEvent ).target.url, 'reason:', event.reason);
                 socketDeferred.reject('Socket closed');
                 this.closeSocket(event);
             };
 
-            socket.onerror = event => {
+            socket.onerror = (event) => {
                 socketDeferred.reject('Socket error');
                 this.closeSocket(event);
             };
 
-            socket.onopen = event => {
-                $timeout.cancel(this.connectTimer);
+            socket.onopen = (event) => {
+                // setTimeout.cancel();
+                clearTimeout(this.connectTimer)
                 delete this.connectTimer;
 
                 this.pendingRequests = {};
                 this.sequenceNumber = 0;
 
-                $q.resolve(this.onOpen()).then(() => {
-                    this.notify('webSocketOpen');
-                    this.sendSubscription();
-                    socketDeferred.resolve(this.socket);
-                }).then(null, error => {
-                    this.closeSocket(error);
-                });
+                Promise.resolve(this.onOpen())
+                    .then(() => {
+                        this.notify('webSocketOpen');
+                        this.sendSubscription();
+                        socketDeferred.resolve(this.socket);
+                    })
+                    .then(null, (error) => {
+                        this.closeSocket(error);
+                    });
             };
 
-            socket.onmessage = event => {
+            socket.onmessage = (event) => {
                 try {
-                    const message = angular.fromJson(event.data);
+                    const message = JSON.parse(event.data);
 
                     if (message.status === 'ERROR') {
                         const error = new Error('Web socket status ERROR');
@@ -171,7 +203,7 @@ function NotificationManagerFactory(maEventBus, maWatchdog) {
                 }
             };
 
-            return socketDeferred.promise;
+            return socketDeferred;
         }
 
         onOpen() {
@@ -182,9 +214,10 @@ function NotificationManagerFactory(maEventBus, maWatchdog) {
          * Processes the websocket payload and calls notify() with the appropriate event type.
          * Default notifier for CRUD type websocket payloads, they have a action and object property.
          */
-        notifyFromPayload(payload) {
+
+        notifyFromPayload(payload:XidPayload) {
             if (typeof payload.action === 'string') {
-                const eventType = mapEventType[payload.action] || payload.action;
+                const eventType = mapEventType[payload.action as 'add'] || payload.action;
                 if (eventType) {
                     const item = payload.object != null ? this.transformObject(payload.object) : null;
                     const attributes = new CrudOperationAttributes({
@@ -199,59 +232,59 @@ function NotificationManagerFactory(maEventBus, maWatchdog) {
             }
         }
 
-        createCrudOperationAttributes(options) {
+        createCrudOperationAttributes(options:any) {
             return new CrudOperationAttributes(options);
         }
 
         /**
          * Processes a V2 websocket message and calls notify()
          */
-        messageReceived(message) {
+        messageReceived(message:NotificationMessage) {
             if (message.messageType === 'RESPONSE') {
                 if (isFinite(message.sequenceNumber)) {
                     const request = this.pendingRequests[message.sequenceNumber];
                     if (request != null) {
-                        request.deferred.resolve(message.payload);
-                        $timeout.cancel(request.timeoutPromise);
+                        Promise.resolve(message.payload);
+                      //  $timeout.cancel(request.timeoutPromise);
                     }
                     delete this.pendingRequests[message.sequenceNumber];
                 }
             } else if (message.messageType === 'NOTIFICATION') {
                 const item = this.transformObject(message.payload);
-                const notificationType = mapEventType[message.notificationType] || message.notificationType;
+                const notificationType = mapEventType[message.notificationType as 'add'] || message.notificationType;
                 this.notify(notificationType, item, message.attributes);
             }
         }
 
-        closeSocket(event) {
+        closeSocket(event?: Event) {
             if (this.socketDeferred) {
                 this.socketDeferred.reject('Socket closed');
-                delete this.socketDeferred;
             }
             if (this.connectTimer) {
-                $timeout.cancel(this.connectTimer);
+                clearTimeout(this.connectTimer);
                 delete this.connectTimer;
             }
             if (this.socket) {
-                this.socket.onclose = angular.noop;
-                this.socket.onerror = angular.noop;
-                this.socket.onopen = angular.noop;
-                this.socket.onmessage = angular.noop;
+                this.socket.onclose = ()=>{};
+                this.socket.onerror = ()=>{};
+                this.socket.onopen = ()=>{};
+                this.socket.onmessage = ()=>{};
                 this.socket.close();
                 delete this.socket;
             }
 
-            Object.keys(this.pendingRequests).forEach(sequenceNumber => {
+            Object.keys(this.pendingRequests).forEach((sequenceNumber) => {
                 const request = this.pendingRequests[sequenceNumber];
-                request.deferred.reject('Socket closed');
-                $timeout.cancel(request.timeoutPromise);
+                Promise.reject('Socket closed');
+                // request.deferred.reject('Socket closed');
+                // $timeout.cancel(request.timeoutPromise);
             });
             this.pendingRequests = {};
             this.sequenceNumber = 0;
 
             if (event) {
                 // websocket closed by server, check if Mango is still up
-                maWatchdog.checkStatus();
+                Watchdog.checkStatus();
             }
         }
 
@@ -271,16 +304,16 @@ function NotificationManagerFactory(maEventBus, maWatchdog) {
             });
         }
 
-        sendMessage(message) {
+        sendMessage(message:string) {
             if (this.socketConnected()) {
-                this.socket.send(angular.toJson(message));
+                (this.socket as WebSocket).send(JSON.parse(message));
             }
         }
 
-        sendRequest(message, timeout = MA_TIMEOUTS.websocketRequest) {
+        sendRequest(message:WebSocketRequest, timeout = MA_TIMEOUTS.websocketRequest) {
             if (this.socketConnected()) {
-                const deferred = $q.defer();
-                const timeoutPromise = $timeout(() => {
+                const deferred = {resolve:Promise.resolve,reject:Promise.reject};
+                const timeoutPromise = setTimeout(() => {
                     deferred.reject('Timeout');
                 }, timeout);
                 const sequenceNumber = this.sequenceNumber++;
@@ -292,10 +325,10 @@ function NotificationManagerFactory(maEventBus, maWatchdog) {
                     timeoutPromise
                 };
 
-                this.socket.send(angular.toJson(message));
-                return deferred.promise;
+                (this.socket as WebSocket).send(JSON.stringify(message));
+                return deferred;
             } else {
-                return $q.reject('Socket is not open');
+                return Promise.reject('Socket is not open');
             }
         }
 
@@ -314,7 +347,7 @@ function NotificationManagerFactory(maEventBus, maWatchdog) {
 
                 let subscriptionChanged = false;
                 if (Array.isArray(xids)) {
-                    xids.forEach(xid => {
+                    xids.forEach((xid) => {
                         if (!this.subscribedXids.hasOwnProperty(xid)) {
                             this.subscribedXids[xid] = 1;
                             subscriptionChanged = true;
@@ -333,7 +366,7 @@ function NotificationManagerFactory(maEventBus, maWatchdog) {
                         this.sendSubscription();
                     }
                 } else if (this.loggedIn) {
-                    this.openSocket().catch(angular.noop);
+                    this.openSocket().catch(()=>{});
                 }
             }
 
@@ -362,7 +395,7 @@ function NotificationManagerFactory(maEventBus, maWatchdog) {
             let deregistered = false;
             const deregisterEvents = () => {
                 if (!deregistered) {
-                    eventDeregisters.forEach(eventDeregister => eventDeregister());
+                    eventDeregisters.forEach((eventDeregister) => eventDeregister());
                     deregistered = true;
 
                     if (!localOnly) {
@@ -371,7 +404,7 @@ function NotificationManagerFactory(maEventBus, maWatchdog) {
                         let subscriptionChanged = false;
                         // decrement the count for xid subscriptions
                         if (Array.isArray(xids)) {
-                            xids.forEach(xid => {
+                            xids.forEach((xid) => {
                                 this.subscribedXids[xid]--;
 
                                 // unsubscribe any xids with no more listeners
@@ -407,12 +440,17 @@ function NotificationManagerFactory(maEventBus, maWatchdog) {
 
         // TODO remove
         subscribeToXids(xids, handler, $scope, eventTypes = ['create', 'update', 'delete', 'stateChange']) {
-            return this.subscribe((...args) => {
-                const item = args[1];
-                if (xids.includes(item.xid)) {
-                    handler(...args);
-                }
-            }, $scope, eventTypes, xids);
+            return this.subscribe(
+                (...args) => {
+                    const item = args[1];
+                    if (xids.includes(item.xid)) {
+                        handler(...args);
+                    }
+                },
+                $scope,
+                eventTypes,
+                xids
+            );
         }
 
         /**

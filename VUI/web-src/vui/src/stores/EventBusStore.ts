@@ -74,7 +74,7 @@ export const useEventBusStore = defineStore('eventBus', ()=> {
      * @param {string} topic Topic name, cannot contain wildcards
      * @param {*} args arbitrary number of arguments which will be passed to the listeners (after the event argument)
      */
-    const publish = (topic:EventBusEvent|string, ...args:any[]) => {
+    const publish = (topic:EventBusEvent|string|CustomEvent, ...args:any[]) => {
         let event;
         if (topic instanceof Event) {
             event = topic;

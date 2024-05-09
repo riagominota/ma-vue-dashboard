@@ -26,7 +26,7 @@ const useUserStore = defineStore('userStore', () => {
 
     const userResource = new UserResource(USER_API_PATH, {});
     const { $get, $save, $update, $delete } = userResource;
-    // const lastUpgradeTime: DateTime;
+    const lastUpgradeTime = ref<DateTime>();
     const current = ref<UserModel>();
     const ensureXsrfToken = async (req: AxiosRequestConfig) => {
         // ensures there is a CSRF protection cookie set before logging in
@@ -38,8 +38,11 @@ const useUserStore = defineStore('userStore', () => {
     const systemLocale = ref<string>();
     const systemTimezone = ref<string|Zone>();
     const oauth2Clients = ref<string[]>();
-    const setCurrentUser = function(user:UserModel) {
-        current.value = user;
+    const setCurrentUser = function(user:UserModel|null) {
+        if(user)
+            current.value = user;
+        else
+            current.value = undefined
     };
     const setSystemLocale = function(locale:string) {
         systemLocale.value = locale;
@@ -303,8 +306,9 @@ if (!angular.equals(user, currentUser)) {
         setSystemLocale,
         setSystemTimezone,
         switchCurrentUser,
-        setOAuth2Clients
-//        lastUpgradeTime
+        setOAuth2Clients,
+        storedUsername,
+       lastUpgradeTime
     };
 });
 

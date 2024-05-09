@@ -4,7 +4,8 @@
 
 
 import defaultUiSettings from '../assets/json/vuiSettings.json';
-import util from './bootstrapUtil.js';
+// import util from './bootstrapUtil.js';
+import { useSessionStore } from '@/stores/sessionStore';
 import {axios} from './axios.js'
 import { AxiosResponse } from 'axios';
 import {apply} from 'ts-merge-patch'
@@ -13,6 +14,9 @@ import { useUserStore } from '@/stores/UserStore.js';
 import { VUISettings } from '@/types/VUISettings.js';
 //needs to be in web directory for REST controller to read
 // import './uiSettings.json?fileLoader';
+
+const SessionStore = useSessionStore();
+
 export const boostrapPreLogin = ()=>
 {
 let beforeinstallpromptEvent:Event;
@@ -23,7 +27,7 @@ window.addEventListener('beforeinstallprompt', e => {
 
 Promise.resolve().then(() => {
     // clear the autologin credentials if the url parameter is set
-    util.checkClearAutoLogin();
+    SessionStore.checkClearAutoLogin();
     
     const preLoginDataPromise:Promise<PreLoginData> = axios({
         method: 'GET',
@@ -77,15 +81,15 @@ Promise.resolve().then(() => {
         }
         
         return uiSettingsPromise.then((uiSettings) => {
-            return util.autoLogin(uiSettings);
+            return SessionStore.autoLogin(uiSettings);
         });
     });
     
     const postLoginDataPromise = userPromise.then(user => {
         if (!user) return;
         
-        return util.xhrRequest({
-            method: 'GET',
+        return axios({
+            method: 'get',
             url: '/rest/latest/ui-bootstrap/post-login'
         }).then(response => {
             if (response.status !== 200) {

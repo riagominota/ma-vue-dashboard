@@ -4,11 +4,14 @@
 
 import { DateTime } from 'luxon';
 import constants from '@/boot/constants';
-import rqlBuilderFactory from '@/services/RqlBuilder';
+import rqlBuilderFactory, { RqlBuilderInstance } from '@/services/RqlBuilder';
 import { v4 as uuid4 } from 'uuid';
 import { RouteParams } from 'vue-router';
 import { number } from 'mathjs';
 import { AxiosError, AxiosResponse } from 'axios';
+import { apply } from 'ts-merge-patch';
+import restResourceFactory from '@/services/RestResource';
+import { RqlVisitorInstance } from '@/services/RqlVisitor';
 /**
 * @ngdoc service
 * @name ngMangoServices.maUtil
@@ -24,148 +27,185 @@ import { AxiosError, AxiosResponse } from 'axios';
 */
 
 // CONVERT TO A PINIA STORE
-        // /**
-        //  * @ngdoc method
-        //  * @methodOf ngMangoServices.maUtil
-        //  * @name encodeStateParams
-        //  *
-        //  * @description Encodes watch list parameters into a format that will work with $state.go().
-        //  * Encodes null into 'null', and empty array into undefined, unwraps single element arrays e.g. [a] => a
-        //  * Parameter names which are not found in $stateParams will be excluded from the output.
-        //  *
-        //  * @param {object} inputParameters Watch list parameters to encode
-        //  * @returns {object} Encoded parameters to pass to $state.go()
-        //  */
-        // encodeStateParams(inputParameters:Record<string,any>) {
-        //     const params = {};
+// /**
+//  * @ngdoc method
+//  * @methodOf ngMangoServices.maUtil
+//  * @name encodeStateParams
+//  *
+//  * @description Encodes watch list parameters into a format that will work with $state.go().
+//  * Encodes null into 'null', and empty array into undefined, unwraps single element arrays e.g. [a] => a
+//  * Parameter names which are not found in $stateParams will be excluded from the output.
+//  *
+//  * @param {object} inputParameters Watch list parameters to encode
+//  * @returns {object} Encoded parameters to pass to $state.go()
+//  */
+// encodeStateParams(inputParameters:Record<string,any>) {
+//     const params = {};
 
-        //     Object.keys(inputParameters).forEach((key) => {
-        //         const paramValue = inputParameters[key];
+//     Object.keys(inputParameters).forEach((key) => {
+//         const paramValue = inputParameters[key];
 
-        //         if (!$stateParams.hasOwnProperty(key)) {
-        //             return;
-        //         }
+//         if (!$stateParams.hasOwnProperty(key)) {
+//             return;
+//         }
 
-        //         if (Array.isArray(paramValue)) {
-        //             if (!paramValue.length) {
-        //                 params[key] = undefined;
-        //             } else if (paramValue.length === 1) {
-        //                 params[key] = paramValue[0] === null ? ENCODED_STATE_PARAM_NULL : paramValue[0];
-        //             } else {
-        //                 params[key] = paramValue.map((value) => {
-        //                     return value === null ? ENCODED_STATE_PARAM_NULL : value;
-        //                 });
-        //             }
-        //         } else if (paramValue === null) {
-        //             params[key] = ENCODED_STATE_PARAM_NULL;
-        //         } else {
-        //             params[key] = paramValue;
-        //         }
-        //     });
+//         if (Array.isArray(paramValue)) {
+//             if (!paramValue.length) {
+//                 params[key] = undefined;
+//             } else if (paramValue.length === 1) {
+//                 params[key] = paramValue[0] === null ? ENCODED_STATE_PARAM_NULL : paramValue[0];
+//             } else {
+//                 params[key] = paramValue.map((value) => {
+//                     return value === null ? ENCODED_STATE_PARAM_NULL : value;
+//                 });
+//             }
+//         } else if (paramValue === null) {
+//             params[key] = ENCODED_STATE_PARAM_NULL;
+//         } else {
+//             params[key] = paramValue;
+//         }
+//     });
 
-        //     return params;
-        // },
+//     return params;
+// },
 
-        // /**
-        //  * @ngdoc method
-        //  * @methodOf ngMangoServices.maUtil
-        //  * @name decodedStateParams
-        //  *
-        //  * @description Returns $stateParams decoded into a format that can be used in watch list parameters.
-        //  * Decodes 'null' into null.
-        //  *
-        //  * @returns {object} Decoded parameters for watch list
-        //  */
-        // decodedStateParams() {
-        //     const params = Object.assign({}, $stateParams);
+// /**
+//  * @ngdoc method
+//  * @methodOf ngMangoServices.maUtil
+//  * @name decodedStateParams
+//  *
+//  * @description Returns $stateParams decoded into a format that can be used in watch list parameters.
+//  * Decodes 'null' into null.
+//  *
+//  * @returns {object} Decoded parameters for watch list
+//  */
+// decodedStateParams() {
+//     const params = Object.assign({}, $stateParams);
 
-        //     Object.keys(params).forEach((key) => {
-        //         const paramValue = params[key];
-        //         if (Array.isArray(paramValue)) {
-        //             params[key] = paramValue.map((value) => {
-        //                 return value === ENCODED_STATE_PARAM_NULL ? null : value;
-        //             });
-        //         } else if (paramValue === ENCODED_STATE_PARAM_NULL) {
-        //             params[key] = null;
-        //         }
-        //     });
+//     Object.keys(params).forEach((key) => {
+//         const paramValue = params[key];
+//         if (Array.isArray(paramValue)) {
+//             params[key] = paramValue.map((value) => {
+//                 return value === ENCODED_STATE_PARAM_NULL ? null : value;
+//             });
+//         } else if (paramValue === ENCODED_STATE_PARAM_NULL) {
+//             params[key] = null;
+//         }
+//     });
 
-        //     return params;
-        // },
+//     return params;
+// },
 
-        // /**
-        //  * @ngdoc method
-        //  * @methodOf ngMangoServices.maUtil
-        //  * @name createArrayParams
-        //  *
-        //  * @description Creates a parameters object where each value is always an array. Useful for setting
-        //  *     multi-select watch list parameters from state parameters.
-        //  *
-        //  * @param {object} parameters $stateParams like object
-        //  * @returns {object} new parameters object where values are always arrays
-        //  */
-        // createArrayParams(parameters) {
-        //     const arrayParams = {};
-        //     Object.keys(parameters).forEach((key) => {
-        //         const paramValue = parameters[key];
-        //         if (paramValue === undefined) {
-        //             arrayParams[key] = [];
-        //         } else if (!Array.isArray(paramValue)) {
-        //             arrayParams[key] = [paramValue];
-        //         } else {
-        //             arrayParams[key] = paramValue;
-        //         }
-        //     });
-        //     return arrayParams;
-        // },
+// /**
+//  * @ngdoc method
+//  * @methodOf ngMangoServices.maUtil
+//  * @name createArrayParams
+//  *
+//  * @description Creates a parameters object where each value is always an array. Useful for setting
+//  *     multi-select watch list parameters from state parameters.
+//  *
+//  * @param {object} parameters $stateParams like object
+//  * @returns {object} new parameters object where values are always arrays
+//  */
+// createArrayParams(parameters) {
+//     const arrayParams = {};
+//     Object.keys(parameters).forEach((key) => {
+//         const paramValue = parameters[key];
+//         if (paramValue === undefined) {
+//             arrayParams[key] = [];
+//         } else if (!Array.isArray(paramValue)) {
+//             arrayParams[key] = [paramValue];
+//         } else {
+//             arrayParams[key] = paramValue;
+//         }
+//     });
+//     return arrayParams;
+// },
 
-        // /**
-        //  * @ngdoc method
-        //  * @methodOf ngMangoServices.maUtil
-        //  * @name differentToStateParams
-        //  *
-        //  * @description Compares new state params to the current $stateParams
-        //  *
-        //  * @param {object} updateParams New state params
-        //  * @returns {boolean} true if updateParams are the different to the current $stateParams
-        //  *
-        //  */
-        // differentToStateParams(updateParams) {
-        //     return Object.keys(updateParams).some((key) => {
-        //         const paramValue = updateParams[key];
-        //         return $stateParams.hasOwnProperty(key) && !angular.equals(paramValue, $stateParams[key]);
-        //     });
-        // },
+// /**
+//  * @ngdoc method
+//  * @methodOf ngMangoServices.maUtil
+//  * @name differentToStateParams
+//  *
+//  * @description Compares new state params to the current $stateParams
+//  *
+//  * @param {object} updateParams New state params
+//  * @returns {boolean} true if updateParams are the different to the current $stateParams
+//  *
+//  */
+// differentToStateParams(updateParams) {
+//     return Object.keys(updateParams).some((key) => {
+//         const paramValue = updateParams[key];
+//         return $stateParams.hasOwnProperty(key) && !angular.equals(paramValue, $stateParams[key]);
+//     });
+// },
 
-        // /**
-        //  * @ngdoc method
-        //  * @methodOf ngMangoServices.maUtil
-        //  * @name updateStateParams
-        //  *
-        //  * @description Updates $stateParams using $state.go() if updateParams are different to the current $stateParams
-        //  *
-        //  * @param {object} updateParams New state params
-        //  * @returns {boolean} true if updateParams were different and $state.go() was called
-        //  */
-        // updateStateParams(updateParams) {
-        //     if (this.differentToStateParams(updateParams)) {
-        //         $state.go('.', updateParams, { location: 'replace', notify: false });
-        //         return true;
-        //     }
-        //     return false;
-        // },
+// /**
+//  * @ngdoc method
+//  * @methodOf ngMangoServices.maUtil
+//  * @name updateStateParams
+//  *
+//  * @description Updates $stateParams using $state.go() if updateParams are different to the current $stateParams
+//  *
+//  * @param {object} updateParams New state params
+//  * @returns {boolean} true if updateParams were different and $state.go() was called
+//  */
+// updateStateParams(updateParams) {
+//     if (this.differentToStateParams(updateParams)) {
+//         $state.go('.', updateParams, { location: 'replace', notify: false });
+//         return true;
+//     }
+//     return false;
+// },
 
+interface ObjectResource extends Array<any> {
+    $start: number;
+    $limit: number;
+    $total: number;
+    $pages: number;
+    $page: number;
+    length: number;
+}
 
-type ObjectResource = {
-    resource:{
-            $start:number,
-            $limit:number,
-            $total:number,
-            $pages:number,
-            $page:number,
-            length:number
-        }        }
-function UtilFactory( RqlBuilder ) {
+interface UtilFactory {
+    maMatch(args: any): any;
+    maMatches(selector: any): boolean;
+    query(queryObject: any, opts?: {}): any;
+    maFind(selector: any): Element[];
+    maHasFocus(): boolean;
+    maClick(): boolean | UtilFactory;
+    maFocus(options: { selectText?: string; sort?: string; scrollIntoView?: boolean }): UtilFactory;
+    firstMatch: (accessor: string) => (selector: string) => Element[];
+    maParent: (selector: string) => Element[];
+    maNext: (selector: string) => Element[];
+    maPrev: (selector: string) => Element[];
+    maForEach(...args: any[]): UtilFactory;
+    maPush(...args: any[]): UtilFactory;
+    maFilter(...args: any[]): any[];
+    maMap(...args: any[]): any[];
+    maAdd(...args: any[]): any[];
+    maIncludes($other: string): boolean;
+    maNot($other: string): any[];
+    arrayDiff(
+        newArray: any[],
+        oldArray: any[]
+    ): {
+        added: any[];
+        removed: any[];
+        changed: boolean;
+    };
+    toLuxonDT: (input: undefined | string | number, now: number, format: string) => DateTime;
+    isEmpty(str: string): boolean;
+    numKeys(obj: Record<string, number | string | boolean>, start: string): number;
+    openSocket(path: string): WebSocket;
+    transformArrayResponse(data: string, headers: string, code: number): any;
+    arrayResponseInterceptor(data: { data: ObjectResource; resource: ObjectResource; config: { url: string } }): ObjectResource | Promise<never>;
+    memoize(fn: Function, cacheSize: number): any;
+    rollupIntervalCalculator(from: string, to: string, rollupType: string, asObject: boolean): string | { intervals: number; units: string };
+    blobToText(blob: Blob): Promise<never>;
+}
+
+function UtilFactory(this: any) {
     const mangoBaseUrl = constants.MA_BASE_URL;
 
     // const $stateParams = $injector.has('$stateParams') ? $injector.get('$stateParams') : null;
@@ -177,53 +217,50 @@ function UtilFactory( RqlBuilder ) {
 
     const ENCODED_STATE_PARAM_NULL = 'null';
 
+    const RestResource = restResourceFactory();
 
-    const firstMatch = function (accessor) {
-        return function (selector) {
-            const selection = [];
-            Array.prototype.forEach.call(this, (e) => {
-                while ((e = e[accessor]) != null) {
-                    if (e instanceof Element && e.matches(selector)) {
-                        selection.push(e);
-                        break;
+    const util: UtilFactory = {
+        query: RestResource.query,
+        firstMatch(accessor: string): (selector: string) => Element[] {
+            return (selector: string) => {
+                const selection: Element[] = [];
+                Array.prototype.forEach.call(this, (e: any) => {
+                    while ((e = e[accessor]) != null) {
+                        if (e instanceof Element && e.matches(selector)) {
+                            selection.push(e);
+                            break;
+                        }
                     }
-                }
-            });
-            return selection;
-        };
-    };
-
-
-
-
-
-    const util = {
-        maMatch(selector) {
+                });
+                return selection;
+            };
+        },
+        maMatch(selector: any) {
             const elements = Array.prototype.filter.call(this, (e) => {
                 return e instanceof Element && e.matches(selector);
             });
-            return JQLite(elements);
+            return elements;
         },
 
-        maMatches(selector) {
+        maMatches(selector: any) {
             return Array.prototype.some.call(this, (e) => {
                 return e instanceof Element && e.matches(selector);
             });
         },
 
-        maFind(selector) {
-            const elements = Array.from(this.maMatch(selector));
+        maFind(selector: any): Element[] {
+            const elements = Array.from(this.maMatch(selector)) as Element[];
             Array.prototype.forEach.call(this, (e) => {
                 if (e instanceof Element || e instanceof Document) {
                     const matches = e.querySelectorAll(selector);
                     elements.push(...matches);
                 }
             });
-            return JQLite(elements);
+            return elements;
         },
 
         maHasFocus() {
-            const activeElement = $document[0].activeElement;
+            const activeElement = document.activeElement;
             if (!activeElement) return false;
 
             return Array.prototype.some.call(this, (e) => {
@@ -233,7 +270,7 @@ function UtilFactory( RqlBuilder ) {
 
         maClick() {
             Array.prototype.some.call(this, (e) => {
-                if (e instanceof Element) {
+                if (e instanceof HTMLElement) {
                     e.click();
                     return true;
                 }
@@ -241,12 +278,12 @@ function UtilFactory( RqlBuilder ) {
             return this;
         },
 
-        maFocus(options = {}) {
+        maFocus(options: { selectText?: string; sort?: string; scrollIntoView?: boolean } = {}) {
             const selectText = !!options.selectText;
             const sort = !!options.sort;
             const scrollIntoView = !!options.scrollIntoView;
 
-            const focusable = Array.prototype.filter.call(this, (e) => {
+            const focusable = Array.prototype.filter.call(this, (e: HTMLFormElement) => {
                 // offsetParent is null if element is not visible
                 return e instanceof Element && e.offsetParent != null && !e.disabled;
             });
@@ -273,50 +310,49 @@ function UtilFactory( RqlBuilder ) {
             return this;
         },
 
-        maParent: firstMatch('parentNode'),
-        maNext: firstMatch('nextSibling'),
-        maPrev: firstMatch('previousSibling'),
+        maParent: this.firstMatch('parentNode'),
+        maNext: this.firstMatch('nextSibling'),
+        maPrev: this.firstMatch('previousSibling'),
 
-        maForEach() {
-            Array.prototype.forEach.apply(this, arguments);
+        maForEach(...args: any[]) {
+            const fn = args[0];
+            Array.prototype.forEach.apply(this, args as [callbackfn: (value: any, index: number, array: any[]) => void, thisArg?: any]);
             return this;
         },
 
-        maPush() {
-            Array.prototype.push.apply(this, arguments);
+        maPush(...args: any[]) {
+            Array.prototype.push.apply(this, args);
             return this;
         },
 
-        maFilter() {
-            return JQLite(Array.prototype.filter.apply(this, arguments));
+        maFilter<S>(...args: any[]) {
+            return Array.prototype.filter.apply(this, args as [predicate: (value: any, index: number, array: any[]) => value is S, thisArg?: any]);
         },
 
-        maMap() {
-            return JQLite(Array.prototype.map.apply(this, arguments));
+        maMap<U>(...args: any[]): any[] {
+            return Array.prototype.map.apply(this, args as [callbackfn: (value: any, index: number, array: any[]) => U, thisArg?: any]);
         },
 
-        maAdd() {
-            const args = Array.from(arguments).map((arg) => (arg instanceof JQLite ? Array.from(arg) : arg));
-            return JQLite(Array.prototype.concat.apply(Array.from(this), args));
+        maAdd(...add: any[]) {
+            const args = Array.from(add).map((arg) => (arg.prototype.constructor.name === 'Object' ? Array.from(arg) : arg));
+            return Array.prototype.concat.apply(Array.from(this as any), args);
         },
 
-        maIncludes($other) {
+        maIncludes($other: string) {
             return Array.prototype.some.call(this, (e) => {
                 return Array.prototype.includes.call($other, e);
             });
         },
 
-        maNot($other) {
-            return JQLite(
-                Array.prototype.filter.call(this, (e) => {
-                    return !Array.prototype.includes.call($other, e);
-                })
-            );
+        maNot($other: string) {
+            return Array.prototype.filter.call(this, (e) => {
+                return !Array.prototype.includes.call($other, e);
+            });
         },
 
-        maFirst() {
-            return this.length ? JQLite(this[0]) : JQLite();
-        },
+        // maFirst() {
+        //     return this.length ? JQLite(this[0]) : JQLite();
+        // },
         /**
         * @ngdoc method
         * @methodOf ngMangoServices.maUtil
@@ -332,7 +368,7 @@ function UtilFactory( RqlBuilder ) {
         <li>`removed` - ARRAY of items that were in oldArray that were not in newArray.</li>
         <li>`changed` - BOOLEAN true/false depending on if there is a diff between the arrays.
         */
-        arrayDiff(newArray:any[], oldArray:any[]) {
+        arrayDiff(newArray: any[], oldArray: any[]) {
             if (newArray === undefined) newArray = [];
             if (oldArray === undefined) oldArray = [];
 
@@ -363,8 +399,8 @@ function UtilFactory( RqlBuilder ) {
          * @returns {object}  Returns a moment js object.
          *
          */
-        toLuxonDT(input:string|number, now:number, format:string) {
-            if (!input || input === 'now') return DateTime.now;
+        toLuxonDT(input: string | number | undefined, now: number, format: string): DateTime {
+            if (!input || input === 'now') return DateTime.now();
             if (typeof input === 'string') {
                 return DateTime.fromFormat(input, format || constants.MA_DATE_FORMATS.dateTimeSeconds);
             }
@@ -382,7 +418,7 @@ function UtilFactory( RqlBuilder ) {
          * @returns {boolean}  Returns true if `str` is null, undefined, or whitespace
          *
          */
-        isEmpty(str:string) {
+        isEmpty(str: string) {
             return !str || /^\s*$/.test(str);
         },
 
@@ -398,7 +434,7 @@ function UtilFactory( RqlBuilder ) {
          * @returns {number}  Returns the number of keys in `obj` starting with the text given by `start` string
          *
          */
-        numKeys(obj:Record<string,number|string|boolean>, start:string) {
+        numKeys(obj: Record<string, number | string | boolean>, start: string): number {
             let count = 0;
             for (const key in obj) {
                 if (key.indexOf(start) === 0) count++;
@@ -417,7 +453,7 @@ function UtilFactory( RqlBuilder ) {
          * @returns {object}  Returns a WebSocket object at the specifed path
          *
          */
-        openSocket(path:string) {
+        openSocket(path: string) {
             if (!('WebSocket' in window)) {
                 throw new Error('WebSocket not supported');
             }
@@ -454,7 +490,7 @@ function UtilFactory( RqlBuilder ) {
          * @returns {object[]}  Array with $total property
          *
          */
-        transformArrayResponse(data:string, headers:string, code:number) {
+        transformArrayResponse(data: string, headers: string, code: number) {
             try {
                 if (!data) return data;
                 const parsed = JSON.parse(data);
@@ -479,8 +515,7 @@ function UtilFactory( RqlBuilder ) {
          *
          */
 
-
-        arrayResponseInterceptor<T>(data:{data:string,resource:ObjectResource,config:{url:string}}) {
+        arrayResponseInterceptor<T>(data: { data: ObjectResource; resource: ObjectResource; config: { url: string } }) {
             if (data.data === undefined) return Promise.reject(data);
 
             try {
@@ -527,8 +562,8 @@ function UtilFactory( RqlBuilder ) {
          * Used to prevent infinite digest loops in filters etc.
          *
          */
-        memoize(fn, cacheSize) {
-            const cache = [];
+        memoize(fn: Function, cacheSize: number) {
+            const cache: any[] = [];
             if (!Number.isFinite(cacheSize) || cacheSize <= 0) {
                 cacheSize = 10;
             }
@@ -536,7 +571,7 @@ function UtilFactory( RqlBuilder ) {
                 cache.push(undefined);
             } while (--cacheSize > 0);
 
-            return function () {
+            return () => {
                 const args = Array.prototype.slice.call(arguments, 0);
 
                 searchCache: for (let i = 0; i < cache.length; i++) {
@@ -575,8 +610,8 @@ function UtilFactory( RqlBuilder ) {
          * @returns {string} Returns a string holding the Rollup Interval (eg. `1 MINUTES`)
          *
          */
-        rollupIntervalCalculator(from:string, to:string, rollupType:string,asObject:boolean) {
-            const duration = DateTime.fromFormat(to, constants.MA_DATE_TIME_FORMATS[0].format ).diff(DateTime.fromFormat(from, constants.MA_DATE_TIME_FORMATS[0].format)).as('seconds');
+        rollupIntervalCalculator(from: string, to: string, rollupType: string, asObject: boolean) {
+            const duration = DateTime.fromFormat(to, constants.MA_DATE_TIME_FORMATS[0].format).diff(DateTime.fromFormat(from, constants.MA_DATE_TIME_FORMATS[0].format)).as('seconds');
             let result = { intervals: 1, units: 'SECONDS' };
 
             // console.log(duration,moment.duration(duration).humanize(),rollupType);
@@ -670,10 +705,10 @@ function UtilFactory( RqlBuilder ) {
             }
         },
 
-        objQuery(options) {
-            if (!options) return this.query();
-
-            const rqlBuilder = new RqlBuilder();
+        objQuery(options: any) {
+            const factory = rqlBuilderFactory();
+            const rqlBuilder = new factory();
+            if (!options) return rqlBuilder.query();
             const params = [];
 
             if (typeof options.query === 'string' && options.query) {
@@ -730,11 +765,11 @@ function UtilFactory( RqlBuilder ) {
             return params.length ? this.query({ rqlQuery: params.join('&') }) : this.query();
         },
 
-        parseInternationalFloat(strValue:string) {
+        parseInternationalFloat(strValue: string) {
             strValue = standardizeFloat(strValue);
             return parseFloat(strValue);
 
-            function standardizeFloat(strValue:string) {
+            function standardizeFloat(strValue: string) {
                 let matches;
 
                 // has obvious space or full stop thousands separator and a comma as radix point
@@ -760,7 +795,7 @@ function UtilFactory( RqlBuilder ) {
             }
         },
 
-        pointValueToString(pointValue:number|boolean, point:DataPoint) {
+        pointValueToString(pointValue: number | boolean, point: DataPoint) {
             if (point && typeof point.getTextRenderer === 'function') {
                 const rendered = point.getTextRenderer().render(pointValue);
                 if (rendered && rendered.text && typeof rendered.text === 'string') {
@@ -791,64 +826,64 @@ function UtilFactory( RqlBuilder ) {
             return '' + pointValue;
         },
 
-        throwHttpError(error:AxiosResponse) {
+        throwHttpError(error: AxiosResponse) {
             if (error instanceof Error) return Promise.reject(error);
             if (error.status < 0) throw new Error('$http request timeout or cancelled');
             throw new Error(error.status + ' - ' + error.statusText);
         },
 
-        cancelOrTimeout<T>(cancelPromise:Promise<T>, timeout:number) {
+        cancelOrTimeout<T>(cancelPromise: Promise<T>, timeout: number) {
             timeout = Number.isFinite(timeout) && timeout >= 0 ? timeout : constants.MA_TIMEOUTS.xhr;
             if (timeout > 0) {
-                const timeoutPromise =  new Promise(function(resolve) {
-                    setTimeout(resolve, timeout,false);
+                const timeoutPromise = new Promise(function (resolve) {
+                    setTimeout(resolve, timeout, false);
                 });
                 return Promise.race([cancelPromise, timeoutPromise]);
             }
             return cancelPromise;
         },
 
-        snakeCase(name:string, separator:string) {
+        snakeCase(name: string, separator: string) {
             separator = separator || '-';
             return name.replace(SNAKE_CASE_REGEXP, function (letter, pos) {
                 return (pos ? separator : '') + letter.toLowerCase();
             });
         },
 
-        camelCase(name:string) {
+        camelCase(name: string) {
             return name.replace(PREFIX_REGEXP, '').replace(SPECIAL_CHARS_REGEXP, fnCamelCaseReplace);
 
-            function fnCamelCaseReplace(all:string, letter:string) {
+            function fnCamelCaseReplace(all: string, letter: string) {
                 return letter.toUpperCase();
             }
         },
 
-        titleCase(input:string) {
-            return input.replace(/\w\S*/g, function (txt:string) {
+        titleCase(input: string) {
+            return input.replace(/\w\S*/g, function (txt: string) {
                 return txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase();
             });
         },
 
-        downloadBlob(blob:Blob, filename:string) {
-         /*    if (typeof window.navigator.msSaveBlob === 'function') {
+        downloadBlob(blob: Blob, filename: string) {
+            /*    if (typeof window.navigator.msSaveBlob === 'function') {
                 window.navigator. (blob, filename);
             } else { */
-                const url = URL.createObjectURL(blob);
-                try {
-                    const a = document.createElement('a');
-                    a.style.display = 'none';
-                    a.href = url;
-                    a.download = filename;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                } finally {
-                    URL.revokeObjectURL(url);
-                }
-           /*  } */
+            const url = URL.createObjectURL(blob);
+            try {
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            } finally {
+                URL.revokeObjectURL(url);
+            }
+            /*  } */
         },
 
-        escapeRegExp(str:string) {
+        escapeRegExp(str: string) {
             return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
         },
 
@@ -859,7 +894,7 @@ function UtilFactory( RqlBuilder ) {
          *
          * @description does a deep replace of object values, i.e. keeps the same array/object but replaces all of its keys
          */
-        deepReplace(oldObject:Record<string,any>, newObject:Record<string,any>) {
+        deepReplace(oldObject: Record<string, any>, newObject: Record<string, any>) {
             // remove keys from oldObject which don't exist in newObject
             if (Array.isArray(newObject) && Array.isArray(oldObject)) {
                 oldObject.length = newObject.length;
@@ -872,7 +907,7 @@ function UtilFactory( RqlBuilder ) {
             }
 
             Object.keys(newObject).forEach((key) => {
-                const newValue = newObject[key  as keyof Object];
+                const newValue = newObject[key as keyof Object];
                 const oldValue = oldObject[key as keyof Object];
 
                 if (newValue != null && oldValue != null && typeof newValue === 'object' && typeof oldValue === 'object') {
@@ -882,8 +917,6 @@ function UtilFactory( RqlBuilder ) {
                 }
             });
         },
-
-
 
         /**
          * Escapes all RegExp special characters
@@ -898,7 +931,7 @@ function UtilFactory( RqlBuilder ) {
             return a.size === b.size && Array.from(a).every((x) => b.has(x));
         },
 
-        equalByFn(mapFn:(value: any, index?: number, array?: any[])=>any, a:any[], b:any[]) {
+        equalByFn(mapFn: (value: any, index?: number, array?: any[]) => any, a: any[], b: any[]) {
             if (a === b) return true;
 
             const aIsArray = Array.isArray(a);
@@ -914,11 +947,11 @@ function UtilFactory( RqlBuilder ) {
             return mapFn(a) === mapFn(b);
         },
 
-        equalByKey(key:string, a:string, b:string) {
+        equalByKey(key: string, a: string, b: string) {
             return this.equalByFn((x) => (x == null || typeof x !== 'object' ? x : x[key]), a, b);
         },
 
-        splitPropertyName(name:string, isControlName = false) {
+        splitPropertyName(name: string, isControlName = false) {
             if (!name) {
                 return [];
             }
@@ -954,11 +987,11 @@ function UtilFactory( RqlBuilder ) {
             return propArray.filter((p) => !!p);
         },
 
-        splitControlName(control:string) {
-            return this.splitPropertyName(this.controlName(control), true);
+        splitControlName(control: string) {
+            return this.splitPropertyName(controlName(control), true);
         },
 
-        propertyNameToSelector(name:string) {
+        propertyNameToSelector(name: string) {
             return this.splitPropertyName(name)
                 .map((n) => {
                     return `[name='${n}']`;
@@ -966,7 +999,7 @@ function UtilFactory( RqlBuilder ) {
                 .join(' ');
         },
 
-       /*  controlName(control:string) {
+        /*  controlName(control:string) {
             return control.hasOwnProperty('$maName') ? control.$maName : control.$name;
         },
 
@@ -1006,7 +1039,7 @@ function UtilFactory( RqlBuilder ) {
             }
         }, */
 
-        deepMerge: function deepMerge(dst:Record<string,any>|{}, ...srcArray:Record<string,any>[]) {
+        deepMerge: function deepMerge(dst: Record<string, any> | {}, ...srcArray: Record<string, any>[]) {
             if (dst === null || typeof dst !== 'object') {
                 dst = {};
             }
@@ -1015,10 +1048,9 @@ function UtilFactory( RqlBuilder ) {
                 const src = srcArray[i];
                 if (src == null) continue;
 
-
                 for (let k of Object.keys(src)) {
                     const srcVal = src[k];
-                    let dstVal = (dst as Record<string,any>)[k];
+                    let dstVal = (dst as Record<string, any>)[k];
 
                     if (srcVal !== null && typeof srcVal === 'object') {
                         const srcIsArray = Array.isArray(srcVal);
@@ -1030,9 +1062,9 @@ function UtilFactory( RqlBuilder ) {
                             dstVal = {};
                         }
 
-                        (dst as Record<string,any>)[k] = deepMerge(dstVal, srcVal);
+                        (dst as Record<string, any>)[k] = deepMerge(dstVal, srcVal);
                     } else if (srcVal !== undefined) {
-                        (dst as Record<string,any>)[k] = srcVal;
+                        (dst as Record<string, any>)[k] = srcVal;
                     }
                 }
             }
@@ -1040,7 +1072,7 @@ function UtilFactory( RqlBuilder ) {
             return dst;
         },
 
-        deepDiff: function deepDiff(data:Record<string,any>, defaults) {
+        deepDiff: function deepDiff(data: Record<string, any>, defaults) {
             const differences = {};
             for (const key in data) {
                 const fieldValue = data[key];
@@ -1049,29 +1081,14 @@ function UtilFactory( RqlBuilder ) {
                     if (fieldValue && typeof fieldValue === 'object' && !Array.isArray(fieldValue)) {
                         const diff = deepDiff(fieldValue, defaultValue);
                         if (Object.keys(diff).length) {
-                            (differences as Record<string,any>)[key] = diff;
+                            (differences as Record<string, any>)[key] = diff;
                         }
                     } else {
-                        (differences as Record<string,any>)[key] = fieldValue;
+                        (differences as Record<string, any>)[key] = fieldValue;
                     }
                 }
             }
             return differences;
-        },
-
-        merge() {
-            return angular.merge.apply(angular, arguments);
-        },
-
-        copy() {
-            return angular.copy.apply(angular, arguments);
-        },
-
-        inject(object) {
-            if ((Array.isArray(object) && object.length && typeof object[object.length - 1] === 'function') || (typeof object === 'function' && Array.isArray(object.$inject))) {
-                return $injector.invoke(object);
-            }
-            return object;
         },
 
         /**
@@ -1119,22 +1136,22 @@ function UtilFactory( RqlBuilder ) {
         /**
          * Creates a boolean model for adding/removing an item from a collection (Supports Arrays, Maps, and Sets).
          */
-        createBooleanModel(collection, item, getId) {
+        createBooleanModel(collection: any[] | SetConstructor | MapConstructor, item: Record<string, string>, getId: string | null | Function) {
             if (typeof getId === 'string') {
                 const propertyName = getId;
-                getId = (a) => a[propertyName];
+                getId = (a: Record<string, any>) => a[propertyName];
             } else if (getId == null) {
                 // identity function
-                getId = (a) => a;
+                getId = (a: string) => a;
             }
 
             const id = getId(item);
 
             if (Array.isArray(collection)) {
                 return Object.defineProperty({}, 'value', {
-                    get: () => !!collection.find((a) => getId(a) === id),
+                    get: () => !!collection.find((a) => (getId as Function)(a) === id),
                     set: (value) => {
-                        const index = collection.findIndex((a) => getId(a) === id);
+                        const index = collection.findIndex((a) => (getId as Function)(a) === id);
                         if (value) {
                             if (index < 0) {
                                 collection.push(item);
@@ -1174,14 +1191,14 @@ function UtilFactory( RqlBuilder ) {
         /**
          * Warning: Only parses the token, does not verify the signature
          */
-        parseJwt(token:string) {
+        parseJwt(token: string) {
             const parts = token.split('.');
             const claims = parts[1];
             const jsonStr = atob(claims);
             return JSON.parse(jsonStr);
         },
 
-        setDifference(a:any[], b:any[]) {
+        setDifference(a: any[], b: any[]) {
             const diff = new Set(a);
             for (let o of b) {
                 diff.delete(o);
@@ -1189,16 +1206,16 @@ function UtilFactory( RqlBuilder ) {
             return diff;
         },
 
-        formatBytes(bytes:number|string, precision = 1) {
+        formatBytes(bytes: number | string, precision = 1) {
             if (bytes === 0) return '0 B';
             if (isNaN(parseFloat(bytes as string)) || !isFinite(bytes as number)) return '-';
             const units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'],
                 number = Math.floor(Math.log(bytes as number) / Math.log(1024));
             if (number === 0) precision = 0;
-            return (bytes as number / Math.pow(1024, Math.floor(number))).toFixed(precision) + ' ' + units[number];
+            return ((bytes as number) / Math.pow(1024, Math.floor(number))).toFixed(precision) + ' ' + units[number];
         },
 
-        blobToText(blob:Blob) {
+        blobToText(blob: Blob) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.addEventListener('load', (e) => resolve(reader.result));
@@ -1207,20 +1224,37 @@ function UtilFactory( RqlBuilder ) {
             });
         },
 
-       async blobToJson(blob:Blob):Promise<string> {
-            return JSON.stringify( await this.blobToText(blob))
+        async blobToJson(blob: Blob): Promise<string> {
+            return JSON.stringify(await this.blobToText(blob));
         },
 
         /**
          * Use /file-stores URL outside of REST so it is not rate limited, and is accessible anonymously (if public)
          * @param url
          */
-        fileStoreUrl(url:string) {
+        fileStoreUrl(url: string) {
             return url.replace(/^\/rest\/(?:v\d+|latest)\/file-stores\//, '/file-stores/');
+        },
+        /**
+         * Use get nth argument supplied as an ...args parameter
+         * @param index: number
+         * @param args: any[] - pass arguments into here
+         */
+        sliceArgs(index: number, ...args: any[]): any {
+            let i = 0;
+            for (let arg in args) {
+                if (i === index) {
+                    return arg;
+                }
+                i++;
+            }
+            return null;
         }
     };
 
     return Object.freeze(util);
 }
 
-export const Util = UtilFactory(constants.MA_DATE_FORMATS, rqlBuilderFactory);
+export const Util = UtilFactory();
+
+

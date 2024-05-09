@@ -176,9 +176,11 @@ interface UtilFactory {
     maClick(): boolean | UtilFactory;
     maFocus(options: { selectText?: string; sort?: string; scrollIntoView?: boolean }): UtilFactory;
     firstMatch: (accessor: string) => (selector: string) => Element[];
-    maParent: (selector: string) => Element[];
-    maNext: (selector: string) => Element[];
-    maPrev: (selector: string) => Element[];
+
+    maParent: ((selector: string) => Element[]) | {};
+    maNext: ((selector: string) => Element[]) | {};
+    maPrev: ((selector: string) => Element[]) | {};
+
     maForEach(...args: any[]): UtilFactory;
     maPush(...args: any[]): UtilFactory;
     maFilter(...args: any[]): any[];
@@ -205,7 +207,7 @@ interface UtilFactory {
     blobToText(blob: Blob): Promise<never>;
 }
 
-function UtilFactory(this: any) {
+function UtilFactory() {
     const mangoBaseUrl = constants.MA_BASE_URL;
 
     // const $stateParams = $injector.has('$stateParams') ? $injector.get('$stateParams') : null;
@@ -310,9 +312,9 @@ function UtilFactory(this: any) {
             return this;
         },
 
-        maParent: this.firstMatch('parentNode'),
-        maNext: this.firstMatch('nextSibling'),
-        maPrev: this.firstMatch('previousSibling'),
+        maParent: {},
+        maNext: {},
+        maPrev: {},
 
         maForEach(...args: any[]) {
             const fn = args[0];
@@ -1106,7 +1108,7 @@ function UtilFactory(this: any) {
         },
 
         generateKey(keySizeBits = 256) {
-            const bytes = $window.crypto.getRandomValues(new Uint8Array(keySizeBits / 8));
+            const bytes = window.crypto.getRandomValues(new Uint8Array(keySizeBits / 8));
             return bytes.reduce((key, byte) => key + ('0' + byte.toString(16)).slice(-2), '');
         },
 
@@ -1251,10 +1253,15 @@ function UtilFactory(this: any) {
             return null;
         }
     };
+    util.maParent = util.firstMatch('parentNode');
+    util.maNext = util.firstMatch('nextSibling');
+    util.maPrev = util.firstMatch('previousSibling');
 
     return Object.freeze(util);
 }
 
 export const Util = UtilFactory();
+
+
 
 

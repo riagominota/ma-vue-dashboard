@@ -68,18 +68,23 @@ function NotificationManagerFactory() {
             }
         }
     }
-type DeferredSocket = {resolve: any, reject: any}
-type XidPayload = {action:string,object:Record<string,any>,xid:string,originalXid:string,id:number}
-type NotificationMessage = {messageType:string,notificationType:string,sequenceNumber:number,payload:any,attributes:any}
-type WebSocketRequest = {sequenceNumber:number,messageType:string,requestType:string,notificationTypes:string}
-
+    type DeferredSocket = { resolve: any; reject: any };
+    type XidPayload = { action: string; object: Record<string, any>; xid: string; originalXid: string; id: number };
+    type NotificationMessage = { messageType: string; notificationType: string; sequenceNumber: number; payload: any; attributes: any };
+    interface WebSocketRequest {
+        sequenceNumber?: number;
+        messageType?: string;
+        requestType: string;
+        notificationTypes: string[];
+        xids: string[] | null;
+    }
 
     class NotificationManager {
         listeners: number;
-        subscribedXids: {};
+        subscribedXids: Record<string, any> = {};
         subscribedToAllXidsCount: number;
         eventScope: { notificationManager: NotificationManager };
-        pendingRequests: Record<string,any>;
+        pendingRequests: Record<string, any>;
         sequenceNumber: number;
         loggedIn: boolean;
         socketDeferred: DeferredSocket;
@@ -89,7 +94,7 @@ type WebSocketRequest = {sequenceNumber:number,messageType:string,requestType:st
         supportsSubscribe: any;
         constructor(options: any) {
             Object.assign(this, options);
-            this.socketDeferred = undefined as unknown as DeferredSocket
+            this.socketDeferred = undefined as unknown as DeferredSocket;
             this.listeners = 0;
             this.subscribedXids = {};
             this.subscribedToAllXidsCount = 0;
@@ -126,10 +131,10 @@ type WebSocketRequest = {sequenceNumber:number,messageType:string,requestType:st
             if (!this.webSocketUrl) {
                 return Promise.reject('No websocket URL');
             }
-            let p = new Promise((resolve, reject)=>{
-                this.socketDeferred = { resolve , reject } as DeferredSocket;
+            let p = new Promise((resolve, reject) => {
+                this.socketDeferred = { resolve, reject } as DeferredSocket;
             });
-            const socketDeferred = (this.socketDeferred as DeferredSocket  );
+            const socketDeferred = this.socketDeferred as DeferredSocket;
 
             let host = document.location.host;
             let protocol = document.location.protocol;
@@ -149,12 +154,12 @@ type WebSocketRequest = {sequenceNumber:number,messageType:string,requestType:st
             const socket = (this.socket = new WebSocket(protocol + '//' + host + this.webSocketUrl));
 
             this.connectTimer = setTimeout(() => {
-                (socketDeferred).reject('Timeout opening socket');
+                socketDeferred.reject('Timeout opening socket');
                 this.closeSocket();
             }, MA_TIMEOUTS.websocket);
 
-            socket.onclose = (event : CloseEvent) => {
-                console.warn('WebSocket closed', (event as {target:{url:string},reason:string}&CloseEvent ).target.url, 'reason:', event.reason);
+            socket.onclose = (event: CloseEvent) => {
+                console.warn('WebSocket closed', (event as { target: { url: string }; reason: string } & CloseEvent).target.url, 'reason:', event.reason);
                 socketDeferred.reject('Socket closed');
                 this.closeSocket(event);
             };
@@ -166,7 +171,7 @@ type WebSocketRequest = {sequenceNumber:number,messageType:string,requestType:st
 
             socket.onopen = (event) => {
                 // setTimeout.cancel();
-                clearTimeout(this.connectTimer)
+                clearTimeout(this.connectTimer);
                 delete this.connectTimer;
 
                 this.pendingRequests = {};
@@ -215,7 +220,7 @@ type WebSocketRequest = {sequenceNumber:number,messageType:string,requestType:st
          * Default notifier for CRUD type websocket payloads, they have a action and object property.
          */
 
-        notifyFromPayload(payload:XidPayload) {
+        notifyFromPayload(payload: XidPayload) {
             if (typeof payload.action === 'string') {
                 const eventType = mapEventType[payload.action as 'add'] || payload.action;
                 if (eventType) {
@@ -232,20 +237,20 @@ type WebSocketRequest = {sequenceNumber:number,messageType:string,requestType:st
             }
         }
 
-        createCrudOperationAttributes(options:any) {
+        createCrudOperationAttributes(options: any) {
             return new CrudOperationAttributes(options);
         }
 
         /**
          * Processes a V2 websocket message and calls notify()
          */
-        messageReceived(message:NotificationMessage) {
+        messageReceived(message: NotificationMessage) {
             if (message.messageType === 'RESPONSE') {
                 if (isFinite(message.sequenceNumber)) {
                     const request = this.pendingRequests[message.sequenceNumber];
                     if (request != null) {
                         Promise.resolve(message.payload);
-                      //  $timeout.cancel(request.timeoutPromise);
+                        //  $timeout.cancel(request.timeoutPromise);
                     }
                     delete this.pendingRequests[message.sequenceNumber];
                 }
@@ -265,10 +270,10 @@ type WebSocketRequest = {sequenceNumber:number,messageType:string,requestType:st
                 delete this.connectTimer;
             }
             if (this.socket) {
-                this.socket.onclose = ()=>{};
-                this.socket.onerror = ()=>{};
-                this.socket.onopen = ()=>{};
-                this.socket.onmessage = ()=>{};
+                this.socket.onclose = () => {};
+                this.socket.onerror = () => {};
+                this.socket.onopen = () => {};
+                this.socket.onmessage = () => {};
                 this.socket.close();
                 delete this.socket;
             }
@@ -304,15 +309,15 @@ type WebSocketRequest = {sequenceNumber:number,messageType:string,requestType:st
             });
         }
 
-        sendMessage(message:string) {
+        sendMessage(message: string) {
             if (this.socketConnected()) {
                 (this.socket as WebSocket).send(JSON.parse(message));
             }
         }
 
-        sendRequest(message:WebSocketRequest, timeout = MA_TIMEOUTS.websocketRequest) {
+        sendRequest(message: WebSocketRequest, timeout = MA_TIMEOUTS.websocketRequest) {
             if (this.socketConnected()) {
-                const deferred = {resolve:Promise.resolve,reject:Promise.reject};
+                const deferred = { resolve: Promise.resolve, reject: Promise.reject };
                 const timeoutPromise = setTimeout(() => {
                     deferred.reject('Timeout');
                 }, timeout);
@@ -332,11 +337,10 @@ type WebSocketRequest = {sequenceNumber:number,messageType:string,requestType:st
             }
         }
 
-        subscribe(handler, $scope, eventTypes = ['create', 'update', 'delete', 'stateChange'], xids = null, localOnly = false) {
+        subscribe(handler: Record<string, any> | Function, eventTypes = ['create', 'update', 'delete', 'stateChange'], xids: string[] | null = null, localOnly: boolean = false) {
             if (typeof handler === 'object') {
                 const options = handler;
                 handler = options.handler;
-                $scope = options.scope;
                 eventTypes = options.eventTypes || ['create', 'update', 'delete', 'stateChange'];
                 xids = options.xids || null;
                 localOnly = options.localOnly || false;
@@ -366,29 +370,24 @@ type WebSocketRequest = {sequenceNumber:number,messageType:string,requestType:st
                         this.sendSubscription();
                     }
                 } else if (this.loggedIn) {
-                    this.openSocket().catch(()=>{});
+                    this.openSocket().catch(() => {});
                 }
             }
 
-            const applyThenHandle = (...args) => {
+            const applyThenHandle = (...args: Record<string, any>[]) => {
                 // dont call handler if user supplied xids and this item doesnt match
                 const item = args[1];
                 if (Array.isArray(xids) && !xids.includes(item.xid)) {
                     return;
                 }
 
-                if ($scope) {
-                    $scope.$applyAsync(() => {
-                        handler(...args);
-                    });
-                } else {
-                    handler(...args);
-                }
+                (handler as Function)(...args);
             };
 
             const eventDeregisters = [];
             eventTypes.forEach((eventType) => {
-                const eventDeregister = this.eventScope.$on(eventType, applyThenHandle);
+                // const eventDeregister = this.eventScope.$on(eventType, applyThenHandle);
+                applyThenHandle(eventType);
                 eventDeregisters.push(eventDeregister);
             });
 
@@ -439,7 +438,7 @@ type WebSocketRequest = {sequenceNumber:number,messageType:string,requestType:st
         }
 
         // TODO remove
-        subscribeToXids(xids, handler, $scope, eventTypes = ['create', 'update', 'delete', 'stateChange']) {
+        subscribeToXids(xids: string, handler: Record<string, any> | Function, eventTypes = ['create', 'update', 'delete', 'stateChange']) {
             return this.subscribe(
                 (...args) => {
                     const item = args[1];
@@ -447,7 +446,6 @@ type WebSocketRequest = {sequenceNumber:number,messageType:string,requestType:st
                         handler(...args);
                     }
                 },
-                $scope,
                 eventTypes,
                 xids
             );

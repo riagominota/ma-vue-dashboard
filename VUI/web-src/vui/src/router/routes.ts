@@ -49,16 +49,16 @@ const routes = [
         component: () => import('@/views/pages/Landing.vue')
     },
     {
+        path: '/login',
+        name: 'login',
+        component: () => import('@/views/pages/auth/Login.vue')
+    },
+    {
         path: '/pages/notfound',
         name: 'notfound',
         component: () => import('@/views/pages/NotFound.vue')
     },
 
-    {
-        path: '/auth/login',
-        name: 'login',
-        component: () => import('@/views/pages/auth/Login.vue')
-    },
     {
         path: '/auth/access',
         name: 'accessDenied',

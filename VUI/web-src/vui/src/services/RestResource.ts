@@ -3,15 +3,12 @@ import { Util } from '@/composables/Util';
 import rqlBuilderFactory from './RqlBuilder';
 import constants from '@/boot/constants';
 import resourceCacheFactory from '@/stores/ResourceCache';
-import NotificationManagerFactory from './NotificationManager';
-import { Interaction } from 'chart.js';
+import NotificationManagerFactory from '../services/NotificationManager';
+
 
 const MA_TIMEOUTS = constants.MA_TIMEOUTS;
 
-
-
 function restResourceFactory() {
-
     const NotificationManager = NotificationManagerFactory;
     const RqlBuilder = rqlBuilderFactory();
     const hasSymbol = typeof Symbol === 'function';
@@ -21,22 +18,19 @@ function restResourceFactory() {
     const httpBodyProperty = hasSymbol ? Symbol('httpBody') : '_httpBody';
     const cacheProperty = hasSymbol ? Symbol('cache') : '_cache';
 
-interface objectRecord
-{
-    xidPrefix:string;
-    [key:string]:string
-}
+    interface objectRecord {
+        xidPrefix: string;
+        [key: string]: string;
+    }
 
     class RestResource implements objectRecord {
-
-        xidPrefix:string = "";
-        
+        xidPrefix: string = '';
 
         constructor(properties) {
             Object.assign(this, JSON.parse(JSON.stringify((this.constructor as typeof RestResource & { [key: string]: string }).defaultProperties)), properties);
 
             if ((this.constructor as typeof RestResource).idProperty) {
-                const itemId:string = this [ (this.constructor as typeof RestResource).idProperty ];
+                const itemId: string = this[(this.constructor as typeof RestResource).idProperty];
                 if (itemId) {
                     // item already has an ID store it in a private property so we can use it later when updating the item
                     this.setOriginalId(itemId);
@@ -60,24 +54,26 @@ interface objectRecord
         /**
          * @returns {NotificationManager}
          */
-        static createNotificationManager() {
+        //should need to create one, just pull it in
+
+      /*   static createNotificationManager() {
             return new NotificationManager({
                 webSocketUrl: this.webSocketUrl,
                 transformObject: (...args) => {
                     return new this(...args);
                 }
             });
-        }
+        } */
 
         /**
          * @returns {NotificationManager}
          */
         static get notificationManager() {
-            let notificationManager:NotificationManager = this[notificationManagerProperty];
+            let notificationManager: NotificationManager = this[notificationManagerProperty];
 
             if (!notificationManager) {
                 notificationManager = this.createNotificationManager();
-                this[notificationManagerProperty as symbol | "_notificationManager" ] = notificationManager;
+                this[notificationManagerProperty as symbol | '_notificationManager'] = notificationManager;
             }
 
             return notificationManager;
@@ -88,7 +84,7 @@ interface objectRecord
         }
 
         static query(queryObject, opts = {}) {
-            opts.resourceInfo = {resourceMethod: 'query'};
+            opts.resourceInfo = { resourceMethod: 'query' };
 
             const params = {};
             if (queryObject) {
@@ -98,16 +94,19 @@ interface objectRecord
                 }
             }
 
-            return this.http({
-                url: this.baseUrl,
-                method: 'GET',
-                params: params
-            }, opts).then(response => {
+            return this.http(
+                {
+                    url: this.baseUrl,
+                    method: 'GET',
+                    params: params
+                },
+                opts
+            ).then((response) => {
                 if (opts.responseType != null) {
                     return response.data;
                 }
 
-                const items = response.data.items.map(item => {
+                const items = response.data.items.map((item) => {
                     return new this(item);
                 });
                 items.$total = response.data.total;
@@ -116,18 +115,21 @@ interface objectRecord
         }
 
         static queryPost(queryObject, opts = {}) {
-            opts.resourceInfo = {resourceMethod: 'queryPost'};
+            opts.resourceInfo = { resourceMethod: 'queryPost' };
 
-            return this.http({
-                url: this.baseUrl + '/query',
-                method: 'POST',
-                data: queryObject
-            }, opts).then(response => {
+            return this.http(
+                {
+                    url: this.baseUrl + '/query',
+                    method: 'POST',
+                    data: queryObject
+                },
+                opts
+            ).then((response) => {
                 if (opts.responseType != null) {
                     return response.data;
                 }
 
-                const items = response.data.items.map(item => {
+                const items = response.data.items.map((item) => {
                     return new this(item);
                 });
                 items.$total = response.data.total;
@@ -148,7 +150,7 @@ interface objectRecord
             const item = Object.create(this.prototype);
             item.setOriginalId(id);
 
-            return item.get(opts).then(item => {
+            return item.get(opts).then((item) => {
                 return new this(item);
             });
         }
@@ -157,7 +159,7 @@ interface objectRecord
             const item = Object.create(this.prototype);
             item.id = id;
 
-            return item.getById(opts).then(item => {
+            return item.getById(opts).then((item) => {
                 return new this(item);
             });
         }
@@ -236,61 +238,77 @@ interface objectRecord
 
         get(opts = {}) {
             const originalId = this.getOriginalId();
-            opts.resourceInfo = {resourceMethod: 'get', originalId};
+            opts.resourceInfo = { resourceMethod: 'get', originalId };
 
-            return (this.constructor as typeof RestResource).http({
-                url: (this.constructor as typeof RestResource).baseUrl + '/' + (this.constructor as typeof RestResource).encodeUriSegment(originalId),
-                method: 'GET',
-                params: opts.params
-            }, opts).then(response => {
-                this.itemUpdated(response.data, opts.responseType);
-                this.initialize('get');
-                if ((this.constructor as typeof RestResource).notifyUpdateOnGet) {
-                    (this.constructor as typeof RestResource).notifyCrudOperation('update', this, originalId);
-                }
-                return this;
-            });
+            return (this.constructor as typeof RestResource)
+                .http(
+                    {
+                        url: (this.constructor as typeof RestResource).baseUrl + '/' + (this.constructor as typeof RestResource).encodeUriSegment(originalId),
+                        method: 'GET',
+                        params: opts.params
+                    },
+                    opts
+                )
+                .then((response) => {
+                    this.itemUpdated(response.data, opts.responseType);
+                    this.initialize('get');
+                    if ((this.constructor as typeof RestResource).notifyUpdateOnGet) {
+                        (this.constructor as typeof RestResource).notifyCrudOperation('update', this, originalId);
+                    }
+                    return this;
+                });
         }
 
         getById(opts = {}) {
             const originalId = this.getOriginalId();
-            opts.resourceInfo = {resourceMethod: 'getById', originalId};
+            opts.resourceInfo = { resourceMethod: 'getById', originalId };
 
-            return (this.constructor as typeof RestResource).http({
-                url: (this.constructor as typeof RestResource).baseUrl + '/by-id/' + (this.constructor as typeof RestResource).encodeUriSegment(this.id),
-                method: 'GET',
-                params: opts.params
-            }, opts).then(response => {
-                this.itemUpdated(response.data, opts.responseType);
-                this.initialize('get');
-                if ((this.constructor as typeof RestResource).notifyUpdateOnGet) {
-                    (this.constructor as typeof RestResource).notifyCrudOperation('update', this, originalId);
-                }
-                return this;
-            });
+            return (this.constructor as typeof RestResource)
+                .http(
+                    {
+                        url: (this.constructor as typeof RestResource).baseUrl + '/by-id/' + (this.constructor as typeof RestResource).encodeUriSegment(this.id),
+                        method: 'GET',
+                        params: opts.params
+                    },
+                    opts
+                )
+                .then((response) => {
+                    this.itemUpdated(response.data, opts.responseType);
+                    this.initialize('get');
+                    if ((this.constructor as typeof RestResource).notifyUpdateOnGet) {
+                        (this.constructor as typeof RestResource).notifyCrudOperation('update', this, originalId);
+                    }
+                    return this;
+                });
         }
 
         getAndSubscribe($scope, opts = {}) {
-            return this.get(opts).catch(error => {
-                if (error.status === 404) {
+            return this.get(opts)
+                .catch((error) => {
+                    if (error.status === 404) {
+                        return this;
+                    }
+                    return $q.reject(error);
+                })
+                .then((item) => {
+                    const id = this[(this.constructor as typeof RestResource).idProperty];
+
+                    (this.constructor as typeof RestResource).notificationManager.subscribeToXids(
+                        [id],
+                        (event, updatedItem) => {
+                            this.itemUpdated(updatedItem);
+                            this.initialize('webSocket.' + event.name);
+                        },
+                        $scope
+                    );
+
                     return this;
-                }
-                return $q.reject(error);
-            }).then(item => {
-                const id = this[(this.constructor as typeof RestResource).idProperty];
-
-                (this.constructor as typeof RestResource).notificationManager.subscribeToXids([id], (event, updatedItem) => {
-                    this.itemUpdated(updatedItem);
-                    this.initialize('webSocket.' + event.name);
-                }, $scope);
-
-                return this;
-            });
+                });
         }
 
         save(opts = {}) {
             const originalId = this.getOriginalId();
-            opts.resourceInfo = {resourceMethod: 'save', originalId};
+            opts.resourceInfo = { resourceMethod: 'save', originalId };
 
             const saveType = originalId ? 'update' : 'create';
 
@@ -305,17 +323,22 @@ interface objectRecord
                 opts.resourceInfo.saveType = saveType;
             }
 
-            return (this.constructor as typeof RestResource).http({
-                url,
-                method,
-                data: this[httpBodyProperty] || this,
-                params: opts.params
-            }, opts).then(response => {
-                this.itemUpdated(response.data, opts.responseType);
-                this.initialize(saveType);
-                (this.constructor as typeof RestResource).notifyCrudOperation(saveType, this, originalId);
-                return this;
-            });
+            return (this.constructor as typeof RestResource)
+                .http(
+                    {
+                        url,
+                        method,
+                        data: this[httpBodyProperty] || this,
+                        params: opts.params
+                    },
+                    opts
+                )
+                .then((response) => {
+                    this.itemUpdated(response.data, opts.responseType);
+                    this.initialize(saveType);
+                    (this.constructor as typeof RestResource).notifyCrudOperation(saveType, this, originalId);
+                    return this;
+                });
         }
 
         itemUpdated(item, responseType, useMerge) {
@@ -333,23 +356,27 @@ interface objectRecord
 
         delete(opts = {}) {
             const originalId = this.getOriginalId();
-            opts.resourceInfo = {resourceMethod: 'delete', originalId};
+            opts.resourceInfo = { resourceMethod: 'delete', originalId };
 
-            return (this.constructor as typeof RestResource).http({
-                url: (this.constructor as typeof RestResource).baseUrl + '/' + (this.constructor as typeof RestResource).encodeUriSegment(originalId),
-                method: 'DELETE',
-                params: opts.params
-            }, opts).then(response => {
-                this.itemUpdated(response.data, opts.responseType);
-                this.deleteOriginalId();
-                this.initialize('delete');
-                (this.constructor as typeof RestResource).notifyCrudOperation('delete', this, originalId);
-                return this;
-            });
+            return (this.constructor as typeof RestResource)
+                .http(
+                    {
+                        url: (this.constructor as typeof RestResource).baseUrl + '/' + (this.constructor as typeof RestResource).encodeUriSegment(originalId),
+                        method: 'DELETE',
+                        params: opts.params
+                    },
+                    opts
+                )
+                .then((response) => {
+                    this.itemUpdated(response.data, opts.responseType);
+                    this.deleteOriginalId();
+                    this.initialize('delete');
+                    (this.constructor as typeof RestResource).notifyCrudOperation('delete', this, originalId);
+                    return this;
+                });
         }
 
-        initialize(reason) {
-        }
+        initialize(reason) {}
 
         static http(httpConfig, opts = {}) {
             if (httpConfig.timeout == null) {
@@ -362,12 +389,12 @@ interface objectRecord
                         httpConfig.timeout.cancelled = true;
                     });
                 } else {
-                    const timeoutPromise = timeout(()=>{}, timeout, false);
+                    const timeoutPromise = timeout(() => {}, timeout, false);
                     const userCancelledPromise = opts.cancel.finally(() => {
                         timeout.cancel(timeoutPromise);
                         httpConfig.timeout.cancelled = true;
                     });
-                    httpConfig.timeout = $q.race([userCancelledPromise, timeoutPromise.catch(()=>{})]);
+                    httpConfig.timeout = $q.race([userCancelledPromise, timeoutPromise.catch(() => {})]);
                 }
             }
 
@@ -383,8 +410,7 @@ interface objectRecord
         }
 
         static wasCancelled(error) {
-            return error && error.xhrStatus === 'abort' &&
-                error.config && error.config.timeout && error.config.timeout.cancelled;
+            return error && error.xhrStatus === 'abort' && error.config && error.config.timeout && error.config.timeout.cancelled;
         }
 
         static defer() {
@@ -401,12 +427,14 @@ interface objectRecord
 
             if (this.getOriginalId()) {
                 this.$enableToggling = true;
-                this.save().catch(error => {
-                    this.enabled = prevValue;
-                    return $q.reject(error);
-                }).finally(() => {
-                    delete this.$enableToggling;
-                });
+                this.save()
+                    .catch((error) => {
+                        this.enabled = prevValue;
+                        return $q.reject(error);
+                    })
+                    .finally(() => {
+                        delete this.$enableToggling;
+                    });
             }
         }
 

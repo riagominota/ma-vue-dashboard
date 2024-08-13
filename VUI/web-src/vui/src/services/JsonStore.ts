@@ -1,9 +1,9 @@
 /*
  * Copyright (C) 2021 Radix IoT LLC. All rights reserved.
  */
-
-import angular from 'angular';
-
+import { defineStore } from 'pinia';
+import { axios } from '@/boot/axios';
+import NotificationManagerFactory from '@/services/NotificationManager'
 /**
 * @ngdoc service
 * @name ngMangoServices.maJsonStore
@@ -101,22 +101,43 @@ import angular from 'angular';
 * @returns {object} Returns a json store object. Objects will be of the resource class and have resource actions available to them.
 *
 */
-JsonStoreFactory.$inject = ['$resource'];
-function JsonStoreFactory($resource) {
-    const jsonStoreUrl = '/rest/latest/json-data/';
-    
-    const defaultProperties = {
-        name: '',
-        readPermission: [],
-        editPermission: [],
-        jsonData: {},
-        dataPath: []
-    };
-    
-    function setDataPathInterceptor(data) {
+interface JsonStoreObject {
+    name: string;
+    readPermission: string[];
+    editPermission: string[];
+    jsonData: Record<string,any>;
+    dataPath: string[];
+}
+
+const defaultProperties = {
+    name: '',
+    readPermission: [],
+    editPermission: [],
+    jsonData: {},
+    dataPath: []
+};
+
+
+class JsonStore
+{
+
+    jsonStoreUrl = '/rest/latest/json-data/';
+    resource = axios.create();
+    xid:string;
+    _dataPath:string;
+    requestInterceptor:number;
+    notificationManager:NotificationManager;
+    constructor(xid:string,dataPath='')
+    {
+        this.xid = xid;
+        this._dataPath = dataPath;
+        this.requestInterceptor = this.resource.interceptors.request.use(this.setDataPathInterceptor)
+    }
+
+     setDataPathInterceptor(data) {
         const urlParts = data.config.url.split('/');
         const lastPart = decodeURIComponent(urlParts[urlParts.length - 1]);
-        
+
         if (lastPart !== data.data.xid) {
             data.resource.dataPath = lastPart.split('.');
         } else {
@@ -127,101 +148,112 @@ function JsonStoreFactory($resource) {
         if (xid) {
             data.resource.originalId = xid;
         }
-        
+
         return data.resource;
     }
 
-    const serializePermission = permission => {
-        return permission.map(t => Array.isArray(t) ? t.join(',') : t);
+    serializePermission = (permission: string[]) => {
+        return permission.map((t) => (Array.isArray(t) ? t.join(',') : t));
     };
 
-    const JsonStore = $resource(jsonStoreUrl + ':xid/:dataPathStr', {
-        xid: data => data && (data.originalId || data.xid),
-        dataPathStr: '@dataPathStr'
-    }, {
-        query: {
-            method: 'GET',
-            isArray: true,
-            interceptor: {
-                response: (data) => {
-                    return data.resource.map(xid => {
-                        return new JsonStore({xid});
-                    });
+    const JsonStore = $resource(
+        jsonStoreUrl + ':xid/:dataPathStr',
+        {
+            xid: (data) => data && (data.originalId || data.xid),
+            dataPathStr: '@dataPathStr'
+        },
+        {
+            query: {
+                method: 'GET',
+                isArray: true,
+                interceptor: {
+                    response: (data) => {
+                        return data.resource.map((xid) => {
+                            return new JsonStore({ xid });
+                        });
+                    }
+                }
+            },
+            get: {
+                interceptor: {
+                    response: setDataPathInterceptor
+                }
+            },
+            save: {
+                method: 'POST',
+                interceptor: {
+                    response: setDataPathInterceptor
+                },
+                transformRequest: function (data, headersGetter) {
+                    return angular.toJson(data.jsonData);
+                },
+                params: {
+                    name: '@name',
+                    readPermission: (item) => serializePermission(item.readPermission),
+                    editPermission: (item) => serializePermission(item.editPermission)
+                }
+            },
+            update: {
+                method: 'PUT',
+                interceptor: {
+                    response: setDataPathInterceptor
+                },
+                transformRequest: function (data, headersGetter) {
+                    return angular.toJson(data.jsonData);
+                },
+                params: {
+                    name: '@name',
+                    readPermission: (item) => serializePermission(item.readPermission),
+                    editPermission: (item) => serializePermission(item.editPermission)
+                }
+            },
+            delete: {
+                method: 'DELETE',
+                interceptor: {
+                    response: setDataPathInterceptor
+                },
+                transformResponse: function (data, headersGetter, status) {
+                    if (data && status < 400) {
+                        const item = angular.fromJson(data);
+                        item.jsonData = null;
+                        return item;
+                    }
+                }
+            },
+            getPublic: {
+                method: 'GET',
+                url: jsonStoreUrl + 'public/:xid/:dataPathStr',
+                interceptor: {
+                    response: setDataPathInterceptor
                 }
             }
         },
-        get: {
-            interceptor: {
-                response: setDataPathInterceptor
-            }
-        },
-        save: {
-            method: 'POST',
-            interceptor: {
-                response: setDataPathInterceptor
-            },
-            transformRequest: function(data, headersGetter) {
-                return angular.toJson(data.jsonData);
-            },
-            params: {
-                name: '@name',
-                readPermission: item => serializePermission(item.readPermission),
-                editPermission: item => serializePermission(item.editPermission)
-            }
-        },
-        update: {
-            method: 'PUT',
-            interceptor: {
-                response: setDataPathInterceptor
-            },
-            transformRequest: function(data, headersGetter) {
-                return angular.toJson(data.jsonData);
-            },
-            params: {
-                name: '@name',
-                readPermission: item => serializePermission(item.readPermission),
-                editPermission: item => serializePermission(item.editPermission)
-            }
-        },
-        'delete': {
-            method: 'DELETE',
-            interceptor: {
-                response: setDataPathInterceptor
-            },
-            transformResponse: function(data, headersGetter, status) {
-                if (data && status < 400) {
-                    const item = angular.fromJson(data);
-                    item.jsonData = null;
-                    return item;
-                }
-            }
-        },
-        getPublic: {
-            method: 'GET',
-            url: jsonStoreUrl + 'public/:xid/:dataPathStr',
-            interceptor: {
-                response: setDataPathInterceptor
-            }
+        {
+            defaultProperties
         }
-    }, {
-        defaultProperties
-    });
-    
-    Object.defineProperty(JsonStore.prototype, 'dataPathStr', {
-        get: function() {
+    );
+
+    get dataPath()
+    {
+        if (!this._dataPath) return '';
+        return this._dataPath.join('.');
+    }
+
+/*     Object.defineProperty(JsonStore.prototype, 'dataPathStr', {
+        get: function () {
             if (!this.dataPath) return '';
             return this.dataPath.join('.');
         }
-    });
+    }); */
 
     Object.assign(JsonStore.notificationManager, {
         webSocketUrl: '/rest/latest/websocket/json-data',
         supportsSubscribe: true
     });
 
-    return JsonStore;
+
 }
 
-export default JsonStoreFactory;
+export default {JsonStore};
 
 

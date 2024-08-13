@@ -32,7 +32,7 @@ const constantsObj = () => {
         MA_ROLLUP_TYPES: [
             { type: 'POINT_DEFAULT', nonNumeric: true, label: 'Point default', translation: 'common.rollup.pointDefault', nonAssignable: true },
             { type: 'NONE', nonNumeric: true, label: 'None', translation: 'common.rollup.none' },
-            { type: 'SIMPLIFY', nonNumeric: false, label: 'Simplify', translation: 'ui.app.simplify', nonAssignable: true },
+            { type: 'SIMPLIFY', nonNumeric: false, label: 'Simplify', translation: 'vui.app.simplify', nonAssignable: true },
             { type: 'AVERAGE', nonNumeric: false, label: 'Average', translation: 'common.rollup.average' },
             { type: 'DELTA', nonNumeric: false, label: 'Delta', translation: 'common.rollup.delta' },
             { type: 'MINIMUM', nonNumeric: false, label: 'Minimum', translation: 'common.rollup.minimum' },
@@ -83,10 +83,10 @@ const constantsObj = () => {
         ],
 
         MA_CHART_TYPES: [
-            { type: 'line', apiType: 'LINE', label: 'Line', translation: 'ui.app.line' },
-            { type: 'smoothedLine', apiType: 'SPLINE', label: 'Smoothed', translation: 'ui.app.smooth' },
-            { type: 'step', apiType: 'STEP', label: 'Step', translation: 'ui.app.step', nonNumeric: true },
-            { type: 'column', apiType: 'BAR', label: 'Bar', translation: 'ui.app.bar' }
+            { type: 'line', apiType: 'LINE', label: 'Line', translation: 'vui.app.line' },
+            { type: 'smoothedLine', apiType: 'SPLINE', label: 'Smoothed', translation: 'vui.app.smooth' },
+            { type: 'step', apiType: 'STEP', label: 'Step', translation: 'vui.app.step', nonNumeric: true },
+            { type: 'column', apiType: 'BAR', label: 'Bar', translation: 'vui.app.bar' }
         ],
 
         MA_SIMPLIFY_TYPES: [

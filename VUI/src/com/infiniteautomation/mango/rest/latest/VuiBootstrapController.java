@@ -26,7 +26,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.infiniteautomation.mango.rest.latest.TranslationsController.TranslationsModel;
 import com.infiniteautomation.mango.rest.latest.model.jsondata.JsonDataModel;
-import com.infiniteautomation.mango.rest.latest.model.modules.AngularJSModuleDefinitionGroupModel;
+// import com.infiniteautomation.mango.rest.latest.model.modules.AngularJSModuleDefinitionGroupModel;
 import com.infiniteautomation.mango.rest.latest.model.user.UserModel;
 import com.infiniteautomation.mango.spring.annotations.RestMapper;
 import com.infiniteautomation.mango.spring.components.PublicUrlService;
@@ -60,7 +60,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value="VUI application bootstrap")
 @RestController
 @RequestMapping("/vui-bootstrap")
-public class BootstrapController {
+public class VuiBootstrapController {
 
     private static final String[] PUBLIC_TRANSLATIONS = new String[] {"login", "header", "users", "validate"};
     private static final String[] PRIVATE_TRANSLATIONS = new String[] {"vui", "common", "pointEdit", "rest", "footer", "dateAndTime"};
@@ -81,7 +81,7 @@ public class BootstrapController {
     Clock clock;
 
     @Autowired
-    public BootstrapController(JsonDataDao jsonDataDao,
+    public VuiBootstrapController(JsonDataDao jsonDataDao,
                                @RestMapper ObjectMapper objectMapper,
                                ServletContext servletContext, PublicUrlService publicUrlService, Environment env,
                                PermissionService permissionService, PageResolver pageResolver, OAuth2Information oAuth2Information,
@@ -110,23 +110,23 @@ public class BootstrapController {
     public ObjectNode manifest(@AuthenticationPrincipal PermissionHolder user, UriComponentsBuilder builder) throws IOException {
         JsonNodeFactory nodeFactory = objectMapper.getNodeFactory();
 
-        ObjectNode uiSettings;
+        ObjectNode vuiSettings;
         try (InputStream in = servletContext.getResourceAsStream("/modules/mangoVUI/web/vuiSettings.json")) {
-            uiSettings = (ObjectNode) objectMapper.readTree(in);
+            vuiSettings = (ObjectNode) objectMapper.readTree(in);
         }
 
-        JsonDataVO uiSettingsVo = this.jsonDataDao.getByXid(VUICommon.MA_VUI_SETTINGS_XID);
-        if (uiSettingsVo != null) {
-            Object uiSettingsData = uiSettingsVo.getJsonData();
-            if (uiSettingsData instanceof ObjectNode) {
-                merge(uiSettings, (ObjectNode) uiSettingsData);
+        JsonDataVO vuiSettingsVo = this.jsonDataDao.getByXid(VUICommon.MA_VUI_SETTINGS_XID);
+        if (vuiSettingsVo != null) {
+            Object vuiSettingsData = vuiSettingsVo.getJsonData();
+            if (vuiSettingsData instanceof ObjectNode) {
+                merge(vuiSettings, (ObjectNode) vuiSettingsData);
             }
         }
 
-        ObjectNode manifest = (ObjectNode) uiSettings.get("pwaManifest");
+        ObjectNode manifest = (ObjectNode) vuiSettings.get("pwaManifest");
 
-        if (uiSettings.hasNonNull("pwaAutomaticName")) {
-            String mode = uiSettings.get("pwaAutomaticName").textValue();
+        if (vuiSettings.hasNonNull("pwaAutomaticName")) {
+            String mode = vuiSettings.get("pwaAutomaticName").textValue();
 
             String autoName = null;
             String instanceDescription = systemSettingsDao.getValue(SystemSettingsDao.INSTANCE_DESCRIPTION);
@@ -148,7 +148,7 @@ public class BootstrapController {
             }
 
             if (autoName != null) {
-                String prefix = uiSettings.hasNonNull("pwaAutomaticNamePrefix") ? uiSettings.get("pwaAutomaticNamePrefix").asText() : null;
+                String prefix = vuiSettings.hasNonNull("pwaAutomaticNamePrefix") ? vuiSettings.get("pwaAutomaticNamePrefix").asText() : null;
 
                 if (prefix != null && !prefix.isEmpty()) {
                     manifest.set("name", nodeFactory.textNode(prefix + " (" + autoName + ")"));
@@ -168,11 +168,11 @@ public class BootstrapController {
         PreLoginData data = new PreLoginData();
 
         boolean devEnabled = env.getProperty("development.enabled", Boolean.class, false);
-        data.setAngularJsModules(ModulesRestController.getAngularJSModules(devEnabled));
+        // data.setAngularJsModules(ModulesRestController.getAngularJSModules(devEnabled));
 
         JsonDataVO vuiSettings = this.jsonDataDao.getByXid(VUICommon.MA_VUI_SETTINGS_XID);
         if (vuiSettings != null) {
-            data.setUiSettings(new JsonDataModel(vuiSettings));
+            data.setVuiSettings(new JsonDataModel(vuiSettings));
         }
 
         data.setServerTimezone(TimeZone.getDefault().getID());
@@ -189,9 +189,24 @@ public class BootstrapController {
             data.setTranslations(TranslationsController.getTranslations(PUBLIC_TRANSLATIONS, Common.getLocale()));
         }
 
-        data.setLoginUri(pageResolver.getLoginUri(null, null));
-        data.setNotFoundUri(pageResolver.getNotFoundUri(null, null));
-        data.setLogoutSuccessUri(pageResolver.getLogoutSuccessUri(null, null));
+        String loginUri = pageResolver.getLoginUri(null, null);
+        String notFoundUri = pageResolver.getLoginUri(null, null);
+        String logoutSuccessUri = pageResolver.getLoginUri(null, null);
+        if(loginUri.startsWith("/ui"))
+        {
+            loginUri = loginUri.replace("/ui", "/vui");
+        }
+        if(notFoundUri.startsWith("/ui"))
+        {
+            notFoundUri = notFoundUri.replace("/ui", "/vui");
+        }
+        if(logoutSuccessUri.startsWith("/ui"))
+        {
+            logoutSuccessUri = logoutSuccessUri.replace("/ui", "/vui");
+        }
+        data.setLoginUri(loginUri);
+        data.setNotFoundUri(notFoundUri);
+        data.setLogoutSuccessUri(logoutSuccessUri);
 
         data.setOauth2Clients(oAuth2Information.enabledClients());
 
@@ -237,8 +252,8 @@ public class BootstrapController {
     }
 
     public static class PreLoginData {
-        private AngularJSModuleDefinitionGroupModel angularJsModules;
-        private JsonDataModel uiSettings;
+        // private AngularJSModuleDefinitionGroupModel angularJsModules;
+        private JsonDataModel vuiSettings;
         private String serverTimezone;
         private String serverLocale;
         private TranslationsModel translations;
@@ -258,12 +273,12 @@ public class BootstrapController {
         public void setTranslations(TranslationsModel translations) {
             this.translations = translations;
         }
-        public AngularJSModuleDefinitionGroupModel getAngularJsModules() {
-            return angularJsModules;
-        }
-        public void setAngularJsModules(AngularJSModuleDefinitionGroupModel angularJsModules) {
-            this.angularJsModules = angularJsModules;
-        }
+        // public AngularJSModuleDefinitionGroupModel getAngularJsModules() {
+        //     return angularJsModules;
+        // }
+        // public void setAngularJsModules(AngularJSModuleDefinitionGroupModel angularJsModules) {
+        //     this.angularJsModules = angularJsModules;
+        // }
         public String getServerTimezone() {
             return serverTimezone;
         }
@@ -288,11 +303,11 @@ public class BootstrapController {
         public void setUser(UserModel user) {
             this.user = user;
         }
-        public JsonDataModel getUiSettings() {
-            return uiSettings;
+        public JsonDataModel getVuiSettings() {
+            return vuiSettings;
         }
-        public void setUiSettings(JsonDataModel uiSettings) {
-            this.uiSettings = uiSettings;
+        public void setVuiSettings(JsonDataModel vuiSettings) {
+            this.vuiSettings = vuiSettings;
         }
         public boolean isPublicRegistrationEnabled() {
             return publicRegistrationEnabled;

@@ -8,4 +8,4 @@ declare module 'pinia' {
     }
 } */
 
-export default { pinia };
+export default pinia;

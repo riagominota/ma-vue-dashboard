@@ -20,6 +20,7 @@ import { Store, defineStore } from "pinia";
 import { computed, inject, reactive } from "vue";
 import {useUserStore} from "./UserStore";
 import constants from "@/boot/constants";
+import {  Locale_Translations } from "@/types/PreLoginData";
 
 const useTranslationStore = defineStore('translationStore',()=>{
     
@@ -45,7 +46,7 @@ const useTranslationStore = defineStore('translationStore',()=>{
             Object.keys(loadedNamespaces).forEach(key => delete loadedNamespaces[key]);
         }
         
-        const loadTranslations = (data:{namespaces:string[],translations:Record<string,Record<string,string>>,locale:string}) => {
+        const loadTranslations = (data:Locale_Translations) => {
             const namespaces = data.namespaces;
             const translations = data.translations;
             const locale = data.locale;
@@ -78,9 +79,9 @@ const useTranslationStore = defineStore('translationStore',()=>{
     
                     const namespaces = findNamespaces(key, args as string[]);
                     
-                    return loadNamespaces(namespaces).then(() => {
+                    // return loadNamespaces(namespaces).then(() => {
                         return trSync(key, args as string[]);
-                    });
+                    // });
                 }
                 
                const  findNamespaces=(key:string, args:string[]|string[][], namespaces:string[] = []) => {
@@ -142,12 +143,12 @@ const useTranslationStore = defineStore('translationStore',()=>{
                         namespaces = Array.prototype.slice.call(arguments);
                     }
     
-                    return Promise.resolve().then( async () => {
-                        let namespacePromises = namespaces.map(async namespace => {
-                            let loadedNamespace = loadedNamespaces[namespace];
-                            if ( Object.prototype.hasOwnProperty.call(loadedNamespace,'then') ) {
-                                return loadedNamespace;
-                            }
+                    // return Promise.resolve().then( async ():Record<string, Record<string, string>> => {
+                    const result=  namespaces.map(async namespace => {
+                            let loadedNamespace = loadedNamespaces[namespace] || {};
+                            // if ( Object.prototype.hasOwnProperty.call(loadedNamespace,'then') ) {
+                            //     return loadedNamespace;
+                            // }
                            
                             
                             let request = pendingRequests[namespace];
@@ -181,8 +182,8 @@ const useTranslationStore = defineStore('translationStore',()=>{
                             }
                             return request;
                         });
-                        return Promise.all(namespacePromises);
-                    }).then(result => {
+                        // return Promise.all(namespacePromises);
+                    // }).then((result:Record<string, Record<string, string>>[] )=> {
                         const allData = {};
                         
                         result.forEach(data => {
@@ -190,7 +191,7 @@ const useTranslationStore = defineStore('translationStore',()=>{
                         });
     
                         return allData;
-                    });
+                    // });
                 }
                 
                const clearCache = () =>{
@@ -214,6 +215,7 @@ const useTranslationStore = defineStore('translationStore',()=>{
                 }
             });   
             return {
+                loadTranslations,
                 tr,
                 trSync
             }

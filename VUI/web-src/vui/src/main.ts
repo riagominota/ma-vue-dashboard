@@ -111,9 +111,10 @@ import { axios, api } from './boot/axios';
 import constantsObj from './boot/constants';
 import {boostrapPreLogin} from './boot/bootstrap';
 import { useEventBusStore } from './stores/EventBusStore';
+import useTranslationStore from './stores/TranslationStore';
 import Tr from './composables/Tr';
 
-boostrapPreLogin();
+
 
 const app = createApp(App);
 
@@ -123,21 +124,20 @@ app.config.globalProperties.$api = api;
 app.config.globalProperties = { ...app.config.globalProperties, ...constantsObj };
 /* GLOBAL CONSTANTS */
 
-
 // console.log(app.config.globalProperties);
 
-app.use(pinia.pinia); //Must be first to preload states before router
+app.use(pinia); //Must be first to preload states before router
 app.use(router);
 app.use(PrimeVue, { ripple: true });
 app.use(ToastService);
 app.use(DialogService);
 app.use(ConfirmationService);
-
+boostrapPreLogin();
 /**
  * Stores
  */
 const EVENT_BUS_STORE = useEventBusStore();
-
+const TRANSLATION_STORE = useTranslationStore();
 /**
  * Stores
  */

@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Jared Wiltshire
  */
 @Configuration
-@ComponentScan(basePackageClasses = BootstrapController.class)
+@ComponentScan(basePackageClasses = VuiBootstrapController.class)
 public class VUIConfiguration {
 
 }
